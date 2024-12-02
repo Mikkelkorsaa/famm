@@ -43,6 +43,12 @@
             <DataAnnotationsValidator />
 
             <div class="form-group">
+              <label>Name</label>
+              <InputText @bind-Value="registerModel.Name" class="form-control" />
+              <ValidationMessage For="@(() => registerModel.Name)" />
+            </div>
+
+            <div class="form-group">
               <label>Email</label>
               <InputText @bind-Value="registerModel.Email" class="form-control" />
               <ValidationMessage For="@(() => registerModel.Email)" />
@@ -103,9 +109,14 @@
   {
     try
     {
+      if (registerModel.Password != registerModel.ConfirmPassword) {
+        errorMessage = "Passwords do not match";
+        return;
+      }
       var response = await Http.PostAsJsonAsync("https://localhost:7000/api/user/register", registerModel);
       if (response.IsSuccessStatusCode)
       {
+        registerModel = new();
         isLogin = true;
         errorMessage = string.Empty;
       }

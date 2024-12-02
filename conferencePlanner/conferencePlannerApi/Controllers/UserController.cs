@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using conferencePlannerApi.Repositories.Interfaces;
 using conferencePlannerCore.Models;
+using System.Security.Cryptography;
 
 namespace conferencePlannerApi.Controllers
 {
@@ -59,6 +60,27 @@ namespace conferencePlannerApi.Controllers
         return Unauthorized();
       }
       return user;
+    }
+
+    [HttpPost]
+    [Route("Register")]
+    public async Task<IActionResult> Register(RegisterModel request)
+    {
+      if (await _repository.GetByEmailAsync(request.Email) != null)
+      {
+        return BadRequest("Email already registered");
+      }
+
+      var user = new User
+      {
+        Name = request.Name,
+        Email = request.Email,
+        Password = request.Password
+      };
+
+      await _repository.CreateAsync(user);
+
+      return Ok();
     }
 
     private bool ValidatePassword(User user, string password)
