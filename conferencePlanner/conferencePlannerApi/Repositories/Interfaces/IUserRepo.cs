@@ -9,5 +9,6 @@ namespace conferencePlannerApi.Repositories.Interfaces
     Task<User> CreateAsync(User user);
     Task<User?> UpdateAsync(int id, User user);
     Task<bool> DeleteAsync(int id);
+    Task<User?> GetByEmailAsync(string email);
   }
 }

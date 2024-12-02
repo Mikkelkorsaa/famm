@@ -39,6 +39,9 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
         public async Task<User?> GetByIdAsync(int id)
             => await Task.FromResult(_users.FirstOrDefault(u => u.Id == id));
 
+        public async Task<User?> GetByEmailAsync(string email)
+            => await Task.FromResult(_users.FirstOrDefault(u => u.Email == email));
+
         public async Task<IEnumerable<User>> GetAllAsync()
             => await Task.FromResult(_users);
 

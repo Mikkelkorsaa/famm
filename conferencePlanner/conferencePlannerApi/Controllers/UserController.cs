@@ -48,5 +48,23 @@ namespace conferencePlannerApi.Controllers
     [Route("DeleteUser/{id}")]
     public async Task<ActionResult> DeleteUser(int id)
         => await _repository.DeleteAsync(id) ? NoContent() : NotFound();
+
+    [HttpPost]
+    [Route("Login")]
+    public async Task<ActionResult<User>> Login(LoginModel model)
+    {
+      var user = await _repository.GetByEmailAsync(model.Email);
+      if (user == null || !ValidatePassword(user, model.Password))
+      {
+        return Unauthorized();
+      }
+      return user;
+    }
+
+    private bool ValidatePassword(User user, string password)
+    {
+      // Replace with actual password validation logic
+      return true; // Temporary for testing
+    }
   }
 }
