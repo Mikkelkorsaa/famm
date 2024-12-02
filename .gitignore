@@ -1,3 +1,13 @@
+# Visual Studio / IDE
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.sln.iml
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
@@ -14,41 +24,79 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
-# Visual Studio files
-.vs/
-*.user
-*.userosscache
-*.sln.docstates
-*.userprefs
-
-# ReSharper
-_ReSharper*/
-*.[Rr]e[Ss]harper
-*.DotSettings.user
-
 # .NET Core
 project.lock.json
 project.fragment.lock.json
 artifacts/
 
 # NuGet
+*.nuget.dgspec.json
+*.nuget.g.props
+*.nuget.g.targets
+project.nuget.cache
 *.nupkg
 *.snupkg
 **/packages/*
-!**/packages/build/
+*.nuget.cache
 
-# MSTest test Results
+# Visual Studio cache/options
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Visual Studio code coverage
+*.coverage
+*.coveragexml
+
+# Assembly generated
+**/AssemblyInfo.cs
+**/AssemblyInfoInputs.cache
+**/*.AssemblyAttributes.cs
+
+# Temporary files
+**/[Tt]emp/
+*.tmp
+*.swp
+*.swo
+*~
+*.bak
+
+# Test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 
-# Build Results of an ATL Project
-[Dd]ebugPS/
-[Rr]eleasePS/
-dlldata.c
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
 
-# IDE-specific files
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sw?
+# Blazor
+**/wwwroot/css/site.min.css
+**/wwwroot/js/site.min.js
+**/*.razor.css.map
+
+# User-specific files
+**/Properties/launchSettings.json
+**/appsettings.Development.json
+**/*.Development.json
+**/*.Local.json
+**/*.Production.json
+
+# Dependencies
+**/node_modules/
