@@ -88,5 +88,13 @@ namespace conferencePlannerApi.Controllers
       // Replace with actual password validation logic
       return true; // Temporary for testing
     }
+
+    [HttpGet]
+    [Route("GetUserByEmail/{email}")]
+    public async Task<ActionResult<User>> GetUserByEmail(string email)
+    {
+      var user = await _repository.GetByEmailAsync(email);
+      return user == null ? NotFound() : user;
+    }
   }
 }

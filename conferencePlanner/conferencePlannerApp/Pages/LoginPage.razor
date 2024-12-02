@@ -2,6 +2,7 @@
 @using conferencePlannerCore.Models
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
+@inject IAuthService AuthService
 
 <div class="row justify-content-center">
   <div class="col-md-4">
@@ -92,6 +93,16 @@
       var response = await Http.PostAsJsonAsync("https://localhost:7000/api/user/login", loginModel);
       if (response.IsSuccessStatusCode)
       {
+        var user = await response.Content.ReadFromJsonAsync<User>();
+        if (user != null)
+        {
+          await AuthService.SetCurrentUser(user);
+        }
+        else
+        {
+          errorMessage = "Error retrieving user information";
+          return;
+        }
         NavigationManager.NavigateTo("/");
       }
       else
@@ -116,7 +127,7 @@
       var response = await Http.PostAsJsonAsync("https://localhost:7000/api/user/register", registerModel);
       if (response.IsSuccessStatusCode)
       {
-        registerModel = new();
+        registerModel = new();        
         isLogin = true;
         errorMessage = string.Empty;
       }
