@@ -92,7 +92,6 @@ artifacts/
 **/*.razor.css.map
 
 # User-specific files
-**/Properties/launchSettings.json
 **/appsettings.Development.json
 **/*.Development.json
 **/*.Local.json
