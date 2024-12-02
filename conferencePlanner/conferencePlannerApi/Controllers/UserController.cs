@@ -6,42 +6,47 @@ namespace conferencePlannerApi.Controllers
 {
   [ApiController]
   [Route("api/[controller]")]
-  public class UsersController : ControllerBase
+  public class UserController : ControllerBase
   {
     private readonly IUserRepo _repository;
 
-    public UsersController(IUserRepo repository)
+    public UserController(IUserRepo repository)
     {
       _repository = repository;
     }
 
     [HttpGet]
-    public async Task<IEnumerable<User>> GetAll()
+    [Route("GetAllUsers")]
+    public async Task<IEnumerable<User>> GetAllUsers()
         => await _repository.GetAllAsync();
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<User>> Get(int id)
+    [HttpGet]
+    [Route("GetUserById/{id}")]
+    public async Task<ActionResult<User>> GetUserById(int id)
     {
       var user = await _repository.GetByIdAsync(id);
       return user == null ? NotFound() : user;
     }
 
     [HttpPost]
-    public async Task<ActionResult<User>> Create(User user)
+    [Route("CreateUser")]
+    public async Task<ActionResult<User>> CreateUser(User user)
     {
       var newUser = await _repository.CreateAsync(user);
-      return CreatedAtAction(nameof(Get), new { id = newUser.Id }, newUser);
+      return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser);
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult<User>> Update(int id, User user)
+    [HttpPut]
+    [Route("UpdateUser/{id}")]
+    public async Task<ActionResult<User>> UpdateUser(int id, User user)
     {
       var updatedUser = await _repository.UpdateAsync(id, user);
       return updatedUser == null ? NotFound() : updatedUser;
     }
 
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(int id)
+    [HttpDelete]
+    [Route("DeleteUser/{id}")]
+    public async Task<ActionResult> DeleteUser(int id)
         => await _repository.DeleteAsync(id) ? NoContent() : NotFound();
   }
 }

@@ -1,4 +1,5 @@
 using conferencePlannerApi.Repositories.Interfaces;
+using conferencePlannerApi.Repositories.LocalImplementations;
 
 var builder = WebApplication.CreateBuilder(args);
 

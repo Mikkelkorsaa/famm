@@ -1,14 +1,17 @@
 using conferencePlannerApi.Repositories.Interfaces;
 using conferencePlannerCore.Models;
-public class LocalUserRepo : IUserRepo
+namespace conferencePlannerApi.Repositories.LocalImplementations
 {
-    private readonly List<User> _users = new()
+    public class LocalUserRepo : IUserRepo
+    {
+        private readonly List<User> _users = new()
         {
             new User
             {
                 Id = 1,
                 Name = "John Doe",
                 Email = "john.doe@example.com",
+                Password = "123",
                 CreatedAt = DateTime.Parse("2024-01-15"),
                 IsActive = true
             },
@@ -17,6 +20,7 @@ public class LocalUserRepo : IUserRepo
                 Id = 2,
                 Name = "Jane Smith",
                 Email = "jane.smith@example.com",
+                Password = "123",
                 CreatedAt = DateTime.Parse("2024-01-20"),
                 IsActive = true
             },
@@ -25,41 +29,43 @@ public class LocalUserRepo : IUserRepo
                 Id = 3,
                 Name = "Bob Johnson",
                 Email = "bob.johnson@example.com",
+                Password = "123",
                 CreatedAt = DateTime.Parse("2024-02-01"),
                 IsActive = false
             }
         };
-    private int _lastId = 3;
+        private int _lastId = 3;
 
-    public async Task<User?> GetByIdAsync(int id)
-        => await Task.FromResult(_users.FirstOrDefault(u => u.Id == id));
+        public async Task<User?> GetByIdAsync(int id)
+            => await Task.FromResult(_users.FirstOrDefault(u => u.Id == id));
 
-    public async Task<IEnumerable<User>> GetAllAsync()
-        => await Task.FromResult(_users);
+        public async Task<IEnumerable<User>> GetAllAsync()
+            => await Task.FromResult(_users);
 
-    public async Task<User> CreateAsync(User user)
-    {
-        var newUser = user with { Id = ++_lastId, CreatedAt = DateTime.UtcNow };
-        _users.Add(newUser);
-        return await Task.FromResult(newUser);
-    }
+        public async Task<User> CreateAsync(User user)
+        {
+            var newUser = user with { Id = ++_lastId, CreatedAt = DateTime.UtcNow };
+            _users.Add(newUser);
+            return await Task.FromResult(newUser);
+        }
 
-    public async Task<User?> UpdateAsync(int id, User user)
-    {
-        var index = _users.FindIndex(u => u.Id == id);
-        if (index == -1) return null;
+        public async Task<User?> UpdateAsync(int id, User user)
+        {
+            var index = _users.FindIndex(u => u.Id == id);
+            if (index == -1) return null;
 
-        var updatedUser = user with { Id = id };
-        _users[index] = updatedUser;
-        return await Task.FromResult(updatedUser);
-    }
+            var updatedUser = user with { Id = id };
+            _users[index] = updatedUser;
+            return await Task.FromResult(updatedUser);
+        }
 
-    public async Task<bool> DeleteAsync(int id)
-    {
-        var index = _users.FindIndex(u => u.Id == id);
-        if (index == -1) return false;
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var index = _users.FindIndex(u => u.Id == id);
+            if (index == -1) return false;
 
-        _users.RemoveAt(index);
-        return await Task.FromResult(true);
+            _users.RemoveAt(index);
+            return await Task.FromResult(true);
+        }
     }
 }
