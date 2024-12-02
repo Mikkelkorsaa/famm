@@ -10,7 +10,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
             {
                 Id = 1,
                 Name = "John Doe",
-                Email = "john.doe@example.com",
+                Email = "john@doe.com",
                 Password = "123",
                 CreatedAt = DateTime.Parse("2024-01-15"),
                 IsActive = true
@@ -19,7 +19,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
             {
                 Id = 2,
                 Name = "Jane Smith",
-                Email = "jane.smith@example.com",
+                Email = "jane@smith.com",
                 Password = "123",
                 CreatedAt = DateTime.Parse("2024-01-20"),
                 IsActive = true
@@ -28,7 +28,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
             {
                 Id = 3,
                 Name = "Bob Johnson",
-                Email = "bob.johnson@example.com",
+                Email = "bob@johnson.com",
                 Password = "123",
                 CreatedAt = DateTime.Parse("2024-02-01"),
                 IsActive = false
