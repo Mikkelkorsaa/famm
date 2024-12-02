@@ -1,29 +1,21 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">conferencePlannerApp</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+﻿<div class="nav-container">
+    <div class="navbar-header">
+        <a class="navbar-brand" href="/">conferencePlannerApp</a>
+        <button class="navbar-toggler" @onclick="ToggleNavMenu" title="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
-</div>
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
+    <nav class="@NavMenuCssClass nav-menu">
+        <NavLink class="nav-item nav-link" style="color:#1c4966;" href="/" Match="NavLinkMatch.All">
+            <span class="bi bi-house-door-fill-nav-menu"></span> Home
+        </NavLink>
+        <NavLink class="nav-item nav-link" style="color:#1c4966; href="counter">
+            <span class="bi bi-plus-square-fill-nav-menu"></span> Counter
+        </NavLink>
+        <NavLink class="nav-item nav-link" style="color:#1c4966; href="weather">
+            <span class="bi bi-list-nested-nav-menu"></span> Weather
+        </NavLink>
     </nav>
 </div>
 
@@ -36,5 +28,4 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
-
 }
