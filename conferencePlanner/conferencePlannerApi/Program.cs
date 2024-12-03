@@ -10,6 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IUserRepo, LocalUserRepo>();
+builder.Services.AddSingleton<IConferenceRepo, LocalConferenceRepo>();
 
 // Configure the CORS policy
 builder.Services.AddCors(options =>

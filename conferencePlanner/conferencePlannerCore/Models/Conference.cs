@@ -16,6 +16,6 @@ namespace conferencePlannerCore.Models
         public DateTime EndDate { get; set; }
         public List<string> Category { get; set; }
         public List<string> ReviewCriteria { get; set; }
-        public Venue venue { get; set; }
+        public Venue Venue { get; set; }
     }
 }
