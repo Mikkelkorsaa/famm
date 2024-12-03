@@ -67,6 +67,12 @@
               <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
             </div>
 
+            <div class="form-group mt-3">
+              <label>Organization</label>
+              <InputText @bind-Value="registerModel.Organization" class="form-control" />
+              <ValidationMessage For="@(() => registerModel.Organization)" />
+            </div>
+
             @if (!string.IsNullOrEmpty(errorMessage))
             {
               <div class="alert alert-danger mt-3">@errorMessage</div>

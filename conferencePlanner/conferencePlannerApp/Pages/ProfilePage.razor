@@ -1,0 +1,154 @@
+@page "/profile"
+@using conferencePlannerCore.Models
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@inject IAuthService AuthService
+
+<div class="container py-5">
+  @if (CurrentUser is null)
+  {
+    <div class="text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+  else
+  {
+    <div class="card shadow-sm mx-auto" style="max-width: 700px;">
+      <div class="card-header bg-white py-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-3">
+            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white"
+              style="width: 48px; height: 48px;">
+              @(CurrentUser.Name.Length > 0 ? CurrentUser.Name[0].ToString().ToUpper() : "U")
+            </div>
+            <div>
+              <h4 class="mb-0">@CurrentUser.Name</h4>
+              <small class="text-muted">@CurrentUser.Role.ToString()</small>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <button @onclick="LogOut" class="btn btn-primary">
+              Log ud
+            </button>
+            <button @onclick="DeleteAccount" class="btn btn-primary">
+              Slet bruger
+            </button>
+            <button @onclick="ToggleEditMode" class="btn @(IsEditing ? "btn-secondary" : "btn-primary")">
+              @(IsEditing ? "Annuller" : "Rediger")
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="mb-4">
+          <label class="form-label">Navn</label>
+          @if (IsEditing)
+          {
+            <input type="text" @bind="EditUser.Name" class="form-control" />
+          }
+          else
+          {
+            <div class="form-control bg-light">@CurrentUser.Name</div>
+          }
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">Email</label>
+          @if (IsEditing)
+          {
+            <input type="email" @bind="EditUser.Email" class="form-control" />
+          }
+          else
+          {
+            <div class="form-control bg-light">@CurrentUser.Email</div>
+          }
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">Origanisation</label>
+          @if (IsEditing)
+          {
+            <input type="text" @bind="EditUser.Organization" class="form-control" />
+          }
+          else
+          {
+            <div class="form-control bg-light">@CurrentUser.Organization</div>
+          }
+        </div>
+
+        @if (IsEditing)
+        {
+          <div class="d-grid">
+            <button @onclick="SaveChanges" class="btn btn-success">
+              Save Changes
+            </button>
+          </div>
+        }
+      </div>
+
+      <div class="card-footer bg-white">
+        <div class="row text-muted">
+          <div class="col-md-6">
+            <small>Medlem siden @CurrentUser.CreatedAt.ToString("MMMM dd, yyyy")</small>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <small>Status: @(CurrentUser.IsActive ? "Active" : "Inactive")</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+@code {
+  private User? CurrentUser { get; set; }
+  private User? EditUser { get; set; }
+  private bool IsEditing { get; set; } = false;
+
+  protected override async Task OnInitializedAsync()
+  {
+    CurrentUser = await AuthService.GetCurrentUser();
+
+    EditUser = CurrentUser! with { };
+  }
+
+  private void ToggleEditMode()
+  {
+    if (IsEditing)
+    {
+      EditUser = CurrentUser! with { };
+    }
+    IsEditing = !IsEditing;
+  }
+
+  private async void DeleteAccount()
+  {
+    var updatedUser = CurrentUser! with { IsActive = false };
+    await Http.PutAsJsonAsync("https://localhost:7000/api/user/updateuser", updatedUser);
+    await AuthService.ClearCurrentUser();
+    NavigationManager.NavigateTo("/");
+  }
+
+  private void LogOut()
+  {
+    AuthService.ClearCurrentUser();
+    NavigationManager.NavigateTo("/");
+  }
+
+  private async Task SaveChanges()
+  {
+    try
+    {
+      CurrentUser = EditUser with { };
+      IsEditing = false;
+      // Logger.LogInformation("Profile updated for user {UserId}", CurrentUser?.Id);
+    }
+    catch (Exception ex)
+    {
+      // Logger.LogError(ex, "Error updating profile for user {UserId}", CurrentUser?.Id);
+    }
+  }
+}

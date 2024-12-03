@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using conferencePlannerApi.Repositories.Interfaces;
 using conferencePlannerCore.Models;
-using System.Security.Cryptography;
 
 namespace conferencePlannerApi.Controllers
 {
@@ -38,10 +37,10 @@ namespace conferencePlannerApi.Controllers
     }
 
     [HttpPut]
-    [Route("UpdateUser/{id}")]
-    public async Task<ActionResult<User>> UpdateUser(int id, User user)
+    [Route("UpdateUser")]
+    public async Task<ActionResult<User>> UpdateUser(User user)
     {
-      var updatedUser = await _repository.UpdateAsync(id, user);
+      var updatedUser = await _repository.UpdateAsync(user);
       return updatedUser == null ? NotFound() : updatedUser;
     }
 
