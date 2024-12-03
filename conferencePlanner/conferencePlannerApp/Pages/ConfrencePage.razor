@@ -1,7 +1,8 @@
-﻿@page "/conference"
+﻿@inject IConferenceHandler conferenceHandler
+@page "/conference"
 
 <h3>ConferencePage</h3>
-<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="createConference">Opret conferance</button>
+<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="createConference">Opret konferancer</button>
 
 @if (showModal)
 {
@@ -9,15 +10,40 @@
         <CreateConferenceComponent OnSave="HandleSave" />
     </ModalComponent>
 }
+<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="showActiveConferences">Vis active konferancer</button>
+
+@if (conferences.Count > 0)
+{
+    <table>
+        <tr>
+            <th> Navn </th>
+            <th> Status </th>
+        </tr>
+        @foreach (Conference conference in conferences)
+        {
+            <td>@conference.Name</td>
+            @if (conference.AbstractDeadLine > DateTime.Now){<td>Indsendelse af abstract</td>}
+            else if(conference.ReviewDeadline > DateTime.Now){<td>Review periode</td>}
+            else if(conference.StartDate > DateTime.Now){<td>Planlægning</td>}
+            else {<td>I gang</td>}
+        }
+    </table>
+}
 
 @code {
     private bool showModal = false;
+    private List<Conference> conferences = new();
 
     private void createConference()
     {
         showModal = true;
         StateHasChanged();
         Console.WriteLine($"{showModal}");
+    }
+
+    private async Task showActiveConferences()
+    {
+        conferences = await conferenceHandler.getActiveConferences();
     }
 
     private void HandleSave(Conference conference)
