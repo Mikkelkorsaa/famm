@@ -20,7 +20,7 @@ namespace conferencePlannerApi.Repositories.Interfaces
         // Input: User ID and updated User object
         // Manipulation: Updates existing record
         // Output: Updated User object or null if not found
-        Task<User?> UpdateAsync(int id, User user);
+        Task<User?> UpdateAsync(User user);
 
         // Input: User ID
         // Manipulation: Removes from database
