@@ -102,7 +102,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
 
     public async Task<Conference> CreateAsync(Conference conference)
     {
-      conference.Id = ++_lastId;
+      var newConference = conference with { Id = ++_lastId };
       _conferences.Add(conference);
       return await Task.FromResult(conference);
     }
