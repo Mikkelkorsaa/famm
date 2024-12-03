@@ -1,0 +1,87 @@
+﻿@page "/uploadabstract"
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+	<div class="col-md-8 bg-light rounded shadow p-4">
+		<h1 class="mb-3 mt-3 text-center">Add product</h1>
+		<EditForm EditContext="@_editContext" class="row p-3" OnSubmit="@HandleSubmit">
+			<DataAnnotationsValidator />
+			<ValidationSummary />
+
+			<div class="col-md-12 mb-3">
+				<label for="Name">Name</label>
+				<InputText id="Name" @bind-Value="@ProductModel.Name" class="form-control" />
+				<ValidationMessage For="@(() => ProductModel.Name)" />
+			</div>
+
+			<div class="col-md-6 mb-3">
+				<label for="Price">Price</label>
+				<InputNumber id="Price" @bind-Value="@ProductModel.Price" class="form-control" />
+			</div>
+
+			<div class="col-md-6 mb-3">
+				<label for="PublishedDate">PublishedDate</label>
+				<InputDate id="PublishedDate" @bind-Value="@ProductModel.PublishedDate" class="form-control" />
+			</div>
+
+			<div class="col-md-6 mb-3">
+				<label for="Description">Description</label>
+				<InputTextArea id="Description" @bind-Value="@ProductModel.Description" class="form-control"
+							   ParsingErrorMessage="The {0} field must have a valid value" DisplayName="Category" />
+			</div>
+
+			<div class="col-md-6 mb-3">
+				<label for="Category">Category</label>
+				<InputSelect id="Category" @bind-Value="@_selectedCategory" class="form-control">
+					<option value="">Select a Category &#11167;</option>
+					@foreach (var cat in _categoryRegister.Categories)
+					{
+						<option value="@cat.Name">@cat.Name</option>
+					}
+				</InputSelect>
+			</div>
+
+			<div class="col-md-6 mb-3">
+				<div class="form-check">
+					<InputCheckbox id="IsPublished" @bind-Value="@ProductModel.IsPublished" class="form-check-input" />
+					<label for="IsPublished">IsPublished</label>
+				</div>
+			</div>
+			<div class="col-12 mb-3">
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</div>
+		</EditForm>
+	</div>
+	<a href="/productlist">Go to list</a>
+</div>
+
+
+@code {
+	private Product ProductModel = new Product();
+	private EditContext _editContext;
+	private CategoryRegister _categoryRegister;
+	private List<Product> _registeredProducts;
+	private string _productKey = "product";
+	private string _selectedCategory = "";
+
+	protected override async Task OnInitializedAsync()
+	{
+		_editContext = new EditContext(ProductModel);
+		_categoryRegister = new CategoryRegister();
+		_registeredProducts = await localStorage.GetItemAsync<List<Product>>(_productKey) ?? new List<Product>();
+	}
+
+	private async Task HandleSubmit()
+	{
+		ProductModel.Category = _categoryRegister.Categories.FirstOrDefault(c => c.Name == _selectedCategory);
+		if (_editContext.Validate())
+		{
+			_registeredProducts.Add(ProductModel);
+			ProductModel = new Product();
+			await UpdateLocalStorage();
+		}
+	}
+
+	private async Task UpdateLocalStorage() => await localStorage.SetItemAsync<List<Product>>(_productKey, _registeredProducts);
+}
+
