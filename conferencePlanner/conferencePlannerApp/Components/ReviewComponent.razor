@@ -2,15 +2,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            @foreach (var review in SelectedAbstract.Reviews)
-            {
-                <div class="review-section">
-                    <h4>Review ID: @review.Id</h4>
-                    <p>User ID: @review.UserId</p>
-                    <div class="form-group">
-                        <label>Comment:</label>
-                        <textarea class="form-control" @bind="review.Comment"></textarea>
-                    </div>
+            @foreach(var review in SelectedAbstract.Reviews){
                     @foreach (var criteria in review.Criterias)
                     {
                         <div class="form-group">
@@ -23,7 +15,8 @@
                             </select>
                         </div>
                     }
-                </div>
+                    <InputTextArea @bind-Value="review.Comment" Label="Comment"></InputTextArea>
+            }
             }
             <button type="button" class="btn btn-primary" @onclick="@UpdateAbstract">Save</button>
         </div>

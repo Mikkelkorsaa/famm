@@ -1,32 +1,36 @@
 ﻿@using conferencePlannerCore.Models
-<h3>View Abstract</h3>
+<h3 class="text-center my-4">View Abstract</h3>
 
 @if (SelectedAbstract != null)
-
 {
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <h4>Abstract Details</h4>
-                <p><strong>Id:</strong> @SelectedAbstract.Id</p>
-                <p><strong>ConferenceId:</strong> @SelectedAbstract.ConferenceId</p>
-                <p><strong>SenderName:</strong> @SelectedAbstract.SenderName</p>
-                <p><strong>PresenterEmail:</strong> @SelectedAbstract.PresenterEmail</p>
-                <p><strong>Title:</strong> @SelectedAbstract.Title</p>
-                <p><strong>Category:</strong> @SelectedAbstract.Category</p>
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">@SelectedAbstract.Title</h4>
+                        <h6 class="card-subtitle mb-2 text-muted">@SelectedAbstract.Category</h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Id:</strong> @SelectedAbstract.Id</p>
+                        <p><strong>Conference Id:</strong> @SelectedAbstract.ConferenceId</p>
+                        <p><strong>Sender Name:</strong> @SelectedAbstract.SenderName</p>
+                        <p><strong>Presenter Email:</strong> @SelectedAbstract.PresenterEmail</p>
+                        <p><strong>Organization:</strong> @SelectedAbstract.Organization</p>
+                        <p><strong>Key Values:</strong> @SelectedAbstract.KeyValues</p>
+                        <p><strong>Abstract Text:</strong> @SelectedAbstract.AbstractText</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 }
-
 else
-
 {
-    <p>No abstract selected.</p>
+    <p class="text-center text-muted">No abstract selected.</p>
 }
 
 @code {
     [Parameter]
-
     public Abstract SelectedAbstract { get; set; }
 }

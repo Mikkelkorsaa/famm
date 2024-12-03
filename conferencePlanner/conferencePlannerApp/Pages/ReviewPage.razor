@@ -4,56 +4,49 @@
 @inject HttpClient Http
 @inject IAbstractService AbstractService
 
+<h3 class="text-center my-4">Review Page</h3>
 
-<h3>Review Page</h3>
-<AbstractListComponent _abstractList="@_abstractList" OnAbstractSelected="SetAbstract"></AbstractListComponent>
-@if(_currentAbstract!= null){
-<ViewAbstractComponent SelectedAbstract="@_currentAbstract"></ViewAbstractComponent>
-}
+
+    <div class="row">
+        <div class="col-md-2">
+            <AbstractListComponent _abstractList="@_abstractList" OnAbstractSelected="SetAbstract"></AbstractListComponent>
+        </div>
+        <div class="col-md-6">
+            <button class="btn btn-primary mb-2" @onclick="ToggleViewAbstract">Toggle View Abstract</button>
+            <div class="@viewAbstractCollapseClass">
+                @if (_currentAbstract != null)
+                {
+                    <ViewAbstractComponent SelectedAbstract="@_currentAbstract"></ViewAbstractComponent>
+                }
+            </div>
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-primary mb-2" @onclick="ToggleReview">Toggle Review</button>
+            <div class="@reviewCollapseClass">
+                @if (_currentAbstract != null)
+                {
+                    <ReviewComponent SelectedAbstract="@_currentAbstract"></ReviewComponent>
+                }
+            </div>
+        </div>
+    </div>
 
 
 @code {
     private List<Review> Reviews = new List<Review>();
-
     private List<Abstract> _abstractList = new List<Abstract>();
     private Abstract _currentAbstract;
+    private bool isViewAbstractCollapsed = true;
+    private bool isReviewCollapsed = true;
 
     protected override async Task OnInitializedAsync()
     {
         _abstractList = await AbstractService.GetAllAbstracts();
-        // Populate with dummy data
-        Reviews = new List<Review>
-        {
-            new Review
-            {
-                Id = 1,
-                UserId = 123,
-                Comment = "Great conference!",
-                Criterias = new List<Criteria>
-                {
-                    new Criteria { Name = "Content Quality", Grade = 4 },
-                    new Criteria { Name = "Speaker Performance", Grade = 5 },
-                    new Criteria { Name = "Organization", Grade = 3 }
-                }
-            },
-            new Review
-            {
-                Id = 2,
-                UserId = 456,
-                Comment = "Good event overall.",
-                Criterias = new List<Criteria>
-                {
-                    new Criteria { Name = "Content Quality", Grade = 3 },
-                    new Criteria { Name = "Speaker Performance", Grade = 4 },
-                    new Criteria { Name = "Organization", Grade = 4 }
-                }
-            }
-        };
     }
 
     private async Task UpdateAbstract()
     {
-        //Update the abstract with the review data
+        // Update the abstract with the review data
         await Http.PostAsJsonAsync("api/reviews", Reviews); // Example API call
     }
 
@@ -62,4 +55,17 @@
         _currentAbstract = abs;
         Console.WriteLine(_currentAbstract);
     }
+
+    private void ToggleViewAbstract()
+    {
+        isViewAbstractCollapsed = !isViewAbstractCollapsed;
+    }
+
+    private void ToggleReview()
+    {
+        isReviewCollapsed = !isReviewCollapsed;
+    }
+
+    private string viewAbstractCollapseClass => isViewAbstractCollapsed ? "collapse" : "collapse show";
+    private string reviewCollapseClass => isReviewCollapsed ? "collapse" : "collapse show";
 }

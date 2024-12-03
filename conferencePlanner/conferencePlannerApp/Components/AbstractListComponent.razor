@@ -2,33 +2,19 @@
 @inject IAbstractService AbstractService
 <h3>AbstractListComponent</h3>
 
-<div class="container">
+
     <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>ConferenceId</th>
-                <th>SenderName</th>
-                <th>PresenterEmail</th>
-                <th>Title</th>
-                <th>Category</th>
-            </tr>
-        </thead>
+       
         <tbody>
             @foreach (var _abstract in _abstractList)
             {
                 <tr @onclick="() => SetAbstract(_abstract)">
-                    <td>@_abstract.Id</td>
-                    <td>@_abstract.ConferenceId</td>
-                    <td>@_abstract.SenderName</td>
-                    <td>@_abstract.PresenterEmail</td>
                     <td>@_abstract.Title</td>
-                    <td>@_abstract.Category</td>
-                </tr>
+                                   </tr>
             }
         </tbody>
     </table>
-</div>
+
 
 @code {
     [Parameter]

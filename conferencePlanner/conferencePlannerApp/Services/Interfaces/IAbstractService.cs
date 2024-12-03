@@ -7,5 +7,7 @@ namespace conferencePlannerApp.Services.Interfaces
 	{
 		Task AddAbstract(Abstract _abstract);
 		Task<List<Abstract>> GetAllAbstracts();
+
+		Task UpdateAbstract (Abstract _abstract);
     }
 }
