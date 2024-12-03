@@ -3,10 +3,21 @@
     public record User
     {
         public int Id { get; init; }
-        public string Name { get; init; } = string.Empty;
-        public string Email { get; init; } = string.Empty;
-        public string Password { get; init; } = string.Empty;
-        public DateTime CreatedAt { get; init; }
-        public bool IsActive { get; init; } = true;
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public UserRole Role { get; set; } = UserRole.Applicant;
+        public string Organization { get; set; } = string.Empty;
+        // public string? ProfilePictureUrl { get; set; }
+        // public string? OrganizationLogoUrl { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public bool IsActive { get; set; } = true;
+    }
+    public enum UserRole
+    {
+        Admin,
+        Organizer,
+        Applicant,
+        Reviewer
     }
 }

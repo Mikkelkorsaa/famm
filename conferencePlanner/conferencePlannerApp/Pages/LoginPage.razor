@@ -11,7 +11,7 @@
         <div class="d-flex justify-content-center mb-3">
           <div class="btn-group">
             <button class="btn @(isLogin ? "btn-primary" : "btn-outline-primary")" @onclick="() => isLogin = true">Login</button>
-            <button class="btn @(!isLogin ? "btn-primary" : "btn-outline-primary")" @onclick="() => isLogin = false">Sign Up</button>
+            <button class="btn @(!isLogin ? "btn-primary" : "btn-outline-primary")" @onclick="() => isLogin = false">Opret Bruger</button>
           </div>
         </div>
 
@@ -26,7 +26,7 @@
             </div>
 
             <div class="form-group mt-3">
-              <label>Password</label>
+              <label>Adgangskode</label>
               <InputText type="password" @bind-Value="loginModel.Password" class="form-control" />
             </div>
 
@@ -44,7 +44,7 @@
             <DataAnnotationsValidator />
 
             <div class="form-group">
-              <label>Name</label>
+              <label>Navn</label>
               <InputText @bind-Value="registerModel.Name" class="form-control" />
               <ValidationMessage For="@(() => registerModel.Name)" />
             </div>
@@ -56,15 +56,21 @@
             </div>
 
             <div class="form-group mt-3">
-              <label>Password</label>
+              <label>Adgangskode</label>
               <InputText type="password" @bind-Value="registerModel.Password" class="form-control" />
               <ValidationMessage For="@(() => registerModel.Password)" />
             </div>
 
             <div class="form-group mt-3">
-              <label>Confirm Password</label>
+              <label>Bekræft adgangskode</label>
               <InputText type="password" @bind-Value="registerModel.ConfirmPassword" class="form-control" />
               <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
+            </div>
+
+            <div class="form-group mt-3">
+              <label>Organisation</label>
+              <InputText @bind-Value="registerModel.Organization" class="form-control" />
+              <ValidationMessage For="@(() => registerModel.Organization)" />
             </div>
 
             @if (!string.IsNullOrEmpty(errorMessage))
@@ -72,7 +78,7 @@
               <div class="alert alert-danger mt-3">@errorMessage</div>
             }
 
-            <button type="submit" class="btn btn-primary mt-3 w-100">Sign Up</button>
+            <button type="submit" class="btn btn-primary mt-3 w-100">Opret</button>
           </EditForm>
         }
       </div>

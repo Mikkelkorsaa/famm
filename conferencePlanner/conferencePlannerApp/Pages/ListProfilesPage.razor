@@ -1,0 +1,156 @@
+@page "/admin/users"
+@using conferencePlannerCore.Models
+@inject IUserService UserService
+
+<div class="container mx-4 my-4">
+    <h1 class="text-2xl font-bold mb-4">User Management</h1>
+
+    @if (users == null)
+    {
+        <div class="flex justify-center items-center">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="mb-4 flex justify-between items-center">
+            <div class="flex gap-2">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        class="form-control px-3 py-2 border rounded"
+                        placeholder="Search users..."
+                        @bind="searchTerm"
+                        @bind:event="oninput"
+                        @onkeyup="HandleSearch" />
+                </div>
+                <select class="form-select px-3 py-2 border rounded" @bind="selectedRole">
+                    <option value="">All Roles</option>
+                    @foreach (var role in Enum.GetValues(typeof(UserRole)))
+                    {
+                        <option value="@role">@role</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="table-auto w-full border-collapse border">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-2 border">Name</th>
+                        <th class="px-4 py-2 border">Email</th>
+                        <th class="px-4 py-2 border">Role</th>
+                        <th class="px-4 py-2 border">Organization</th>
+                        <th class="px-4 py-2 border">Created At</th>
+                        <th class="px-4 py-2 border">Status</th>
+                        <th class="px-4 py-2 border">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in FilteredUsers)
+                    {
+                        <tr>
+                            <td class="px-4 py-2 border">@user.Name</td>
+                            <td class="px-4 py-2 border">@user.Email</td>
+                            <td class="px-4 py-2 border">
+                                <select class="form-select" value="@user.Role" @onchange="@(e => UpdateUserRole(user, e))">
+                                    @foreach (var role in Enum.GetValues(typeof(UserRole)))
+                                    {
+                                        <option value="@role">@role</option>
+                                    }
+                                </select>
+                            </td>
+                            <td class="px-4 py-2 border">@user.Organization</td>
+                            <td class="px-4 py-2 border">@user.CreatedAt.ToShortDateString()</td>
+                            <td class="px-4 py-2 border">
+                                <span class="@(user.IsActive ? "text-green-600" : "text-red-600")">
+                                    @(user.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                            <td class="px-4 py-2 border">
+                                <button class="btn @(user.IsActive ? "btn-danger" : "btn-success") mr-2"
+                                        @onclick="() => ToggleUserStatus(user)">
+                                    @(user.IsActive ? "Deactivate" : "Activate")
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+    private List<User>? users;
+    private string searchTerm = "";
+    private string selectedRole = "";
+    private Timer? searchTimer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        users = await UserService.GetAllUsersAsync();
+    }
+
+    private IEnumerable<User> FilteredUsers
+    {
+        get
+        {
+            if (users == null) return new List<User>();
+
+            var filtered = users.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                filtered = filtered.Where(u => 
+                    u.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    u.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    u.Organization.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(selectedRole) && Enum.TryParse<UserRole>(selectedRole, out var role))
+            {
+                filtered = filtered.Where(u => u.Role == role);
+            }
+
+            return filtered;
+        }
+    }
+
+    private async Task HandleSearch()
+    {
+        if (searchTimer != null)
+        {
+            await searchTimer.DisposeAsync();
+        }
+
+        searchTimer = new Timer(async _ =>
+        {
+            await InvokeAsync(StateHasChanged);
+            searchTimer?.Dispose();
+        }, null, 300, Timeout.Infinite);
+    }
+
+    private async Task UpdateUserRole(User user, ChangeEventArgs e)
+    {
+        if (Enum.TryParse<UserRole>(e.Value?.ToString(), out var newRole))
+        {
+            user.Role = newRole;
+            await UserService.UpdateUserAsync(user);
+        }
+    }
+
+    private async Task ToggleUserStatus(User user)
+    {
+        user.IsActive = !user.IsActive;
+        await UserService.UpdateUserAsync(user);
+    }
+}
