@@ -1,4 +1,5 @@
 ﻿@using System.ComponentModel.DataAnnotations
+@inject IConferenceHandler conferenceHandler
 
 <EditForm Model="@conference" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -86,13 +87,13 @@
 
 @if (showVenueModal)
 {
-    <Modal OnClose="() => showVenueModal = false">
-        <VenueForm 
+    <ModalComponent OnClose="() => showVenueModal = false">
+        <CreateVenueComponent 
             Venue="@conference.venue" 
             OnSave="HandleVenueSave" 
             OnCancel="() => showVenueModal = false"
         />
-    </Modal>
+    </ModalComponent>
 }
 
 @code {
@@ -115,12 +116,6 @@
     private bool showVenueModal = false;
     private string newCategory = "";
     private string newCriteria = "";
-    
-    // Using DateTime for InputDate compatibility
-    private DateTime abstractDeadline;
-    private DateTime reviewDeadline;
-    private DateTime startDate;
-    private DateTime endDate;
 
     protected override void OnInitialized()
     {
@@ -176,7 +171,7 @@
 
     private async Task HandleValidSubmit()
     {
-
+        await conferenceHandler.createConference(conference);
         await OnSave.InvokeAsync(conference);
     }
 }

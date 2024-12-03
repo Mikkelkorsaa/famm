@@ -15,6 +15,8 @@ namespace conferencePlannerApp.Services.LocalImplementations
         public async Task createConference(Conference conference)
         {
             List<Conference> conferences = await localStorage.GetItemAsync<List<Conference>>("conferences");
+            if (conferences == null)
+                conferences = new();
             conferences.Add(conference);
             await localStorage.SetItemAsync<List<Conference>>("conferences", conferences);
         }

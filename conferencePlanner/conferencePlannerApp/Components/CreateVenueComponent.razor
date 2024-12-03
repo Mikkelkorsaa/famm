@@ -19,7 +19,12 @@
 </EditForm>
 
 @code {
-    [Parameter] public Venue Venue { get; set; }
+    [Parameter]
+    public Venue Venue { get; set; } = new Venue
+    {
+        Name = "",
+        Address = ""
+    };
     [Parameter] public EventCallback<Venue> OnSave { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
 
