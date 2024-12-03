@@ -1,0 +1,32 @@
+﻿@using conferencePlannerCore.Models
+<h3>View Abstract</h3>
+
+@if (SelectedAbstract != null)
+
+{
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h4>Abstract Details</h4>
+                <p><strong>Id:</strong> @SelectedAbstract.Id</p>
+                <p><strong>ConferenceId:</strong> @SelectedAbstract.ConferenceId</p>
+                <p><strong>SenderName:</strong> @SelectedAbstract.SenderName</p>
+                <p><strong>PresenterEmail:</strong> @SelectedAbstract.PresenterEmail</p>
+                <p><strong>Title:</strong> @SelectedAbstract.Title</p>
+                <p><strong>Category:</strong> @SelectedAbstract.Category</p>
+            </div>
+        </div>
+    </div>
+}
+
+else
+
+{
+    <p>No abstract selected.</p>
+}
+
+@code {
+    [Parameter]
+
+    public Abstract SelectedAbstract { get; set; }
+}

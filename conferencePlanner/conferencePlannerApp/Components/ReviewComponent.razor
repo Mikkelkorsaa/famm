@@ -1,0 +1,43 @@
+﻿@inject IAbstractService AbstractService
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            @foreach (var review in SelectedAbstract.Reviews)
+            {
+                <div class="review-section">
+                    <h4>Review ID: @review.Id</h4>
+                    <p>User ID: @review.UserId</p>
+                    <div class="form-group">
+                        <label>Comment:</label>
+                        <textarea class="form-control" @bind="review.Comment"></textarea>
+                    </div>
+                    @foreach (var criteria in review.Criterias)
+                    {
+                        <div class="form-group">
+                            <label>@criteria.Name</label>
+                            <select class="form-control" @bind="criteria.Grade">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            </select>
+                        </div>
+                    }
+                </div>
+            }
+            <button type="button" class="btn btn-primary" @onclick="@UpdateAbstract">Save</button>
+        </div>
+    </div>
+</div>
+@code {
+
+    [Parameter]
+    public Abstract SelectedAbstract { get; set; }
+
+    private async Task UpdateAbstract()
+	{
+		await AbstractService.UpdateAbstract(SelectedAbstract);
+	}
+
+
+}

@@ -1,45 +1,26 @@
 ﻿@page "/Review"
+@using conferencePlannerApp.Components
 @using conferencePlannerCore.Models
 @inject HttpClient Http
+@inject IAbstractService AbstractService
+
 
 <h3>Review Page</h3>
+<AbstractListComponent _abstractList="@_abstractList" OnAbstractSelected="SetAbstract"></AbstractListComponent>
+@if(_currentAbstract!= null){
+<ViewAbstractComponent SelectedAbstract="@_currentAbstract"></ViewAbstractComponent>
+}
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            @foreach (var review in Reviews)
-            {
-                <div class="review-section">
-                    <h4>Review ID: @review.Id</h4>
-                    <p>User ID: @review.UserId</p>
-                    <div class="form-group">
-                        <label>Comment:</label>
-                        <textarea class="form-control" @bind="review.Comment"></textarea>
-                    </div>
-                    @foreach (var criteria in review.Criterias)
-                    {
-                        <div class="form-group">
-                            <label>@criteria.Name</label>
-                            <select class="form-control" @bind="criteria.Grade">
-                                @for (int i = 1; i <= 5; i++)
-                                {
-                                    <option value="@i">@i</option>
-                                }
-                            </select>
-                        </div>
-                    }
-                </div>
-            }
-            <button type="button" class="btn btn-primary" @onclick="@UpdateAbstract">Save</button>
-        </div>
-    </div>
-</div>
 
 @code {
     private List<Review> Reviews = new List<Review>();
 
+    private List<Abstract> _abstractList = new List<Abstract>();
+    private Abstract _currentAbstract;
+
     protected override async Task OnInitializedAsync()
     {
+        _abstractList = await AbstractService.GetAllAbstracts();
         // Populate with dummy data
         Reviews = new List<Review>
         {
@@ -74,5 +55,11 @@
     {
         //Update the abstract with the review data
         await Http.PostAsJsonAsync("api/reviews", Reviews); // Example API call
+    }
+
+    private void SetAbstract(Abstract abs)
+    {
+        _currentAbstract = abs;
+        Console.WriteLine(_currentAbstract);
     }
 }
