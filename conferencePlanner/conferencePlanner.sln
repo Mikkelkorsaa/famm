@@ -1,10 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "conferencePlannerApi", "conferencePlannerApi\conferencePlannerApi.csproj", "{FF74F9BE-99A4-46B7-A43F-4AAD36C79D7B}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "conferencePlannerApi", "conferencePlannerApi\conferencePlannerApi.csproj", "{FF74F9BE-99A4-46B7-A43F-4AAD36C79D7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "conferencePlannerApp", "conferencePlannerApp\conferencePlannerApp.csproj", "{FD83F71B-D4C6-4D06-8006-FEE1FC2FD1D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "conferencePlannerApp", "conferencePlannerApp\conferencePlannerApp.csproj", "{FD83F71B-D4C6-4D06-8006-FEE1FC2FD1D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "conferencePlannerCore", "conferencePlannerCore\conferencePlannerCore.csproj", "{09FAD14B-DFB7-4611-8283-79F893CE33E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "conferencePlannerCore", "conferencePlannerCore\conferencePlannerCore.csproj", "{09FAD14B-DFB7-4611-8283-79F893CE33E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +27,8 @@ Global
 		{09FAD14B-DFB7-4611-8283-79F893CE33E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09FAD14B-DFB7-4611-8283-79F893CE33E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09FAD14B-DFB7-4611-8283-79F893CE33E1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

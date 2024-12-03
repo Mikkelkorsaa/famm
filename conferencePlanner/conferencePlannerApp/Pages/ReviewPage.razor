@@ -1,0 +1,78 @@
+﻿@page "/Review"
+@using conferencePlannerCore.Models
+@inject HttpClient Http
+
+<h3>Review Page</h3>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            @foreach (var review in Reviews)
+            {
+                <div class="review-section">
+                    <h4>Review ID: @review.Id</h4>
+                    <p>User ID: @review.UserId</p>
+                    <div class="form-group">
+                        <label>Comment:</label>
+                        <textarea class="form-control" @bind="review.Comment"></textarea>
+                    </div>
+                    @foreach (var criteria in review.Criterias)
+                    {
+                        <div class="form-group">
+                            <label>@criteria.Name</label>
+                            <select class="form-control" @bind="criteria.Grade">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            </select>
+                        </div>
+                    }
+                </div>
+            }
+            <button type="button" class="btn btn-primary" @onclick="@UpdateAbstract">Save</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Review> Reviews = new List<Review>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Populate with dummy data
+        Reviews = new List<Review>
+        {
+            new Review
+            {
+                Id = 1,
+                UserId = 123,
+                Comment = "Great conference!",
+                Criterias = new List<Criteria>
+                {
+                    new Criteria { Name = "Content Quality", Grade = 4 },
+                    new Criteria { Name = "Speaker Performance", Grade = 5 },
+                    new Criteria { Name = "Organization", Grade = 3 }
+                }
+            },
+            new Review
+            {
+                Id = 2,
+                UserId = 456,
+                Comment = "Good event overall.",
+                Criterias = new List<Criteria>
+                {
+                    new Criteria { Name = "Content Quality", Grade = 3 },
+                    new Criteria { Name = "Speaker Performance", Grade = 4 },
+                    new Criteria { Name = "Organization", Grade = 4 }
+                }
+            }
+        };
+    }
+
+    private async Task UpdateAbstract()
+    {
+        //Update the abstract with the review data
+        await Http.PostAsJsonAsync("api/reviews", Reviews); // Example API call
+    }
+}
