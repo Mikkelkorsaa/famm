@@ -1,5 +1,6 @@
 @page "/profile"
 @using conferencePlannerCore.Models
+@using System.Globalization
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
 @inject IAuthService AuthService
@@ -49,7 +50,7 @@
           {
             @if (EditUser != null)
             {
-                <input type="text" @bind="EditUser.Name" class="form-control" />
+              <input type="text" @bind="EditUser.Name" class="form-control" />
             }
           }
           else
@@ -64,7 +65,7 @@
           {
             @if (EditUser != null)
             {
-                <input type="text" @bind="EditUser.Email" class="form-control" />
+              <input type="text" @bind="EditUser.Email" class="form-control" />
             }
           }
           else
@@ -79,7 +80,7 @@
           {
             @if (EditUser != null)
             {
-                <input type="text" @bind="EditUser.Organization" class="form-control" />
+              <input type="text" @bind="EditUser.Organization" class="form-control" />
             }
           }
           else
@@ -104,7 +105,7 @@
             <small>Medlem siden @CurrentUser.CreatedAt.ToString("MMMM dd, yyyy")</small>
           </div>
           <div class="col-md-6 text-md-end">
-            <small>Status: @(CurrentUser.IsActive ? "Active" : "Inactive")</small>
+            <small>Status: @(CurrentUser.IsActive ? "Aktiv" : "Inaktiv")</small>
           </div>
         </div>
       </div>
@@ -116,6 +117,7 @@
   private User? CurrentUser { get; set; }
   private User? EditUser { get; set; }
   private bool IsEditing { get; set; } = false;
+  private CultureInfo danishCulture { get; set; } = new CultureInfo("da-DK");
 
   protected override async Task OnInitializedAsync()
   {
@@ -151,13 +153,17 @@
   {
     try
     {
-      CurrentUser = EditUser with { };
+      if (EditUser != null)
+      {
+        CurrentUser = EditUser with { };
+        await Http.PutAsJsonAsync("https://localhost:7000/api/user/updateuser", CurrentUser);
+        await AuthService.SetCurrentUser(CurrentUser);
+      }
       IsEditing = false;
-      // Logger.LogInformation("Profile updated for user {UserId}", CurrentUser?.Id);
     }
     catch (Exception ex)
     {
-      // Logger.LogError(ex, "Error updating profile for user {UserId}", CurrentUser?.Id);
+      throw ex;
     }
   }
 }
