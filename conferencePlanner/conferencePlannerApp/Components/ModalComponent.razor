@@ -1,0 +1,67 @@
+﻿@inject IJSRuntime JS
+
+<div class="modal-overlay" @onclick="CloseModal">
+    <div class="modal-content card shadow bg-dark text-light" @onclick:stopPropagation="true">
+        <div class="card-body">
+            <button type="button" class="btn-close btn-close-white float-end" aria-label="Close" @onclick="CloseModal"></button>
+            @ChildContent
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        position: relative;
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        background: #333;
+        border-radius: 8px;
+        padding: 20px;
+        z-index: 1001;
+    }
+
+    body.modal-open {
+        overflow: hidden;
+    }
+</style>
+
+@code
+{
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await JS.InvokeVoidAsync("document.body.classList.add", "modal-open");
+    }
+
+    private async Task CloseModal()
+    {
+        await JS.InvokeVoidAsync("document.body.classList.remove","modal-open");
+        await OnClose.InvokeAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await JS.InvokeVoidAsync("document.body.classList.remove","modal-open");
+    }
+}

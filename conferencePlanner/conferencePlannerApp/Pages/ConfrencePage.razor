@@ -1,0 +1,28 @@
+﻿@page "/conference"
+
+<h3>ConferencePage</h3>
+<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="createConference">Opret conferance</button>
+
+@if (showModal)
+{
+    <ModalComponent OnClose="() => showModal = false">
+        <CreateConferenceComponent OnSave="HandleSave" />
+    </ModalComponent>
+}
+
+@code {
+    private bool showModal = false;
+
+    private void createConference()
+    {
+        showModal = true;
+        StateHasChanged();
+        Console.WriteLine($"{showModal}");
+    }
+
+    private void HandleSave(Conference conference)
+    {
+        showModal = false;
+        StateHasChanged();
+    }
+}
