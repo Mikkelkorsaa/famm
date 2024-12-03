@@ -47,7 +47,10 @@
           <label class="form-label">Navn</label>
           @if (IsEditing)
           {
-            <input type="text" @bind="EditUser.Name" class="form-control" />
+            @if (EditUser != null)
+            {
+                <input type="text" @bind="EditUser.Name" class="form-control" />
+            }
           }
           else
           {
@@ -59,7 +62,10 @@
           <label class="form-label">Email</label>
           @if (IsEditing)
           {
-            <input type="email" @bind="EditUser.Email" class="form-control" />
+            @if (EditUser != null)
+            {
+                <input type="text" @bind="EditUser.Email" class="form-control" />
+            }
           }
           else
           {
@@ -71,7 +77,10 @@
           <label class="form-label">Origanisation</label>
           @if (IsEditing)
           {
-            <input type="text" @bind="EditUser.Organization" class="form-control" />
+            @if (EditUser != null)
+            {
+                <input type="text" @bind="EditUser.Organization" class="form-control" />
+            }
           }
           else
           {

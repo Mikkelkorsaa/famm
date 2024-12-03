@@ -58,6 +58,10 @@ namespace conferencePlannerApi.Controllers
       {
         return Unauthorized();
       }
+      else if (!user.IsActive)
+      {
+        return Forbid();
+      }
       return user;
     }
 
@@ -84,8 +88,11 @@ namespace conferencePlannerApi.Controllers
 
     private bool ValidatePassword(User user, string password)
     {
-      // Replace with actual password validation logic
-      return true; // Temporary for testing
+      if (user.Password != password)
+      {
+        return false;
+      }
+      return true;
     }
 
     [HttpGet]
