@@ -19,11 +19,11 @@ namespace conferencePlannerApi.Controllers
 		{
 			var allowedTypes = new[] { "image/jpeg", "image/png", "image/gif" };
 
-			if (file == null || file.Length == 0) return BadRequest("File is null or empty");
+			if (file == null || file.Length == 0) return BadRequest("Tom fil");
 			
-			if (!allowedTypes.Contains(file.ContentType.ToLower())) return BadRequest("Invalid file type");
+			if (!allowedTypes.Contains(file.ContentType.ToLower())) return BadRequest("Filtypen er ikke gyldig");
 			
-			if(file.Length > 5 * 1024 * 1024) return BadRequest("File size exceeds 5MB");
+			if(file.Length > 20000000) return BadRequest("Filen er større end 20MB");
 			
 			using var ms = new MemoryStream();
 			await file.CopyToAsync(ms);

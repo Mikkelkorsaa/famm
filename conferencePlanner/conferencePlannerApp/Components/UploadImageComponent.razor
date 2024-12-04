@@ -12,10 +12,9 @@
 </div>
 
 @code {
-
     [Parameter]
-    public Abstract _abstract { get; set; }
-    private string _imageUrl { get; set; }
+    public Abstract _abstract { get; set; } = new();
+    private string? _imageUrl { get; set; }
     private bool _isLoading { get; set; }
 
     private async Task HandleSelectedFile(InputFileChangeEventArgs e)
@@ -25,15 +24,15 @@
             _isLoading = true;
             var file = e.File;
 
-            if (file.Size > 5 * 1024 * 1024)
+            if (file.Size > 10 *1024 *1024)
             {
-                await JSRuntime.InvokeVoidAsync("alert", "File size is too large. Please select a file smaller than 5MB.");
+                await JSRuntime.InvokeVoidAsync("alert", "Filen må maks være 20MB");
                 return;
             }
 
             // Create a preview URL
             var buffer = new byte[file.Size];
-            await file.OpenReadStream().ReadAsync(buffer);
+            await file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).ReadAsync(buffer);
             _imageUrl = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
 
             // Upload the image
