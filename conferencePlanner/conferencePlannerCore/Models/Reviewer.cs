@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace conferencePlannerCore.Models
 {
-    public record ConferenceFilter
+    public class Reviewer
     {
-        public DateTime? StartDate { get; set; } = DateTime.Now;
-        public DateTime? EndDate { get; set; } = DateTime.Now;
+        public int UserID { get; set; }
+        public List<string> Category { get; set; }
     }
 }

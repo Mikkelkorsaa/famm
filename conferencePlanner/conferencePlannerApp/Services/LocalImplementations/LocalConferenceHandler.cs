@@ -32,5 +32,25 @@ namespace conferencePlannerApp.Services.LocalImplementations
             }
             return result;
         }
+
+        public async Task<Conference> getConference(int id)
+        {
+            List<Conference> conferences = await localStorage.GetItemAsync<List<Conference>>("conferences");
+            return conferences[0];
+        }
+
+        public async Task<List<Conference>> getPastConferences(ConferenceFilter filter)
+        {
+            List<Conference> result = new();
+            List<Conference> conferences = await localStorage.GetItemAsync<List<Conference>>("conferences");
+            foreach (Conference conference in conferences)
+            {
+                if (conference.EndDate < DateTime.Now)
+                {
+                    result.Add(conference);
+                }
+            }
+            return result;
+        }
     }
 }
