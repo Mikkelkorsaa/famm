@@ -1,0 +1,39 @@
+﻿@inject IUploadImageService UploadFileService
+@inject IJSRuntime JSRuntime
+
+
+<div class="upload-container">
+	<InputFile OnChange="@HandleSelectedFile" accept".jpg,.jpeg,.png"></InputFile>
+</div>
+
+@code {
+	private Abstract _abstract { get; set; }
+
+	private string imageUrl { get; set; }
+	private bool isLoading { get; set; }
+
+	private async Task HandleSelectedFile(InputFileChangeEventArgs e)
+	{
+		try
+		{
+			isLoading = true;
+			var file = e.File;
+
+			if (file.Size > 5 * 1024 * 1024)
+			{
+				await JSRuntime.InvokeVoidAsync("alert", "File size is too large. Please select a file smaller than 5MB.");
+				return;
+			}
+
+			await UploadFileService.UploadImage(file, _abstract);
+		}
+		catch (Exception ex)
+		{
+			await JSRuntime.InvokeVoidAsync("alert", ex.Message);
+		}
+		finally
+		{
+			isLoading = false;
+		}
+	}
+}
