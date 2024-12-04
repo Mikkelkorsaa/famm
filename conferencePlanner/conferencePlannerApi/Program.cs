@@ -11,7 +11,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IUserRepo, LocalUserRepo>();
 builder.Services.AddSingleton<IConferenceRepo, LocalConferenceRepo>();
-builder.Services.AddSingleton<IAbstractRepository, LocalAbstractRepository>();
+builder.Services.AddSingleton<IAbstractRepo, LocalAbstractRepo>();
 
 // Configure the CORS policy
 builder.Services.AddCors(options =>
