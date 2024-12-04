@@ -5,7 +5,7 @@
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
     <div class="col-md-8 bg-light rounded shadow p-4">
         <h1 class="mb-3 mt-3 text-center">Indsend Abstrakt</h1>
-        <EditForm Model="@_abstractModel" OnSubmit="@HandleSubmit" class="row p-3">
+        <EditForm EditContext="@_editcontext" OnSubmit="@HandleSubmit" class="row p-3">
             <div class="col-md-12 mb-3">
                 <label for="Name">Navn på indsender</label>
                 <InputText id="Name" @bind-Value="@_abstractModel.SenderName" class="form-control" />
@@ -74,9 +74,11 @@
     private string _abstractKey = "abstract";
     private List<string> _categories = new List<string> { "Soda", "Kamboocha", "Coffee", "Tee" };
     private string _newCoAuthor = "";
+    private EditContext _editcontext;
 
     protected override async Task OnInitializedAsync()
     {
+        _editcontext = new EditContext(_abstractModel);
         var storedAbstract = await localStorage.GetItemAsync<Abstract>(_abstractKey);
         if (storedAbstract != null)
         {
@@ -87,11 +89,9 @@
 
     private async Task HandleSubmit()
     {
+        if(_editcontext.Validate())
         await abstractService.AddAbstract(_abstractModel);
-        _abstractModel = new Abstract
-            {
-                CoAuthors = new List<string>()
-            };
+        _abstractModel = new Abstract{CoAuthors = new List<string>()};
         await UpdateLocalStorage();
     }
 
