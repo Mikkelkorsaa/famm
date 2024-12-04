@@ -4,26 +4,25 @@
 @inject HttpClient Http
 @inject IAbstractService AbstractService
 @inject IJSRuntime JSRuntime
-
+<div class="filler"/>
 <div class="container-fluid p-0">
     <div class="row no-gutters">
-        <div class="@GetSidebarColumnClass()">
+        <div class="@sidebarColumnClass">
             <AbstractListComponent @ref="_abstractListComponent"
                                    _abstractList="@_abstractList"
                                    OnAbstractSelected="SetAbstract"
                                    OnCollapseChanged="HandleCollapseChanged">
             </AbstractListComponent>
         </div>
-        <div class="@GetContentColumnClass()">
+        <div class="@contentColumnClass">
             <div class="row">
-                <div class="@GetViewAbstractColumnClass()">
+                <div class="view-abstract-column">
                     @if (_currentAbstract != null)
                     {
                         <ViewAbstractComponent SelectedAbstract="@_currentAbstract"></ViewAbstractComponent>
                     }
                 </div>
-
-                <div class="@GetReviewColumnClass()">
+                <div class="review-column">
                     @if (_currentAbstract != null)
                     {
                         <ReviewComponent SelectedAbstract="@_currentAbstract"></ReviewComponent>
@@ -35,7 +34,7 @@
 </div>
 
 <script>
-    window.registerClickOutsideHandler = (sidebarRef, dotNetHelper) => {
+    window.registerHandlers = (sidebarRef, dotNetHelper) => {
         document.addEventListener("click", (event) => {
             const sidebarElement = sidebarRef && sidebarRef.getBoundingClientRect();
             const isClickInside =
@@ -48,47 +47,73 @@
                 dotNetHelper.invokeMethodAsync("CollapseSidebar");
             }
         });
-    };
-    window.unregisterClickOutsideHandler = () => {
-        document.removeEventListener("click");
-    };
 
-    window.registerResizeHandler = (dotNetHelper) => {
         window.addEventListener("resize", () => {
             dotNetHelper.invokeMethodAsync("OnResize", window.innerWidth);
         });
+    };
+
+    window.unregisterHandlers = () => {
+        document.removeEventListener("click");
+        window.removeEventListener("resize");
     };
 </script>
 
 <style>
     .sidebar-transition {
-        transition: width 0.3s ease, margin 0.3s ease;
+        transition: width 0.5s ease, margin 0.5s ease;
     }
 
     .content-column {
-        display: flex;
         flex-wrap: wrap;
+        transition: margin-left 0.5s ease;
     }
 
     .view-abstract-column {
-        flex: 1;
-        min-width: 300px;
+        width: 70%; /* Fixed width for the abstract column */
+        flex-shrink: 0; /* Prevents it from shrinking */
+        flex-grow: 0; /* Prevents it from growing */
+      
     }
 
     .review-column {
-        flex: 0 0 33.3333%; /* col-4 equivalent */
-        max-width: 33.3333%; /* col-4 equivalent */
+        flex: 0 0 30%;
+        max-width: 30%;
+        min-width: 30%;
+    }
+
+    /* Adjustments for when the sidebar is collapsed or expanded */
+    .sidebar-column-expanded {
+        margin-left: 300px;
+    }
+
+    .sidebar-column-collapsed {
+        margin-left: 60px;
+    }
+    .filler {
+        margin-top:10px;
+    }
+
+    .sidebar-column-expanded,
+    .sidebar-column-collapsed {
+        transition: all 0.5s ease;
     }
 </style>
 
 @code {
     private AbstractListComponent _abstractListComponent;
-    private List<Review> Reviews = new List<Review>();
-    private List<Abstract> _abstractList = new List<Abstract>();
+    private List<Abstract> _abstractList = new();
     private Abstract _currentAbstract;
-    private bool isSidebarCollapsed = false;
+    private bool isSidebarCollapsed;
     private int windowWidth;
 
+    private string sidebarColumnClass => isSidebarCollapsed
+      ? "col-1 sidebar-transition sidebar-column-collapsed"
+      : "col-2 sidebar-transition sidebar-column-expanded";
+
+    private string contentColumnClass => isSidebarCollapsed
+        ? "col-11 sidebar-transition content-column sidebar-column-collapsed"
+        : "col-10 sidebar-transition content-column sidebar-column-expanded";
     protected override async Task OnInitializedAsync()
     {
         _abstractList = await AbstractService.GetAllAbstracts();
@@ -98,10 +123,9 @@
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("registerClickOutsideHandler", _abstractListComponent.PublicSidebarRef, DotNetObjectReference.Create(this));
-            await JSRuntime.InvokeVoidAsync("registerResizeHandler", DotNetObjectReference.Create(this));
+            var dotNetRef = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("registerHandlers", _abstractListComponent?.PublicSidebarRef, dotNetRef);
             windowWidth = await JSRuntime.InvokeAsync<int>("eval", "window.innerWidth");
-            StateHasChanged();
         }
     }
 
@@ -115,33 +139,15 @@
     private void SetAbstract(Abstract abs)
     {
         _currentAbstract = abs;
-        Console.WriteLine(_currentAbstract);
     }
 
     private void HandleCollapseChanged(bool isCollapsed)
     {
-        isSidebarCollapsed = isCollapsed;
-        StateHasChanged();
-    }
-
-    private string GetSidebarColumnClass()
-    {
-        return isSidebarCollapsed ? "col-1 sidebar-transition" : "col-2 sidebar-transition";
-    }
-
-    private string GetContentColumnClass()
-    {
-        return isSidebarCollapsed ? "col-11 sidebar-transition content-column" : "col-10 sidebar-transition content-column";
-    }
-
-    private string GetViewAbstractColumnClass()
-    {
-        return "view-abstract-column";
-    }
-
-    private string GetReviewColumnClass()
-    {
-        return "review-column";
+        if (isSidebarCollapsed != isCollapsed)
+        {
+            isSidebarCollapsed = isCollapsed;
+            StateHasChanged();
+        }
     }
 
     [JSInvokable]
@@ -156,6 +162,6 @@
 
     public async ValueTask DisposeAsync()
     {
-        await JSRuntime.InvokeVoidAsync("unregisterClickOutsideHandler");
+        await JSRuntime.InvokeVoidAsync("unregisterHandlers");
     }
 }

@@ -2,6 +2,7 @@
 @inject IAbstractService AbstractService
 @inject IJSRuntime JSRuntime
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+
 <div class="abstract-sidebar @(IsCollapsed ? "collapsed" : "expanded")" @ref="PublicSidebarRef">
     <div class="collapse-toggle" @onclick="ToggleCollapse">
         <i class="bi bi-list"></i>
@@ -33,17 +34,18 @@
 <style>
     /* Sidebar Container */
     .abstract-sidebar {
-        position: fixed;
-        top: 56px; /* Adjust for navbar height */
-        left: 0;
-        height: calc(100vh - 56px); /* Full height minus navbar */
-        transition: width 0.3s ease, box-shadow 0.3s ease;
-        background-color: #f8f9fa; /* Light grey background */
-        border-right: 1px solid #d6d8db; /* Light grey border */
+        position: absolute;
+        top: 56px;
+        left: 5px;
+        height: 100vh;
+        transition: width 0.5s ease, box-shadow 0.5s ease;
+        background-color: #f8f9fa;
+        border-right: 1px solid #d6d8db;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         z-index: 1000;
         display: flex;
         flex-direction: column;
+        border-radius: 8px;
     }
 
         .abstract-sidebar.collapsed {
@@ -54,7 +56,6 @@
             width: 300px;
         }
 
-    /* Collapse Toggle Button */
     .collapse-toggle {
         width: 60px;
         height: 60px;
@@ -62,16 +63,16 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        background-color: #e9ecef; /* Lighter grey background */
+        background-color: #e9ecef;
         border-bottom: 1px solid #d6d8db;
         transition: background-color 0.2s;
+        border-radius: 8px 8px 0 0;
     }
 
         .collapse-toggle:hover {
-            background-color: #d6d8db; /* Slightly darker grey on hover */
+            background-color: #d6d8db;
         }
 
-    /* List Container */
     .abstract-list-container {
         flex-grow: 1;
         padding: 10px;
@@ -79,21 +80,21 @@
         background-color: #f8f9fa;
     }
 
-    /* List Items */
     .list-group-item {
         cursor: pointer;
         transition: background-color 0.2s;
-        background-color: #ffffff; /* White background for list items */
-        border: 1px solid #d6d8db; /* Light grey border */
+        background-color: #ffffff;
+        border: 1px solid #d6d8db;
         margin-bottom: 5px;
+        border-radius: 8px;
     }
 
         .list-group-item:hover {
-            background-color: #e9ecef; /* Light grey background on hover */
+            background-color: #e9ecef;
         }
 
         .list-group-item.active {
-            background-color: #cce5ff; /* Highlighted light blue */
+            background-color: #cce5ff;
             border-color: #b8daff;
             color: #004085;
         }
@@ -105,7 +106,6 @@
         text-overflow: ellipsis;
     }
 
-    /* Collapsed Sidebar Styles */
     .abstract-sidebar.collapsed .abstract-list-container {
         display: none;
     }
@@ -129,7 +129,6 @@
     [Parameter]
     public EventCallback<bool> OnCollapseChanged { get; set; }
 
-    // Public property to expose SidebarRef
     public ElementReference PublicSidebarRef { get; private set; }
 
     private Abstract SelectedAbstract { get; set; } = null;
@@ -140,7 +139,8 @@
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("registerClickOutsideHandler", PublicSidebarRef, DotNetObjectReference.Create(this));
+            var dotNetRef = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("registerHandlers", PublicSidebarRef, dotNetRef);
         }
     }
 
@@ -169,6 +169,6 @@
 
     public async ValueTask DisposeAsync()
     {
-        await JSRuntime.InvokeVoidAsync("unregisterClickOutsideHandler");
+        await JSRuntime.InvokeVoidAsync("unregisterHandlers");
     }
 }
