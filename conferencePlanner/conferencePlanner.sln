@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.11.35327.3
+VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "conferencePlannerApi", "conferencePlannerApi\conferencePlannerApi.csproj", "{FF74F9BE-99A4-46B7-A43F-4AAD36C79D7B}"
 EndProject
@@ -32,6 +32,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {0EBBC9E6-CC19-4661-BC35-D72860F0A68E}
+		SolutionGuid = {5CE1BAEF-55B4-4647-9F03-C672E01BA4CA}
 	EndGlobalSection
 EndGlobal

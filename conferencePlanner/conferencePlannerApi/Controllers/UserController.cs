@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using conferencePlannerApi.Repositories.Interfaces;
 using conferencePlannerCore.Models;
-using System.Security.Cryptography;
+using conferencePlannerApi.Services.Interfaces;
 
 namespace conferencePlannerApi.Controllers
 {
@@ -10,10 +10,12 @@ namespace conferencePlannerApi.Controllers
   public class UserController : ControllerBase
   {
     private readonly IUserRepo _repository;
+    private readonly IEmailService _emailService;
 
-    public UserController(IUserRepo repository)
+    public UserController(IUserRepo repository, IEmailService emailService)
     {
       _repository = repository;
+      _emailService = emailService;
     }
 
     [HttpGet]
@@ -38,10 +40,10 @@ namespace conferencePlannerApi.Controllers
     }
 
     [HttpPut]
-    [Route("UpdateUser/{id}")]
-    public async Task<ActionResult<User>> UpdateUser(int id, User user)
+    [Route("UpdateUser")]
+    public async Task<ActionResult<User>> UpdateUser(User user)
     {
-      var updatedUser = await _repository.UpdateAsync(id, user);
+      var updatedUser = await _repository.UpdateAsync(user);
       return updatedUser == null ? NotFound() : updatedUser;
     }
 
@@ -58,6 +60,10 @@ namespace conferencePlannerApi.Controllers
       if (user == null || !ValidatePassword(user, model.Password))
       {
         return Unauthorized();
+      }
+      else if (!user.IsActive)
+      {
+        return Forbid();
       }
       return user;
     }
@@ -85,8 +91,11 @@ namespace conferencePlannerApi.Controllers
 
     private bool ValidatePassword(User user, string password)
     {
-      // Replace with actual password validation logic
-      return true; // Temporary for testing
+      if (user.Password != password)
+      {
+        return false;
+      }
+      return true;
     }
 
     [HttpGet]
@@ -95,6 +104,17 @@ namespace conferencePlannerApi.Controllers
     {
       var user = await _repository.GetByEmailAsync(email);
       return user == null ? NotFound() : user;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SendEmail()
+    {
+        await _emailService.SendEmailAsync(
+            "mikkelkorsaa@gmail.com",
+            "Test Subject",
+            "<h1>Hello</h1><p>This is a test email.</p>"
+        );
+        return Ok();
     }
   }
 }
