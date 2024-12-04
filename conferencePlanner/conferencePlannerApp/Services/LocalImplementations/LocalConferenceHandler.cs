@@ -21,7 +21,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
             await localStorage.SetItemAsync<List<Conference>>("conferences", conferences);
         }
 
-        public async Task<List<Conference>> getActiveConferences()
+        public async Task<List<Conference>> getActiveConferences(ConferenceFilter filter)
         {
             List<Conference> result = new();
             List<Conference> conferences = await localStorage.GetItemAsync<List<Conference>>("conferences");

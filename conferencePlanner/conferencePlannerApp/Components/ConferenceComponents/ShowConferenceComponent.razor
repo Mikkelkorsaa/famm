@@ -7,18 +7,18 @@
         <div class="card-body">
             <div class="row mb-3">
                 <div class="col">
-                    <h5>Important Dates</h5>
+                    <h5>Vigtige datoer</h5>
                     <ul class="list-unstyled">
                         <li><strong>Abstract Deadline:</strong> @conference.AbstractDeadLine.ToString("d")</li>
                         <li><strong>Review Deadline:</strong> @conference.ReviewDeadline.ToString("d")</li>
-                        <li><strong>Conference Period:</strong> @conference.StartDate.ToString("d") - @conference.EndDate.ToString("d")</li>
+                        <li><strong>Konference Period:</strong> @conference.StartDate.ToString("d") - @conference.EndDate.ToString("d")</li>
                     </ul>
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <h5>Categories</h5>
+                    <h5>Kategorier</h5>
                     <div class="d-flex flex-wrap gap-2">
                         @foreach (var category in conference.Category)
                         {
@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <h5>Review Criteria</h5>
+                    <h5>Bedømmelses kriterier</h5>
                     <div class="d-flex flex-wrap gap-2">
                         @foreach (var criteria in conference.ReviewCriteria)
                         {
@@ -41,7 +41,7 @@
             {
                 <div class="row">
                     <div class="col">
-                        <h5>Venue</h5>
+                        <h5>Lokation</h5>
                         <div class="card">
                             <div class="card-body">
                                 <h6 class="card-title">@conference.Location.Name</h6>

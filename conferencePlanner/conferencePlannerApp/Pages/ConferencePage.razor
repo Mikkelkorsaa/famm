@@ -2,7 +2,7 @@
 @page "/conference"
 
 <h3>ConferencePage</h3>
-<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="createConference">Opret konferancer</button>
+<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="createConference">Opret konferencer</button>
 
 @if (showModal)
 {
@@ -10,7 +10,7 @@
         <CreateConferenceComponent OnSave="HandleSave" />
     </ModalComponent>
 }
-<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="showActiveConferences">Vis active konferancer</button>
+<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="showActiveConferences">Vis active konferencer</button>
 
 @if (conferences.Count > 0){
     <ConfrenceTableComponent conferences="@conferences"/>
@@ -29,7 +29,7 @@
 
     private async Task showActiveConferences()
     {
-        conferences = await conferenceHandler.getActiveConferences();
+        conferences = await conferenceHandler.getActiveConferences(new ConferenceFilter());
     }
 
     private void HandleSave(Conference conference)

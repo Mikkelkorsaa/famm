@@ -3,18 +3,18 @@
     <ValidationSummary />
 
     <div class="mb-3">
-        <label class="form-label">Venue Name</label>
+        <label class="form-label">Lokationens navn</label>
         <InputText @bind-Value="venue.Name" class="form-control" />
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Address</label>
+        <label class="form-label">Addressen</label>
         <InputTextArea @bind-Value="venue.Address" class="form-control" />
     </div>
 
     <div class="d-flex justify-content-end gap-2">
-        <button type="button" class="btn btn-secondary" @onclick="HandleCancel">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save Venue</button>
+        <button type="button" class="btn btn-secondary" @onclick="HandleCancel">Fortryd</button>
+        <button type="submit" class="btn btn-primary">Gem lokation</button>
     </div>
 </EditForm>
 
