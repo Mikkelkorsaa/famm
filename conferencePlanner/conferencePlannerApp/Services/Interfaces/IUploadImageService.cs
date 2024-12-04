@@ -5,5 +5,7 @@ namespace conferencePlannerApp.Services.Interfaces;
 
 public interface IUploadImageService
 {
-	Task UploadImage(IBrowserFile file, Abstract _abstract);
+    //input: Image file and abstract object
+    //Saves image to database
+    Task UploadImage(IBrowserFile file, Abstract _abstract);
 }
