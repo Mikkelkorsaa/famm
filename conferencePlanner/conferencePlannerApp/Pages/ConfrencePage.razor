@@ -12,22 +12,8 @@
 }
 <button type="button" class="btn btn-primary w-50 btn-sm" @onclick="showActiveConferences">Vis active konferancer</button>
 
-@if (conferences.Count > 0)
-{
-    <table>
-        <tr>
-            <th> Navn </th>
-            <th> Status </th>
-        </tr>
-        @foreach (Conference conference in conferences)
-        {
-            <td>@conference.Name</td>
-            @if (conference.AbstractDeadLine > DateTime.Now){<td>Indsendelse af abstract</td>}
-            else if(conference.ReviewDeadline > DateTime.Now){<td>Review periode</td>}
-            else if(conference.StartDate > DateTime.Now){<td>Planlægning</td>}
-            else {<td>I gang</td>}
-        }
-    </table>
+@if (conferences.Count > 0){
+    <ConfrenceTableComponent conferences="@conferences"/>
 }
 
 @code {

@@ -1,0 +1,41 @@
+﻿<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Navn</th>
+            <th scope="col">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Conference conference in conferences)
+        {
+            <tr>
+                <td>@conference.Name</td>
+                @if (conference.AbstractDeadLine > DateTime.Now)
+                {
+                    <td><span class="badge bg-primary">Indsendelse af abstract</span></td>
+                }
+                else if (conference.ReviewDeadline > DateTime.Now)
+                {
+                    <td><span class="badge bg-info">Review periode</span></td>
+                }
+                else if (conference.StartDate > DateTime.Now)
+                {
+                    <td><span class="badge bg-warning">Planlægning</span></td>
+                }
+                else if (conference.EndDate > DateTime.Now)
+                {
+                    <td><span class="badge bg-success">I gang</span></td>
+                }
+                else
+                {
+                    <td><span class="badge bg-secondary">Afsluttet</span></td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public List<Conference> conferences { get; set; }
+}

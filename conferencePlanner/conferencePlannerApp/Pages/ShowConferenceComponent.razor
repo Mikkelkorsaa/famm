@@ -1,0 +1,61 @@
+﻿@if (conference != null)
+{
+    <div class="card">
+        <div class="card-header">
+            <h3>@conference.Name</h3>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col">
+                    <h5>Important Dates</h5>
+                    <ul class="list-unstyled">
+                        <li><strong>Abstract Deadline:</strong> @conference.AbstractDeadLine.ToString("d")</li>
+                        <li><strong>Review Deadline:</strong> @conference.ReviewDeadline.ToString("d")</li>
+                        <li><strong>Conference Period:</strong> @conference.StartDate.ToString("d") - @conference.EndDate.ToString("d")</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h5>Categories</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach (var category in conference.Category)
+                        {
+                            <span class="badge bg-primary">@category</span>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h5>Review Criteria</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach (var criteria in conference.ReviewCriteria)
+                        {
+                            <span class="badge bg-secondary">@criteria</span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @if (conference.Location != null)
+            {
+                <div class="row">
+                    <div class="col">
+                        <h5>Venue</h5>
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title">@conference.Location.Name</h6>
+                                <p class="card-text">@conference.Location.Address</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Conference conference { get; set; }
+}
