@@ -5,7 +5,7 @@ namespace conferencePlannerApi.Repositories.Interfaces
 {
 	public interface IAbstractRepo
 	{
-        //input: Image file and abstract object
+        //input: Byte array and abstract object
         //Saves image to database
         Task UploadImage(byte[] imageBytes, Abstract _abstract);
 	}
