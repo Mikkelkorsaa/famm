@@ -1,29 +1,174 @@
 ﻿@using conferencePlannerCore.Models
 @inject IAbstractService AbstractService
-<h3>AbstractListComponent</h3>
+@inject IJSRuntime JSRuntime
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+<div class="abstract-sidebar @(IsCollapsed ? "collapsed" : "expanded")" @ref="PublicSidebarRef">
+    <div class="collapse-toggle" @onclick="ToggleCollapse">
+        <i class="bi bi-list"></i>
+    </div>
 
+    @if (!IsCollapsed)
+    {
+        <div class="abstract-list-container">
+            <div class="list-group">
+                @foreach (var abstractItem in _abstractList)
+                {
+                    <div class="list-group-item list-group-item-action @(abstractItem == SelectedAbstract ? "active" : "")"
+                         @onclick="() => SetAbstract(abstractItem)">
+                        <h6 class="mb-1 text-truncate">@abstractItem.Title</h6>
+                    </div>
+                }
+            </div>
 
-    <table class="table table-striped">
-       
-        <tbody>
-            @foreach (var _abstract in _abstractList)
+            @if (!_abstractList.Any())
             {
-                <tr @onclick="() => SetAbstract(_abstract)">
-                    <td>@_abstract.Title</td>
-                                   </tr>
+                <div class="text-center text-muted mt-3">
+                    No abstracts available
+                </div>
             }
-        </tbody>
-    </table>
+        </div>
+    }
+</div>
 
+<style>
+    /* Sidebar Container */
+    .abstract-sidebar {
+        position: fixed;
+        top: 56px; /* Adjust for navbar height */
+        left: 0;
+        height: calc(100vh - 56px); /* Full height minus navbar */
+        transition: width 0.3s ease, box-shadow 0.3s ease;
+        background-color: #f8f9fa; /* Light grey background */
+        border-right: 1px solid #d6d8db; /* Light grey border */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .abstract-sidebar.collapsed {
+            width: 60px;
+        }
+
+        .abstract-sidebar.expanded {
+            width: 300px;
+        }
+
+    /* Collapse Toggle Button */
+    .collapse-toggle {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background-color: #e9ecef; /* Lighter grey background */
+        border-bottom: 1px solid #d6d8db;
+        transition: background-color 0.2s;
+    }
+
+        .collapse-toggle:hover {
+            background-color: #d6d8db; /* Slightly darker grey on hover */
+        }
+
+    /* List Container */
+    .abstract-list-container {
+        flex-grow: 1;
+        padding: 10px;
+        overflow-y: auto;
+        background-color: #f8f9fa;
+    }
+
+    /* List Items */
+    .list-group-item {
+        cursor: pointer;
+        transition: background-color 0.2s;
+        background-color: #ffffff; /* White background for list items */
+        border: 1px solid #d6d8db; /* Light grey border */
+        margin-bottom: 5px;
+    }
+
+        .list-group-item:hover {
+            background-color: #e9ecef; /* Light grey background on hover */
+        }
+
+        .list-group-item.active {
+            background-color: #cce5ff; /* Highlighted light blue */
+            border-color: #b8daff;
+            color: #004085;
+        }
+
+    .text-truncate {
+        max-width: 250px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Collapsed Sidebar Styles */
+    .abstract-sidebar.collapsed .abstract-list-container {
+        display: none;
+    }
+
+    .abstract-sidebar.collapsed .list-group-item {
+        display: none;
+    }
+
+    .abstract-sidebar.collapsed .text-center {
+        display: none;
+    }
+</style>
 
 @code {
     [Parameter]
-    public List<Abstract> _abstractList { get; set; }
+    public List<Abstract> _abstractList { get; set; } = new List<Abstract>();
 
     [Parameter]
     public EventCallback<Abstract> OnAbstractSelected { get; set; }
-    private async Task SetAbstract(Abstract _abstract)
-	{
-		await OnAbstractSelected.InvokeAsync(_abstract);
-	}
+
+    [Parameter]
+    public EventCallback<bool> OnCollapseChanged { get; set; }
+
+    // Public property to expose SidebarRef
+    public ElementReference PublicSidebarRef { get; private set; }
+
+    private Abstract SelectedAbstract { get; set; } = null;
+
+    private bool IsCollapsed { get; set; } = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("registerClickOutsideHandler", PublicSidebarRef, DotNetObjectReference.Create(this));
+        }
+    }
+
+    [JSInvokable]
+    public void CollapseSidebar()
+    {
+        if (!IsCollapsed)
+        {
+            IsCollapsed = true;
+            StateHasChanged();
+            OnCollapseChanged.InvokeAsync(IsCollapsed);
+        }
+    }
+
+    private async Task SetAbstract(Abstract abstractItem)
+    {
+        SelectedAbstract = abstractItem;
+        await OnAbstractSelected.InvokeAsync(abstractItem);
+    }
+
+    private void ToggleCollapse()
+    {
+        IsCollapsed = !IsCollapsed;
+        OnCollapseChanged.InvokeAsync(IsCollapsed);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("unregisterClickOutsideHandler");
+    }
 }

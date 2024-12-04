@@ -3,51 +3,113 @@
 @using conferencePlannerCore.Models
 @inject HttpClient Http
 @inject IAbstractService AbstractService
+@inject IJSRuntime JSRuntime
 
-<h3 class="text-center my-4">Review Page</h3>
-
-
-    <div class="row">
-        <div class="col-md-2">
-            <AbstractListComponent _abstractList="@_abstractList" OnAbstractSelected="SetAbstract"></AbstractListComponent>
+<div class="container-fluid p-0">
+    <div class="row no-gutters">
+        <div class="@GetSidebarColumnClass()">
+            <AbstractListComponent @ref="_abstractListComponent"
+                                   _abstractList="@_abstractList"
+                                   OnAbstractSelected="SetAbstract"
+                                   OnCollapseChanged="HandleCollapseChanged">
+            </AbstractListComponent>
         </div>
-        <div class="col-md-6">
-            <button class="btn btn-primary mb-2" @onclick="ToggleViewAbstract">Toggle View Abstract</button>
-            <div class="@viewAbstractCollapseClass">
-                @if (_currentAbstract != null)
-                {
-                    <ViewAbstractComponent SelectedAbstract="@_currentAbstract"></ViewAbstractComponent>
-                }
-            </div>
-        </div>
-        <div class="col-md-4">
-            <button class="btn btn-primary mb-2" @onclick="ToggleReview">Toggle Review</button>
-            <div class="@reviewCollapseClass">
-                @if (_currentAbstract != null)
-                {
-                    <ReviewComponent SelectedAbstract="@_currentAbstract"></ReviewComponent>
-                }
+        <div class="@GetContentColumnClass()">
+            <div class="row">
+                <div class="@GetViewAbstractColumnClass()">
+                    @if (_currentAbstract != null)
+                    {
+                        <ViewAbstractComponent SelectedAbstract="@_currentAbstract"></ViewAbstractComponent>
+                    }
+                </div>
+
+                <div class="@GetReviewColumnClass()">
+                    @if (_currentAbstract != null)
+                    {
+                        <ReviewComponent SelectedAbstract="@_currentAbstract"></ReviewComponent>
+                    }
+                </div>
             </div>
         </div>
     </div>
+</div>
 
+<script>
+    window.registerClickOutsideHandler = (sidebarRef, dotNetHelper) => {
+        document.addEventListener("click", (event) => {
+            const sidebarElement = sidebarRef && sidebarRef.getBoundingClientRect();
+            const isClickInside =
+                sidebarElement &&
+                event.clientX >= sidebarElement.left &&
+                event.clientX <= sidebarElement.right &&
+                event.clientY >= sidebarElement.top &&
+                event.clientY <= sidebarElement.bottom;
+            if (!isClickInside) {
+                dotNetHelper.invokeMethodAsync("CollapseSidebar");
+            }
+        });
+    };
+    window.unregisterClickOutsideHandler = () => {
+        document.removeEventListener("click");
+    };
+
+    window.registerResizeHandler = (dotNetHelper) => {
+        window.addEventListener("resize", () => {
+            dotNetHelper.invokeMethodAsync("OnResize", window.innerWidth);
+        });
+    };
+</script>
+
+<style>
+    .sidebar-transition {
+        transition: width 0.3s ease, margin 0.3s ease;
+    }
+
+    .content-column {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .view-abstract-column {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .review-column {
+        flex: 0 0 33.3333%; /* col-4 equivalent */
+        max-width: 33.3333%; /* col-4 equivalent */
+    }
+</style>
 
 @code {
+    private AbstractListComponent _abstractListComponent;
     private List<Review> Reviews = new List<Review>();
     private List<Abstract> _abstractList = new List<Abstract>();
     private Abstract _currentAbstract;
-    private bool isViewAbstractCollapsed = true;
-    private bool isReviewCollapsed = true;
+    private bool isSidebarCollapsed = false;
+    private int windowWidth;
 
     protected override async Task OnInitializedAsync()
     {
         _abstractList = await AbstractService.GetAllAbstracts();
     }
 
-    private async Task UpdateAbstract()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Update the abstract with the review data
-        await Http.PostAsJsonAsync("api/reviews", Reviews); // Example API call
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("registerClickOutsideHandler", _abstractListComponent.PublicSidebarRef, DotNetObjectReference.Create(this));
+            await JSRuntime.InvokeVoidAsync("registerResizeHandler", DotNetObjectReference.Create(this));
+            windowWidth = await JSRuntime.InvokeAsync<int>("eval", "window.innerWidth");
+            StateHasChanged();
+        }
+    }
+
+    [JSInvokable]
+    public void OnResize(int width)
+    {
+        windowWidth = width;
+        StateHasChanged();
     }
 
     private void SetAbstract(Abstract abs)
@@ -56,16 +118,44 @@
         Console.WriteLine(_currentAbstract);
     }
 
-    private void ToggleViewAbstract()
+    private void HandleCollapseChanged(bool isCollapsed)
     {
-        isViewAbstractCollapsed = !isViewAbstractCollapsed;
+        isSidebarCollapsed = isCollapsed;
+        StateHasChanged();
     }
 
-    private void ToggleReview()
+    private string GetSidebarColumnClass()
     {
-        isReviewCollapsed = !isReviewCollapsed;
+        return isSidebarCollapsed ? "col-1 sidebar-transition" : "col-2 sidebar-transition";
     }
 
-    private string viewAbstractCollapseClass => isViewAbstractCollapsed ? "collapse" : "collapse show";
-    private string reviewCollapseClass => isReviewCollapsed ? "collapse" : "collapse show";
+    private string GetContentColumnClass()
+    {
+        return isSidebarCollapsed ? "col-11 sidebar-transition content-column" : "col-10 sidebar-transition content-column";
+    }
+
+    private string GetViewAbstractColumnClass()
+    {
+        return "view-abstract-column";
+    }
+
+    private string GetReviewColumnClass()
+    {
+        return "review-column";
+    }
+
+    [JSInvokable]
+    public void CollapseSidebar()
+    {
+        if (!isSidebarCollapsed)
+        {
+            isSidebarCollapsed = true;
+            StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("unregisterClickOutsideHandler");
+    }
 }
