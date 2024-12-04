@@ -68,17 +68,17 @@
 
     <div class="mb-3">
         <label class="form-label">Venue</label>
-        @if (conference.venue != null)
+        @if (conference.Location != null)
         {
             <div class="card mb-2">
                 <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">@conference.venue.Name</h6>
-                    <p class="card-text">@conference.venue.Address</p>
+                    <h6 class="card-subtitle mb-2 text-muted">@conference.Location.Name</h6>
+                    <p class="card-text">@conference.Location.Address</p>
                 </div>
             </div>
         }
         <button type="button" class="btn btn-outline-primary" @onclick="ShowVenueModal">
-            @(conference.venue == null ? "Select Venue" : "Change Venue")
+            @(conference.Location == null ? "Select Venue" : "Change Venue")
         </button>
     </div>
 
@@ -89,7 +89,7 @@
 {
     <ModalComponent OnClose="() => showVenueModal = false">
         <CreateVenueComponent 
-            Venue="@conference.venue" 
+            Venue="@conference.Location" 
             OnSave="HandleVenueSave" 
             OnCancel="() => showVenueModal = false"
         />
@@ -108,7 +108,7 @@
             ReviewDeadline = DateTime.Now,
             StartDate = DateTime.Now,
             EndDate = DateTime.Now,
-            venue = new Venue { Id = 0, Name = "", Address = "" }
+            Location = new Venue { Id = 0, Name = "", Address = "" }
         };
 
     [Parameter] public EventCallback<Conference> OnSave { get; set; }
@@ -163,9 +163,9 @@
         showVenueModal = true;
     }
 
-    private void HandleVenueSave(Venue venue)
+    private void HandleVenueSave(Venue location)
     {
-        conference.venue = venue;
+        conference.Location = location;
         showVenueModal = false;
     }
 
