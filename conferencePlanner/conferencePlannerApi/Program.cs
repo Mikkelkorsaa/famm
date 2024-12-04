@@ -1,5 +1,8 @@
 using conferencePlannerApi.Repositories.Interfaces;
 using conferencePlannerApi.Repositories.LocalImplementations;
+using conferencePlannerApi.Services.Interfaces;
+using conferencePlannerApi.Services.Implementations;
+using conferencePlannerCore.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +14,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IUserRepo, LocalUserRepo>();
 builder.Services.AddSingleton<IConferenceRepo, LocalConferenceRepo>();
+
+builder.Services.Configure<EmailConfiguration>(
+    builder.Configuration.GetSection("EmailConfiguration"));
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Configure the CORS policy
 builder.Services.AddCors(options =>
