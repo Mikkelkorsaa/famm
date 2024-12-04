@@ -1,0 +1,182 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+<EditForm Model="@conference" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Conference Name</label>
+        <InputText @bind-Value="conference.Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Abstract Deadline</label>
+        <InputDate @bind-Value="conference.AbstractDeadLine" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Review Deadline</label>
+        <InputDate @bind-Value="conference.ReviewDeadline" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Start Date</label>
+        <InputDate @bind-Value="conference.StartDate" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">End Date</label>
+        <InputDate @bind-Value="conference.EndDate" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Categories</label>
+        <div class="input-group">
+            <InputText @bind-Value="newCategory" class="form-control" />
+            <button type="button" class="btn btn-outline-secondary" @onclick="AddCategory">Add Category</button>
+        </div>
+        <div class="mt-2">
+            @foreach (var category in conference.Category)
+            {
+                <span class="badge bg-primary me-2 mb-2">
+                    @category
+                    <button type="button" class="btn-close btn-close-white btn-sm" 
+                            @onclick="() => RemoveCategory(category)"></button>
+                </span>
+            }
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Review Criteria</label>
+        <div class="input-group">
+            <InputText @bind-Value="newCriteria" class="form-control" />
+            <button type="button" class="btn btn-outline-secondary" @onclick="AddCriteria">Add Criteria</button>
+        </div>
+        <div class="mt-2">
+            @foreach (var criteria in conference.ReviewCriteria)
+            {
+                <span class="badge bg-secondary me-2 mb-2">
+                    @criteria
+                    <button type="button" class="btn-close btn-close-white btn-sm" 
+                            @onclick="() => RemoveCriteria(criteria)"></button>
+                </span>
+            }
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Venue</label>
+        @if (conference.Location != null)
+        {
+            <div class="card mb-2">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">@conference.Location.Name</h6>
+                    <p class="card-text">@conference.Location.Address</p>
+                </div>
+            </div>
+        }
+        <button type="button" class="btn btn-outline-primary" @onclick="ShowVenueModal">
+            @(conference.Location == null ? "Select Venue" : "Change Venue")
+        </button>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Conference</button>
+</EditForm>
+
+@if (showVenueModal)
+{
+    <ModalComponent OnClose="() => showVenueModal = false">
+        <CreateVenueComponent 
+            Venue="@conference.Location" 
+            OnSave="HandleVenueSave" 
+            OnCancel="() => showVenueModal = false"
+        />
+    </ModalComponent>
+}
+
+@code {
+    [Parameter]
+    public Conference conference { get; set; } = new Conference
+        {
+            Id = 0,
+            Name = "",
+            Category = new List<string>(),
+            ReviewCriteria = new List<string>(),
+            AbstractDeadLine = DateTime.Now,
+            ReviewDeadline = DateTime.Now,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now,
+            Location = new Venue { Id = 0, Name = "", Address = "" }
+        };
+
+    [Parameter] public EventCallback<Conference> OnSave { get; set; }
+
+    private bool showVenueModal = false;
+    private string newCategory = "";
+    private string newCriteria = "";
+    
+    // Using DateTime for InputDate compatibility
+    private DateTime abstractDeadline;
+    private DateTime reviewDeadline;
+    private DateTime startDate;
+    private DateTime endDate;
+
+    protected override void OnInitialized()
+    {
+        // Initialize the conference if it's null
+        if (conference == null)
+        {
+            conference = new Conference
+            {
+                Category = new List<string>(),
+                ReviewCriteria = new List<string>()
+            };
+        }
+    }
+
+    private void AddCategory()
+    {
+        if (!string.IsNullOrWhiteSpace(newCategory))
+        {
+            conference.Category.Add(newCategory);
+            newCategory = "";
+        }
+    }
+
+    private void RemoveCategory(string category)
+    {
+        conference.Category.Remove(category);
+    }
+
+    private void AddCriteria()
+    {
+        if (!string.IsNullOrWhiteSpace(newCriteria))
+        {
+            conference.ReviewCriteria.Add(newCriteria);
+            newCriteria = "";
+        }
+    }
+
+    private void RemoveCriteria(string criteria)
+    {
+        conference.ReviewCriteria.Remove(criteria);
+    }
+
+    private void ShowVenueModal()
+    {
+        showVenueModal = true;
+    }
+
+    private void HandleVenueSave(Venue location)
+    {
+        conference.Location = location;
+        showVenueModal = false;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+
+        await OnSave.InvokeAsync(conference);
+    }
+}

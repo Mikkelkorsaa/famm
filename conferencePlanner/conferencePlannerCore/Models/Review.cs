@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace conferencePlannerCore.Models;
 
-public class Review
+public record Review
 {
 }
 

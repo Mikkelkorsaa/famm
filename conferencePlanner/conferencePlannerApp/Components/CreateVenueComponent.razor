@@ -1,0 +1,43 @@
+﻿<EditForm Model="@venue" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Venue Name</label>
+        <InputText @bind-Value="venue.Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Address</label>
+        <InputTextArea @bind-Value="venue.Address" class="form-control" />
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-secondary" @onclick="HandleCancel">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Venue</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public Venue Venue { get; set; }
+    [Parameter] public EventCallback<Venue> OnSave { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private Venue venue;
+
+    protected override void OnInitialized()
+    {
+        // Create a copy of the venue to avoid directly modifying the parameter
+        venue = Venue ?? new Venue();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await OnSave.InvokeAsync(venue);
+    }
+
+    private async Task HandleCancel()
+    {
+        await OnCancel.InvokeAsync();
+    }
+}
