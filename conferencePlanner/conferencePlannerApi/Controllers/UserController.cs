@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using conferencePlannerApi.Repositories.Interfaces;
 using conferencePlannerCore.Models;
+using conferencePlannerApi.Services.Interfaces;
 
 namespace conferencePlannerApi.Controllers
 {
@@ -9,10 +10,12 @@ namespace conferencePlannerApi.Controllers
   public class UserController : ControllerBase
   {
     private readonly IUserRepo _repository;
+    private readonly IEmailService _emailService;
 
-    public UserController(IUserRepo repository)
+    public UserController(IUserRepo repository, IEmailService emailService)
     {
       _repository = repository;
+      _emailService = emailService;
     }
 
     [HttpGet]
@@ -101,6 +104,17 @@ namespace conferencePlannerApi.Controllers
     {
       var user = await _repository.GetByEmailAsync(email);
       return user == null ? NotFound() : user;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SendEmail()
+    {
+        await _emailService.SendEmailAsync(
+            "mikkelkorsaa@gmail.com",
+            "Test Subject",
+            "<h1>Hello</h1><p>This is a test email.</p>"
+        );
+        return Ok();
     }
   }
 }
