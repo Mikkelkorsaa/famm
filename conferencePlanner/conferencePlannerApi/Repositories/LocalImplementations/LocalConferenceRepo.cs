@@ -27,7 +27,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
                     "Presentation Quality",
                     "Practical Impact"
                 },
-                Venue = new Venue
+                Location = new Venue
                 {
                   Id = 1,
                   Name = "Grand Tech Conference Center",
@@ -55,7 +55,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
                     "Research Impact",
                     "Data Quality"
                 },
-              Venue = new Venue
+              Location = new Venue
               {
                 Id = 2,
                 Name = "Berlin Congress Center",
@@ -83,7 +83,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
                     "Implementation Feasibility",
                     "Novel Approach"
                 },
-              Venue = new Venue
+              Location = new Venue
               {
                 Id = 3,
                 Name = "Singapore Tech Hub",

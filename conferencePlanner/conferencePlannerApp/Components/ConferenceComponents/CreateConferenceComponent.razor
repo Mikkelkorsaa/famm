@@ -1,39 +1,40 @@
 ﻿@using System.ComponentModel.DataAnnotations
+@inject IConferenceHandler conferenceHandler
 
 <EditForm Model="@conference" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <div class="mb-3">
-        <label class="form-label">Conference Name</label>
+        <label class="form-label">Konferancens navn</label>
         <InputText @bind-Value="conference.Name" class="form-control" />
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Abstract Deadline</label>
+        <label class="form-label">Abstrakt tidsfrist</label>
         <InputDate @bind-Value="conference.AbstractDeadLine" class="form-control" />
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Review Deadline</label>
+        <label class="form-label">Bedømmelses tidsfrist</label>
         <InputDate @bind-Value="conference.ReviewDeadline" class="form-control" />
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Start Date</label>
+        <label class="form-label">Start dato</label>
         <InputDate @bind-Value="conference.StartDate" class="form-control" />
     </div>
 
     <div class="mb-3">
-        <label class="form-label">End Date</label>
+        <label class="form-label">Slut dato</label>
         <InputDate @bind-Value="conference.EndDate" class="form-control" />
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Categories</label>
+        <label class="form-label">Kategori</label>
         <div class="input-group">
             <InputText @bind-Value="newCategory" class="form-control" />
-            <button type="button" class="btn btn-outline-secondary" @onclick="AddCategory">Add Category</button>
+            <button type="button" class="btn btn-outline-secondary" @onclick="AddCategory">Tilføj kategori</button>
         </div>
         <div class="mt-2">
             @foreach (var category in conference.Category)
@@ -48,10 +49,10 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Review Criteria</label>
+        <label class="form-label">Bedømmelse kriteria</label>
         <div class="input-group">
             <InputText @bind-Value="newCriteria" class="form-control" />
-            <button type="button" class="btn btn-outline-secondary" @onclick="AddCriteria">Add Criteria</button>
+            <button type="button" class="btn btn-outline-secondary" @onclick="AddCriteria">Tilføj kriteria</button>
         </div>
         <div class="mt-2">
             @foreach (var criteria in conference.ReviewCriteria)
@@ -66,7 +67,7 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Venue</label>
+        <label class="form-label">Lokation</label>
         @if (conference.Location != null)
         {
             <div class="card mb-2">
@@ -80,8 +81,7 @@
             @(conference.Location == null ? "Select Venue" : "Change Venue")
         </button>
     </div>
-
-    <button type="submit" class="btn btn-primary">Save Conference</button>
+    <button type="submit" class="btn btn-primary">Gem konference</button>
 </EditForm>
 
 @if (showVenueModal)
@@ -115,12 +115,6 @@
     private bool showVenueModal = false;
     private string newCategory = "";
     private string newCriteria = "";
-    
-    // Using DateTime for InputDate compatibility
-    private DateTime abstractDeadline;
-    private DateTime reviewDeadline;
-    private DateTime startDate;
-    private DateTime endDate;
 
     protected override void OnInitialized()
     {
@@ -176,7 +170,7 @@
 
     private async Task HandleValidSubmit()
     {
-
+        await conferenceHandler.createConference(conference);
         await OnSave.InvokeAsync(conference);
     }
 }
