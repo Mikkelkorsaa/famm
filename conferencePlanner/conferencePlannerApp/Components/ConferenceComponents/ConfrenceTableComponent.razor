@@ -8,7 +8,7 @@
     <tbody>
         @foreach (Conference conference in conferences)
         {
-            <tr>
+            <tr @onclick="() => displayConference(conference)">
                 <td>@conference.Name</td>
                 @if (conference.AbstractDeadLine > DateTime.Now)
                 {
@@ -35,7 +35,22 @@
     </tbody>
 </table>
 
+@if (showConference)
+{
+    <ModalComponent OnClose="() => showConference = false">
+        <ShowConferenceComponent conference="@selectedConference" />
+    </ModalComponent>    
+}
+
 @code {
     [Parameter]
     public List<Conference> conferences { get; set; }
+    public bool showConference = false;
+    public Conference? selectedConference;
+
+    public void displayConference(Conference conference)
+    {
+        selectedConference = conference;
+        showConference = true;
+    }
 }
