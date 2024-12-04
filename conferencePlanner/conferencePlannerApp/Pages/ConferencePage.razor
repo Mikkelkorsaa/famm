@@ -1,0 +1,40 @@
+﻿@inject IConferenceHandler conferenceHandler
+@page "/conference"
+
+<h3>ConferencePage</h3>
+<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="createConference">Opret konferencer</button>
+
+@if (showModal)
+{
+    <ModalComponent OnClose="() => showModal = false">
+        <CreateConferenceComponent OnSave="HandleSave" />
+    </ModalComponent>
+}
+<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="showActiveConferences">Vis active konferencer</button>
+
+@if (conferences.Count > 0){
+    <ConfrenceTableComponent conferences="@conferences"/>
+}
+
+@code {
+    private bool showModal = false;
+    private List<Conference> conferences = new();
+
+    private void createConference()
+    {
+        showModal = true;
+        StateHasChanged();
+        Console.WriteLine($"{showModal}");
+    }
+
+    private async Task showActiveConferences()
+    {
+        conferences = await conferenceHandler.getActiveConferences(new ConferenceFilter());
+    }
+
+    private void HandleSave(Conference conference)
+    {
+        showModal = false;
+        StateHasChanged();
+    }
+}
