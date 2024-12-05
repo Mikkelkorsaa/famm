@@ -9,25 +9,25 @@ namespace conferencePlannerApi.Controllers
   [Route("api/[controller]")]
   public class UserController : ControllerBase
   {
-    private readonly IUserRepo _repository;
+    private readonly IUserRepo _repo;
     private readonly IEmailService _emailService;
 
-    public UserController(IUserRepo repository, IEmailService emailService)
+    public UserController(IUserRepo repo, IEmailService emailService)
     {
-      _repository = repository;
+      _repo = repo;
       _emailService = emailService;
     }
 
     [HttpGet]
     [Route("GetAllUsers")]
     public async Task<IEnumerable<User>> GetAllUsers()
-        => await _repository.GetAllAsync();
+        => await _repo.GetAllAsync();
 
     [HttpGet]
     [Route("GetUserById/{id}")]
     public async Task<ActionResult<User>> GetUserById(int id)
     {
-      var user = await _repository.GetByIdAsync(id);
+      var user = await _repo.GetByIdAsync(id);
       return user == null ? NotFound() : user;
     }
 
@@ -35,7 +35,7 @@ namespace conferencePlannerApi.Controllers
     [Route("CreateUser")]
     public async Task<ActionResult<User>> CreateUser(User user)
     {
-      var newUser = await _repository.CreateAsync(user);
+      var newUser = await _repo.CreateAsync(user);
       return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser);
     }
 
@@ -43,20 +43,20 @@ namespace conferencePlannerApi.Controllers
     [Route("UpdateUser")]
     public async Task<ActionResult<User>> UpdateUser(User user)
     {
-      var updatedUser = await _repository.UpdateAsync(user);
+      var updatedUser = await _repo.UpdateAsync(user);
       return updatedUser == null ? NotFound() : updatedUser;
     }
 
     [HttpDelete]
     [Route("DeleteUser/{id}")]
     public async Task<ActionResult> DeleteUser(int id)
-        => await _repository.DeleteAsync(id) ? NoContent() : NotFound();
+        => await _repo.DeleteAsync(id) ? NoContent() : NotFound();
 
     [HttpPost]
     [Route("Login")]
     public async Task<ActionResult<User>> Login(LoginModel model)
     {
-      var user = await _repository.GetByEmailAsync(model.Email);
+      var user = await _repo.GetByEmailAsync(model.Email);
       if (user == null || !ValidatePassword(user, model.Password))
       {
         return Unauthorized();
@@ -72,7 +72,7 @@ namespace conferencePlannerApi.Controllers
     [Route("Register")]
     public async Task<IActionResult> Register(RegisterModel request)
     {
-      if (await _repository.GetByEmailAsync(request.Email) != null)
+      if (await _repo.GetByEmailAsync(request.Email) != null)
       {
         return BadRequest("Email already registered");
       }
@@ -84,7 +84,7 @@ namespace conferencePlannerApi.Controllers
         Password = request.Password
       };
 
-      await _repository.CreateAsync(user);
+      await _repo.CreateAsync(user);
 
       return Ok();
     }
@@ -102,7 +102,7 @@ namespace conferencePlannerApi.Controllers
     [Route("GetUserByEmail/{email}")]
     public async Task<ActionResult<User>> GetUserByEmail(string email)
     {
-      var user = await _repository.GetByEmailAsync(email);
+      var user = await _repo.GetByEmailAsync(email);
       return user == null ? NotFound() : user;
     }
 
