@@ -25,10 +25,5 @@ namespace conferencePlannerApi.Repositories.Interfaces
                 // Manipulation: Removes from database
                 // Output: True if deleted, false if not found
                 Task<bool> DeleteAsync(int id);
-
-                // Input: Abstract ID and PictureModel object
-                // Manipulation: Saves picture to database
-                Task<bool> SavePictureAsync(int id, PictureModel picture);
-                Task<PictureModel> GetPictureAsync(int id);
         }
 }
