@@ -25,7 +25,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
                 AbstractText = "In the heart of a sprawling city, the contrast between the quiet, timeless elegance of the park and the bustling energy of the streets beyond was striking. The park, with its winding paths, ancient trees, and serene lakes, stood as an oasis of peace. It was here that people came to escape, if only for a moment, from the fast-paced world that often seemed to rush ahead without pause. The tall, stone walls of the city surrounded the green expanse, reminding anyone who ventured close that this tranquility existed only within the confines of this oasis.\r\n\r\nThe seasons played their roles with perfect choreography, each bringing a new layer of beauty. In the spring, the cherry blossoms would bloom in delicate pink and white hues, carpeting the ground in soft petals. Summer brought warmth and lush green, with families and friends gathering for picnics, or simply sitting by the water to enjoy the sunshine. As autumn arrived, the trees transformed, their leaves turning golden, orange, and red, painting the landscape with vibrant colors. Winter, while quieter, was just as enchanting. The snow would cover the ground, creating a quiet stillness that was both peaceful and magical.\r\n\r\nEach day, people from all walks of life came and went. Joggers and dog walkers, tourists marveling at the beauty, and locals seeking solace from the chaos of the city. Some sat on benches, gazing at the horizon, lost in their thoughts. Others brought books, losing themselves in the written word while the world carried on around them. It was a place of reflection, of connection to nature, and a reminder that in the midst of the rush of life, moments of calm were still possible. The park, in its timeless beauty, held secrets of the city that only those who took the time to stop and listen could truly hear.",
 
         Category = "Healthcare",
-        Picture = new byte[] { },
+        Picture = string.Empty,
         Reviews = new List<Review>
         {
             new Review
@@ -60,7 +60,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
         KeyValues = "Green Energy, Sustainability, Innovation",
         AbstractText = "An overview of current trends in green energy technology.",
         Category = "Environment",
-        Picture = new byte[] { },
+        Picture = string.Empty,
         Reviews = new List<Review>
         {
             new Review
@@ -89,7 +89,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
         KeyValues = "AI, Ethics, Responsibility",
         AbstractText = "Discusses ethical considerations in AI development.",
         Category = "Technology",
-        Picture = new byte[] { },
+        Picture = string.Empty,
         Reviews = new List<Review>()
     },
     new Abstract
@@ -104,7 +104,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
         KeyValues = "Education, Gamification, Technology",
         AbstractText = "Explores the impact of gamification in modern education.",
         Category = "Education",
-        Picture = new byte[] { },
+        Picture = string.Empty,
         Reviews = new List<Review>()
     },
     new Abstract
@@ -119,7 +119,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
         KeyValues = "Agriculture, Technology, Innovation",
         AbstractText = "Innovative technologies in smart farming and their benefits.",
         Category = "Agriculture",
-        Picture = new byte[] { },
+        Picture = string.Empty,
         Reviews = new List<Review>()
     },
     new Abstract
@@ -134,7 +134,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
         KeyValues = "Autonomous Vehicles, AI, Transportation",
         AbstractText = "Examines the challenges and opportunities in autonomous vehicle adoption.",
         Category = "Transportation",
-        Picture = new byte[] { },
+        Picture = string.Empty,
         Reviews = new List<Review>()
     },
     new Abstract
@@ -149,7 +149,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
         KeyValues = "Biotechnology, Healthcare, Innovation",
         AbstractText = "Recent breakthroughs in biotechnology and their implications.",
         Category = "Healthcare",
-        Picture = new byte[] { },
+        Picture = string.Empty,
         Reviews = new List<Review>()
     },
     new Abstract
@@ -164,7 +164,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
         KeyValues = "Blockchain, Finance, Technology",
         AbstractText = "Exploring the applications of blockchain in financial systems.",
         Category = "Finance",
-        Picture = new byte[] { },
+        Picture = string.Empty,
         Reviews = new List<Review>()
     },
     new Abstract
@@ -179,7 +179,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
         KeyValues = "Solar Power, Clean Energy, Sustainability",
         AbstractText = "Innovations in solar power and their role in a sustainable future.",
         Category = "Environment",
-        Picture = new byte[] { },
+        Picture = string.Empty,
         Reviews = new List<Review>()
     },
     new Abstract
@@ -194,7 +194,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
         KeyValues = "Mars, Space Exploration, Technology",
         AbstractText = "In the heart of a sprawling city, the contrast between the quiet, timeless elegance of the park and the bustling energy of the streets beyond was striking. The park, with its winding paths, ancient trees, and serene lakes, stood as an oasis of peace. It was here that people came to escape, if only for a moment, from the fast-paced world that often seemed to rush ahead without pause. The tall, stone walls of the city surrounded the green expanse, reminding anyone who ventured close that this tranquility existed only within the confines of this oasis.\r\n\r\nThe seasons played their roles with perfect choreography, each bringing a new layer of beauty. In the spring, the cherry blossoms would bloom in delicate pink and white hues, carpeting the ground in soft petals. Summer brought warmth and lush green, with families and friends gathering for picnics, or simply sitting by the water to enjoy the sunshine. As autumn arrived, the trees transformed, their leaves turning golden, orange, and red, painting the landscape with vibrant colors. Winter, while quieter, was just as enchanting. The snow would cover the ground, creating a quiet stillness that was both peaceful and magical.\r\n\r\nEach day, people from all walks of life came and went. Joggers and dog walkers, tourists marveling at the beauty, and locals seeking solace from the chaos of the city. Some sat on benches, gazing at the horizon, lost in their thoughts. Others brought books, losing themselves in the written word while the world carried on around them. It was a place of reflection, of connection to nature, and a reminder that in the midst of the rush of life, moments of calm were still possible. The park, in its timeless beauty, held secrets of the city that only those who took the time to stop and listen could truly hear.",
         Category = "Space Exploration",
-        Picture = new byte[] { },
+        Picture = string.Empty,
         Reviews = new List<Review>()
     }
 
