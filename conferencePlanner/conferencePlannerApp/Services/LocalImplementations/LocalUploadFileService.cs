@@ -7,22 +7,22 @@ namespace conferencePlannerApp.Services.LocalImplementations;
 
 public class LocalUploadFileService : IUploadFileService
 {
-    public async Task<byte[]> ConvertToBase64String(IBrowserFile file)
+    public async Task<string> ConvertToBase64String(IBrowserFile file)
     {
-        if (file == null || file.Size == 0) return null;
-
-        using var stream = file.OpenReadStream(maxAllowedSize: 16 * 1024 * 1024);
-        using var ms = new MemoryStream();
-        await stream.CopyToAsync(ms);
-        byte[] byteArray = ms.ToArray();
-
-        return byteArray;
+        var byteArray = await ConvertToByteArray(file);
+		string base64string = Convert.ToBase64String(byteArray);
+		return base64string;
     }
 
-    public Task<string> ConvertToImageUrl(byte[] bytearr)
-    {
-        throw new NotImplementedException();
-    }
+	public async Task<byte[]> ConvertToByteArray(IBrowserFile file)
+	{
+		if (file == null || file.Size == 0) return null;
+		using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+		using var ms = new MemoryStream();
+		await stream.CopyToAsync(ms);
+		byte[] byteArray = ms.ToArray();
 
-
+		return byteArray;
+	}
 }
+ 

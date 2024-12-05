@@ -14,7 +14,7 @@ namespace conferencePlannerCore.Models
         public string KeyValues { get; set; } = string.Empty;
         public string AbstractText { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
-        public byte[] Picture { get; set; } = Array.Empty<byte>();
+        public string Picture { get; set; } = string.Empty;
         public List<Review> Reviews { get; set; } = new List<Review>();
     }
 }

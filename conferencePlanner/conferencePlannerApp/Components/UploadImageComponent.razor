@@ -14,35 +14,25 @@
 
 @code {
 	[Parameter]
-	public EventCallback<byte[]> OnFileUploaded { get; set; }
+	public EventCallback<string> OnFileUploaded { get; set; }
 	[Parameter]
 	public string AcceptedFileTypes { get; set; }
 	[Parameter]
 	public int AcceptedSize { get; set; }
-
-
 	private string? _imageUrl { get; set; }
 
 	private async Task HandleSelectedFile(InputFileChangeEventArgs e)
 	{
 		var file = e.File;
-
-		// Validate file type
-		var allowedTypes = AcceptedFileTypes.Split(',').Select(t => t.Trim().ToLower()).ToArray();
-		if (!allowedTypes.Contains(file.ContentType.ToLower()))
-		{
-			// Handle invalid file type (e.g., show an error message)
-			return;
-		}
-
-		// Create a preview URL
-		var buffer = new byte[file.Size];
-		await file.OpenReadStream(maxAllowedSize: AcceptedSize).ReadAsync(buffer);
-		_imageUrl = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
-
-		byte[] bytearr = await UploadFileService.ConvertToByteArray(file);
-		string  base64string = Convert.ToBase64String(bytearr);
-
-		await OnFileUploaded.InvokeAsync(base64string);
+		var imgString= await UploadFileService.ConvertToBase64String(file);
+		PreviewImage(file, imgString);
+		await OnFileUploaded.InvokeAsync(imgString);
 	}
+
+	private async Task PreviewImage(IBrowserFile file, string imgstring)
+	{
+		_imageUrl = $"data:{file.ContentType};base64,{imgstring}";
+		StateHasChanged();
+	}
+
 }
