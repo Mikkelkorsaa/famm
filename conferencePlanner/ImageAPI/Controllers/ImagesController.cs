@@ -11,9 +11,9 @@ public class ImagesController : ControllerBase
     public ImagesController(IConfiguration configuration)
     {
         _configuration = configuration;
-        _imageStoragePath = _configuration["ImageStorage:Path"] ?? "Images";
+        _imageStoragePath = Path.Combine(Directory.GetCurrentDirectory(), 
+            configuration["ImageStorage:Path"] ?? "Images");
         
-        // Ensure storage directory exists
         if (!Directory.Exists(_imageStoragePath))
         {
             Directory.CreateDirectory(_imageStoragePath);
@@ -27,12 +27,10 @@ public class ImagesController : ControllerBase
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded");
 
-        // Validate file type
         var allowedTypes = new[] { "image/jpeg", "image/png", "image/gif" };
         if (!allowedTypes.Contains(file.ContentType.ToLower()))
             return BadRequest("Invalid file type");
 
-        // Generate unique filename
         var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
         var filePath = Path.Combine(_imageStoragePath, fileName);
 
@@ -43,7 +41,6 @@ public class ImagesController : ControllerBase
                 await file.CopyToAsync(stream);
             }
 
-            // Store metadata in JSON file
             var metadata = new
             {
                 OriginalName = file.FileName,
@@ -73,7 +70,6 @@ public class ImagesController : ControllerBase
         if (!System.IO.File.Exists(filePath))
             return NotFound();
 
-        // Read metadata to get content type
         var metadataPath = Path.Combine(_imageStoragePath, $"{fileName}.json");
         if (System.IO.File.Exists(metadataPath))
         {
@@ -83,7 +79,6 @@ public class ImagesController : ControllerBase
             return PhysicalFile(filePath, contentType ?? "application/octet-stream");
         }
 
-        // Fallback content type based on extension
         var ext = Path.GetExtension(fileName).ToLower();
         var mimeType = ext switch
         {
@@ -96,7 +91,8 @@ public class ImagesController : ControllerBase
         return PhysicalFile(filePath, mimeType);
     }
 
-    [HttpDelete("{fileName}")]
+    [HttpDelete]
+    [Route("delete/{fileName}")]
     public IActionResult DeleteImage(string fileName)
     {
         var filePath = Path.Combine(_imageStoragePath, fileName);
