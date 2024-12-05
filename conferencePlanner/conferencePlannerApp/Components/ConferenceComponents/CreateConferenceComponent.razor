@@ -78,8 +78,24 @@
             </div>
         }
         <button type="button" class="btn btn-outline-primary" @onclick="ShowVenueModal">
-            @(conference.Location == null ? "Select Venue" : "Change Venue")
+            @(conference.Location == null ? "Vælg Location" : "Ændre Location")
         </button>
+        <div class="mb-3">
+            <label class="form-label">Bedømmelseskomite</label>
+            @if (conference.Reviewers.Count>0)
+            {
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">@conference.Location.Name</h6>
+                        <p class="card-text">@conference.Location.Address</p>
+                    </div>
+                </div>
+            }
+            <button type="button" class="btn btn-outline-primary" @onclick="ShowVenueModal">
+                @(conference.Location == null ? "Select Venue" : "Change Venue")
+            </button>
+        </div>
+
     </div>
     <button type="submit" class="btn btn-primary">Gem konference</button>
 </EditForm>
