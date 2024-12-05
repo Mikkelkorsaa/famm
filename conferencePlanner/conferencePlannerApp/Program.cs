@@ -18,6 +18,7 @@ builder.Services.AddScoped<IAuthService, LocalStorageAuthService>();
 builder.Services.AddScoped<IUserService, LocalUserService>();
 builder.Services.AddScoped<IUploadImageService, LocalUploadImageService>();
 builder.Services.AddScoped<IConferenceHandler, LocalConferenceHandler>();
+builder.Services.AddScoped<IAbstractService, LocalAbstractService>();
 
 
 await builder.Build().RunAsync();
