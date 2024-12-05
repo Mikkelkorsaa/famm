@@ -16,7 +16,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<IAuthService, LocalStorageAuthService>();
 builder.Services.AddScoped<IUserService, LocalUserService>();
-builder.Services.AddScoped<IUploadImageService, LocalUploadImageService>();
+builder.Services.AddScoped<IUploadFileService, LocalUploadFileService>();
 builder.Services.AddScoped<IConferenceHandler, LocalConferenceHandler>();
 builder.Services.AddScoped<IAbstractService, LocalAbstractService>();
 

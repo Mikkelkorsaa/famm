@@ -27,7 +27,7 @@ namespace conferencePlannerApi.Controllers
 			
 			using var ms = new MemoryStream();
 			await file.CopyToAsync(ms);
-			var imageBytes = ms.ToArray();
+			byte[] imageBytes = ms.ToArray();
 
 			await _abstractRepository.UploadImage(imageBytes, _abstract);
 

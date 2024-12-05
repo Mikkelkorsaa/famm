@@ -14,14 +14,15 @@
                 <label for="PresenterEmail">Oplægsholder email</label>
                 <InputText id="PresenterEmail" @bind-Value="@_abstractModel.PresenterEmail" class="form-control" />
             </div>
-            <div class="col-md-6 mb-3">
+            <div class="col-md-12 mb-3">
                 <label for="Medforfattere">Medforfattere</label>
                 <div class="d-flex gap-2">
                     <InputText id="Medforfattere" @bind-Value="@_newCoAuthor" class="form-control" />
-                    <button type="button" class="btn btn-primary" @onclick="AddCoAuthor">Tilføj medforfatter</button>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-primary" @onclick="AddCoAuthor">Tilføj Medforfatter</button>
+                    </div>
                 </div>
             </div>
-
             @if (_abstractModel.CoAuthors?.Any() == true)
             {
                 <div class="col-12 mb-3">
@@ -62,6 +63,10 @@
                     }
                 </InputSelect>
             </div>
+            <div class="col-md-6 mb-3">
+                <label for="Upload Fil">Upload Fil</label>
+                <UploadImageComponent OnFileUploaded="HandleFileData" AcceptedFileTypes="_imgFileTypes" AcceptedSize="_maxImgSize"/>
+            </div>
             <div class="col-12 mb-3">
                 <button type="submit" class="btn btn-primary">Indsend</button>
             </div>
@@ -75,6 +80,15 @@
     private List<string> _categories = new List<string> { "Soda", "Kamboocha", "Coffee", "Tee" };
     private string _newCoAuthor = "";
     private EditContext _editcontext;
+    private Conference _conference;
+    private string _imgFileTypes = ".jpeg,.png,.jpg";
+    private int _maxImgSize = 10 * 1024 * 1024;
+
+    private void HandleFileData(byte[] data)
+    {
+        _abstractModel.Picture = data;
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync()
     {
