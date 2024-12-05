@@ -10,9 +10,9 @@ namespace conferencePlannerApi.Controllers
     {
         private readonly IReviewRepo _repo;
 
-        public ReviewsController(IReviewRepo reviewRepo)
+        public ReviewsController(IReviewRepo repo)
         {
-            _repo = reviewRepo;
+            _repo = repo;
         }
 
         [HttpGet("{id}")]
