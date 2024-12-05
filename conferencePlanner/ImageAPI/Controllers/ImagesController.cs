@@ -20,7 +20,8 @@ public class ImagesController : ControllerBase
         }
     }
 
-    [HttpPost("upload")]
+    [HttpPost]
+    [Route("upload")]
     public async Task<IActionResult> UploadImage(IFormFile file)
     {
         if (file == null || file.Length == 0)
@@ -63,7 +64,8 @@ public class ImagesController : ControllerBase
         }
     }
 
-    [HttpGet("{fileName}")]
+    [HttpGet]
+    [Route("get/{fileName}")]
     public IActionResult GetImage(string fileName)
     {
         var filePath = Path.Combine(_imageStoragePath, fileName);
