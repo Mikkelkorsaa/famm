@@ -20,4 +20,5 @@ builder.Services.AddScoped<IUploadFileService, LocalUploadFileService>();
 builder.Services.AddScoped<IConferenceHandler, LocalConferenceHandler>();
 builder.Services.AddScoped<IAbstractService, LocalAbstractService>();
 
+
 await builder.Build().RunAsync();
