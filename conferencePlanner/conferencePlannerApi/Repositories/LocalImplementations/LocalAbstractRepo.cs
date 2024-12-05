@@ -19,7 +19,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
 							 KeyValues = "climate modeling, machine learning, neural networks, weather prediction",
 							 AbstractText = "This study presents a novel approach to climate change prediction using advanced machine learning techniques. We demonstrate how neural networks can be applied to historical climate data to improve the accuracy of future climate projections. Our results show a 15% improvement in prediction accuracy compared to traditional methods.",
 							 Category = "Machine Learning",
-							 Picture = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20 },
+							 Picture = new PictureModel() { PictureBase64 = "SGVsbG8gd29ybGQhIFRoaXMgaXMgYSByYW5kb20gYmFzZTY0IHN0cmluZyBmb3IgeW91IHRvIHVzZS4=" },
 							 Reviews = new List<Review>()
 					 },
 
@@ -35,7 +35,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
 							 KeyValues = "CRISPR, gene editing, genetic disorders, therapeutic applications",
 							 AbstractText = "Our research explores innovative applications of CRISPR technology in treating rare genetic disorders. Through a series of controlled experiments, we have developed a modified CRISPR-Cas9 system that shows promising results in correcting specific genetic mutations with minimal off-target effects.",
 							 Category = "Biotechnology",
-							 Picture = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20 },
+							 Picture = new PictureModel() { PictureBase64 = "SGVsbG8gd29ybGQhIFRoaXMgaXMgYSByYW5kb20gYmFzZTY0IHN0cmluZyBmb3IgeW91IHRvIHVzZS4=" },
 							 Reviews = new List<Review>()
 					 },
 
@@ -51,7 +51,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
 							 KeyValues = "smart cities, sustainability, urban planning, IoT integration",
 							 AbstractText = "This paper presents a comprehensive framework for implementing smart city solutions in urban development. By integrating IoT sensors, renewable energy systems, and adaptive traffic management, our approach has demonstrated significant improvements in urban efficiency and sustainability. Case studies from three major cities show reductions in energy consumption and traffic congestion.",
 							 Category = "Urban Development",
-							 Picture = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20 },
+							 Picture = new PictureModel() { PictureBase64 = "SGVsbG8gd29ybGQhIFRoaXMgaXMgYSByYW5kb20gYmFzZTY0IHN0cmluZyBmb3IgeW91IHRvIHVzZS4=" },
 							 Reviews = new List<Review>()
 					 }
 			 };
@@ -62,11 +62,16 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
 		public async Task<IEnumerable<Abstract>> GetAllAsync()
 			=> await Task.FromResult(_abstracts);
 
-		public Task<Abstract> CreateAsync(Abstract @abstract)
+		public async Task<Abstract> CreateAsync(Abstract @abstract)
 		{
-			var newAbstract = @abstract with { Id = ++_lastId };
+			var newAbstract = @abstract with
+			{
+				Id = ++_lastId,
+				Picture = new PictureModel(){ PictureBase64 = @abstract.Picture.PictureBase64 }
+			};
+			
 			_abstracts.Add(newAbstract);
-			return Task.FromResult(newAbstract);
+			return await Task.FromResult(newAbstract);
 		}
 
 		public async Task<Abstract?> UpdateAsync(Abstract @abstract)
@@ -79,14 +84,22 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
 			return await Task.FromResult<Abstract?>(@abstract);
 		}
 
-		public Task<bool> DeleteAsync(int id)
+		public async Task<bool> DeleteAsync(int id)
 		{
 			var index = _abstracts.FindIndex(a => a.Id == id);
-			if (index == -1) return Task.FromResult(false);
+			if (index == -1) return await Task.FromResult(false);
 
 			_abstracts.RemoveAt(index);
-			return Task.FromResult(true);
+			return await Task.FromResult(true);
 		}
 
+		public async Task<bool> SavePictureAsync(int id, PictureModel picture)
+		{
+			_abstracts[id].Picture = picture;
+			return await Task.FromResult(true);
+		}
+
+		public async Task<PictureModel> GetPictureAsync(int id)
+			=> await Task.FromResult(_abstracts[id].Picture);
 	}
 }

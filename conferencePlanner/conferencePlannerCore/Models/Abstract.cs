@@ -16,7 +16,7 @@ namespace conferencePlannerCore.Models
         [StringLength(2000)]
         public string AbstractText { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
-        public byte[] Picture { get; set; } = Array.Empty<byte>();
+        public PictureModel Picture { get; set; }
         public List<Review> Reviews { get; set; } = new List<Review>();
     }
 }
