@@ -8,17 +8,17 @@ namespace conferencePlannerApi.Controllers
     [ApiController]
     public class ReviewsController : ControllerBase
     {
-        private readonly IReviewRepo _reviewRepo;
+        private readonly IReviewRepo _repo;
 
         public ReviewsController(IReviewRepo reviewRepo)
         {
-            _reviewRepo = reviewRepo;
+            _repo = reviewRepo;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Review>> GetReviewById(int id)
         {
-            var review = await _reviewRepo.GetReviewByIdAsync(id);
+            var review = await _repo.GetReviewByIdAsync(id);
             if (review == null)
             {
                 return NotFound();
@@ -34,7 +34,7 @@ namespace conferencePlannerApi.Controllers
                 return BadRequest();
             }
 
-            var updatedReview = await _reviewRepo.UpdateAbstract(id, review);
+            var updatedReview = await _repo.UpdateAbstract(id, review);
             if (updatedReview == null)
             {
                 return NotFound();
