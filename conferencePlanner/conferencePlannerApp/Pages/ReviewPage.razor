@@ -4,8 +4,9 @@
 @inject HttpClient Http
 @inject IAbstractService AbstractService
 @inject IJSRuntime JSRuntime
-<div class="filler"/>
-<div class="container-fluid p-0">
+
+<div class="container-fluid">
+    <div class="filler"/>
     <div class="row no-gutters">
         <div class="@sidebarColumnClass">
             <AbstractListComponent @ref="_abstractListComponent"
@@ -60,10 +61,16 @@
 </script>
 
 <style>
+    &::-webkit-scrollbar {
+        display: none; /* Hides the scrollbar */
+    }
+
+    -ms-overflow-style: none; /* Hides scrollbar for Internet Explorer */
+    scrollbar-width: none; /* Hides scrollbar for Firefox */
     .sidebar-transition {
         transition: width 0.5s ease, margin 0.5s ease;
     }
-
+   
     .content-column {
         flex-wrap: wrap;
         transition: margin-left 0.5s ease;
@@ -80,11 +87,12 @@
         flex: 0 0 30%;
         max-width: 30%;
         min-width: 30%;
+        margin-left: -12px;
     }
 
     /* Adjustments for when the sidebar is collapsed or expanded */
     .sidebar-column-expanded {
-        margin-left: 300px;
+        margin-left: 270px;
     }
 
     .sidebar-column-collapsed {
@@ -108,8 +116,8 @@
     private int windowWidth;
 
     private string sidebarColumnClass => isSidebarCollapsed
-      ? "col-1 sidebar-transition sidebar-column-collapsed"
-      : "col-2 sidebar-transition sidebar-column-expanded";
+      ? "col-2 sidebar-transition sidebar-column-collapsed"
+      : "col-1 sidebar-transition sidebar-column-expanded";
 
     private string contentColumnClass => isSidebarCollapsed
         ? "col-11 sidebar-transition content-column sidebar-column-collapsed"

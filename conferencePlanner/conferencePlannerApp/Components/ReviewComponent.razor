@@ -1,116 +1,75 @@
 ﻿@inject IAbstractService AbstractService
 
 <div class="abstract-review-wrapper">
-    <div class="abstract-review-container">
-        
-
-        <div class="abstract-review">
-            @if (SelectedAbstract?.Reviews != null && SelectedAbstract.Reviews.Any())
-            {
-                <div class="reviews-grid">
-                    @foreach (var review in SelectedAbstract.Reviews)
-                    {
-                        <div class="review-card">
-                            <div class="review-criteria">
-                                @foreach (var criteria in review.Criterias)
-                                {
-                                    <div class="form-group">
-                                        <label class="criteria-label">@criteria.Name</label>
-                                        <div class="grade-selector">
-                                            @for (int i = 1; i <= 5; i++)
-                                            {
-                                                int gradeValue = i;
-                                                <button type="button"
-                                                        class="grade-button @(criteria.Grade == gradeValue ? "selected" : "")"
-                                                        @onclick="() => criteria.Grade = gradeValue">
-                                                    @gradeValue
-                                                </button>
-                                            }
-                                        </div>
-                                    </div>
-                                }
-
+    <div class="abstract-review">
+        @if (SelectedAbstract?.Reviews != null && SelectedAbstract.Reviews.Any())
+        {
+            <div class="reviews-grid">
+                @foreach (var review in SelectedAbstract.Reviews)
+                {
+                    <div class="review-card">
+                        <div class="review-criteria">
+                            @foreach (var criteria in review.Criterias)
+                            {
                                 <div class="form-group">
-                                    <label class="comment-label">Comment</label>
-                                    <textarea class="comment-textarea"
-                                              rows="4"
-                                              @bind="review.Comment"
-                                              placeholder="Enter your detailed observations..."></textarea>
+                                    <label class="criteria-label">@criteria.Name</label>
+                                    <div class="grade-selector">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            int gradeValue = i;
+                                            <button type="button"
+                                                    class="grade-button @(criteria.Grade == gradeValue ? "selected" : "")"
+                                                    @onclick="() => criteria.Grade = gradeValue">
+                                                @gradeValue
+                                            </button>
+                                        }
+                                    </div>
                                 </div>
+                            }
+
+                            <div class="form-group">
+                                <label class="comment-label">Comment</label>
+                                <textarea class="comment-textarea"
+                                          rows="4"
+                                          @bind="review.Comment"
+                                          placeholder="Enter your detailed observations..."></textarea>
                             </div>
                         </div>
-                    }
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="no-reviews-placeholder">
+                <div class="no-reviews-icon">
+                    <i class="bi bi-clipboard-x"></i>
                 </div>
+                <p>No reviews available for this abstract.</p>
+            </div>
+        }
+    </div>
+
+    <div class="button-container">
+        <button type="button"
+                class="save-button"
+                @onclick="UpdateAbstract"
+                disabled="@(isSaving)">
+            @if (isSaving)
+            {
+                <span class="spinner"></span>
+                <span>Saving...</span>
             }
             else
             {
-                <div class="no-reviews-placeholder">
-                    <div class="no-reviews-icon">
-                        <i class="bi bi-clipboard-x"></i>
-                    </div>
-                    <p>No reviews available for this abstract.</p>
-                </div>
+                <span>Save Review</span>
             }
-        </div>
-
-        <div class="button-container">
-            <button type="button"
-                    class="save-button"
-                    @onclick="UpdateAbstract"
-                    disabled="@(isSaving)">
-                @if (isSaving)
-                {
-                    <span class="spinner"></span>
-                    <span>Saving...</span>
-                }
-                else
-                {
-                    <span>Save Review</span>
-                }
-            </button>
-        </div>
+        </button>
     </div>
 </div>
 
 <style>
-    .abstract-review-container {
-        background-color: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        max-width: 800px;
-        width: 100%;
-        padding: 2rem;
-        transition: all 0.5s ease;
-        position: sticky;
-        top: 2rem;
-        max-height: calc(100vh - 4rem);
-        overflow-y: auto;
-        /* Custom Scrollbar Styling */
-        scrollbar-width: thin; /* For Firefox */
-        scrollbar-color: #3b82f6 #e5e7eb; /* Thumb and track colors */
-        /* Webkit (Chrome, Safari, newer Opera) Scrollbar */
-        &::-webkit-scrollbar
-
-    {
-        width: 8px; /* Thin scrollbar */
-    }
-
-    &::-webkit-scrollbar-track {
-        background: #f3f4f6; /* Light grey track */
-        border-radius: 10px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background-color: #3b82f6; /* Blue thumb */
-        border-radius: 10px;
-        border: 2px solid #f3f4f6; /* Creates a slight padding around the thumb */
-    }
-
-        &::-webkit-scrollbar-thumb:hover {
-            background-color: #2563eb; /* Darker blue on hover */
-        }
-
-    }
+    
 
     .abstract-review-header {
         background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
@@ -140,10 +99,7 @@
         transition: all 0.3s ease;
     }
 
-        .review-card:hover {
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-            transform: translateY(-3px);
-        }
+       
 
     .grade-selector {
         display: flex;
