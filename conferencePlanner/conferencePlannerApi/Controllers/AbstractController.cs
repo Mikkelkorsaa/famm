@@ -9,23 +9,23 @@ namespace conferencePlannerApi.Controllers
 	public class AbstractController : ControllerBase
 	{
 
-		private readonly IAbstractRepo _repository;
+		private readonly IAbstractRepo _repo;
 
-		public AbstractController(IAbstractRepo repository)
+		public AbstractController(IAbstractRepo repo)
 		{
-			_repository = repository;
+			_repo = repo;
 		}
 
 		[HttpGet]
 		[Route("GetAllAbstracts")]
 		public async Task<IEnumerable<Abstract>> GetAllAbstracts()
-			=> await _repository.GetAllAsync();
+			=> await _repo.GetAllAsync();
 		
 		[HttpGet]
 		[Route("GetAbstractById/{id}")]
 		public async Task<ActionResult<Abstract>> GetAbstractById(int id)
 		{
-			var @abstract = await _repository.GetByIdAsync(id);
+			var @abstract = await _repo.GetByIdAsync(id);
 			return @abstract == null ? NotFound() : @abstract;
 		}
 
@@ -33,7 +33,7 @@ namespace conferencePlannerApi.Controllers
 		[Route("CreateAbstract")]
 		public async Task<ActionResult<Abstract>> CreateAbstract(Abstract @abstract)
 		{
-			var newAbstract = await _repository.CreateAsync(@abstract);
+			var newAbstract = await _repo.CreateAsync(@abstract);
 			return CreatedAtAction(nameof(GetAbstractById), new { id = newAbstract.Id }, newAbstract);
 		}
 
@@ -41,13 +41,13 @@ namespace conferencePlannerApi.Controllers
 		[Route("UpdateAbstract")]
 		public async Task<ActionResult<Abstract>> UpdateAbstract(Abstract @abstract)
 		{
-			var updatedAbstract = await _repository.UpdateAsync(@abstract);
+			var updatedAbstract = await _repo.UpdateAsync(@abstract);
 			return updatedAbstract == null ? NotFound() : updatedAbstract;
 		}
 
 		[HttpDelete]
 		[Route("DeleteAbstract/{id}")]
 		public async Task<ActionResult> DeleteAbstract(int id)
-			=> await _repository.DeleteAsync(id) ? NoContent() : NotFound();
+			=> await _repo.DeleteAsync(id) ? NoContent() : NotFound();
 	}
 }
