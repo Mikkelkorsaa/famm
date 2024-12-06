@@ -8,9 +8,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "conferencePlannerApp", "conferencePlannerApp\conferencePlannerApp.csproj", "{FD83F71B-D4C6-4D06-8006-FEE1FC2FD1D4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "conferencePlannerCore", "conferencePlannerCore\conferencePlannerCore.csproj", "{09FAD14B-DFB7-4611-8283-79F893CE33E1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageAPI", "ImageAPI\ImageAPI.csproj", "{47FBF069-153F-4591-A7DA-75B361A3A137}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

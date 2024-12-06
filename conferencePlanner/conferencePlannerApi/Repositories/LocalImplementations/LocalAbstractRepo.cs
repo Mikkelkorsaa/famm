@@ -1,6 +1,5 @@
 ﻿using conferencePlannerApi.Repositories.Interfaces;
 using conferencePlannerCore.Models;
-using Org.BouncyCastle.Utilities;
 
 namespace conferencePlannerApi.Repositories.LocalImplementations
 {
@@ -65,11 +64,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
 
 		public async Task<Abstract> CreateAsync(Abstract @abstract)
 		{
-			var newAbstract = @abstract with
-			{
-				Id = ++_lastId,
-				Picture = new PictureModel(){ PictureBase64 = @abstract.Picture.PictureBase64 }
-			};
+			var newAbstract = @abstract with { Id = ++_lastId };
 			
 			_abstracts.Add(newAbstract);
 			return await Task.FromResult(newAbstract);
@@ -80,7 +75,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
 			var index = _abstracts.FindIndex(a => a.Id == @abstract.Id);
 			if (index == -1) return null;
 
-			var updatedAbstract = @abstract with { Id = _abstracts[index].Id, Picture = new PictureModel(){ PictureByteArray = @abstract.Picture.PictureByteArray } };
+			var updatedAbstract = @abstract with { Id = _abstracts[index].Id };
 			_abstracts[index] = updatedAbstract;
 			return await Task.FromResult<Abstract?>(@abstract);
 		}
