@@ -1,6 +1,7 @@
 ﻿using conferencePlannerApi.Repositories.Interfaces;
 using conferencePlannerCore.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Json;
 
 namespace conferencePlannerApi.Controllers
 {

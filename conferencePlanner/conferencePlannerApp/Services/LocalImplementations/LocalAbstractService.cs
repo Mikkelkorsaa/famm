@@ -2,28 +2,39 @@
 using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerCore.Models;
 using Blazored.LocalStorage;
+using System.Net.Http.Json;
 
 namespace conferencePlannerApp.Services.LocalImplementations
 {
-    public class LocalStorageAbstractService : IAbstractService
-    {
-        private readonly ILocalStorageService _localStorage;
-        private const string StorageKey = "localAbstrsactList";
-        List<Abstract> _abstracts = new List<Abstract>();
+	public class LocalStorageAbstractService : IAbstractService
+	{
+		private readonly HttpClient _httpClient;
 
-		public LocalStorageAbstractService(ILocalStorageService localStorage)
+		public LocalStorageAbstractService(HttpClient httpClient)
 		{
-			_localStorage = localStorage;
+			_httpClient = httpClient;
 		}
 
 
-		public async Task AddAbstract(Abstract _abstract)
+		public async Task<Abstract> AddAbstract(Abstract @abstract)
 		{
-			_abstracts.Add(_abstract);
-			await _localStorage.SetItemAsync(StorageKey, _abstract);
+			var response = await _httpClient.PostAsJsonAsync("https://localhost:7000/api/abstract/createabstract", @abstract);
+			response.EnsureSuccessStatusCode();
+			var newAbstract = await response.Content.ReadFromJsonAsync<Abstract>();
+			return newAbstract;
 		}
 
-		public async Task<List<Abstract>> GetAbstracts() => await _localStorage.GetItemAsync<List<Abstract>>(StorageKey);
+		public async Task<List<Abstract>> GetAbstracts()
+		{
+			var response = await _httpClient.GetAsync("https://localhost:7000/api/abstract/getallabstracts");
+			response.EnsureSuccessStatusCode();
+			var abstracts = await response.Content.ReadFromJsonAsync<List<Abstract>>();
+			if (abstracts == null)
+			{
+				throw new InvalidOperationException("Failed to retrieve abstracts.");
+			}
+			return abstracts;
+		} 
 
 		public Task UpdateAbstract(Abstract _abstract)
 		{

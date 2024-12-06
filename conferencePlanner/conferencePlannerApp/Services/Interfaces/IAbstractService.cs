@@ -7,7 +7,7 @@ namespace conferencePlannerApp.Services.Interfaces
 	{
 		//Input: Abstract obj.
 		//Manipulation: Sends abstract to database
-		Task AddAbstract(Abstract _abstract);
+		Task<Abstract> AddAbstract(Abstract _abstract);
 
 		//Output: returns a List of abstract objects
 		Task<List<Abstract>> GetAbstracts();

@@ -7,6 +7,17 @@
         <h1 class="mb-3 mt-3 text-center">Indsend Abstrakt</h1>
         <EditForm EditContext="@_editcontext" OnSubmit="@HandleSubmit" class="row p-3">
             <DataAnnotationsValidator/>
+
+            <div class="col-md-6 mb-3">
+                <label for="Kategori">Kategori</label>
+                <InputSelect id="Kategori" @bind-Value="@_abstractModel.Category" class="form-control">
+                    <option value="">Vælg kategori &#11167;</option>
+                    @foreach (var cat in _categories)
+                    {
+                        <option value="@cat">@cat</option>
+                    }
+                </InputSelect>
+            </div>
             <div class="col-md-12 mb-3">
                 <label for="Name">Navn på indsender</label>
                 <InputText id="Name" @bind-Value="@_abstractModel.SenderName" class="form-control" />
