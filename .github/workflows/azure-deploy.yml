@@ -2,7 +2,7 @@ name: Azure Web App Deployment
 on:
   push:
     branches:
-      - dev  # or whatever your development branch is named
+      - development
 
 jobs:
   build-and-deploy:
@@ -10,8 +10,6 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
-    
-    # Add any build steps here if needed
     
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
@@ -25,7 +23,7 @@ jobs:
           This PR was automatically created by the Azure Web App deployment workflow.
           Please review the changes before merging.
         
-        base: main  # or master, depending on your default branch
+        base: main
         draft: false
         
     - name: Deploy to Azure Web App
@@ -34,4 +32,4 @@ jobs:
       with:
         app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: .  # or your build output directory
+        package: .
