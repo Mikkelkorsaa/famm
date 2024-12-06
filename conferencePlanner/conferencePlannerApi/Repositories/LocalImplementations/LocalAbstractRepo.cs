@@ -20,7 +20,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
 							 KeyValues = "climate modeling, machine learning, neural networks, weather prediction",
 							 AbstractText = "This study presents a novel approach to climate change prediction using advanced machine learning techniques. We demonstrate how neural networks can be applied to historical climate data to improve the accuracy of future climate projections. Our results show a 15% improvement in prediction accuracy compared to traditional methods.",
 							 Category = "Machine Learning",
-							 Picture = new PictureModel() { PictureByteArray = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 }},
+							 Picture = "string.Empty",
 							 Reviews = new List<Review>()
 					 },
 
@@ -36,7 +36,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
 							 KeyValues = "CRISPR, gene editing, genetic disorders, therapeutic applications",
 							 AbstractText = "Our research explores innovative applications of CRISPR technology in treating rare genetic disorders. Through a series of controlled experiments, we have developed a modified CRISPR-Cas9 system that shows promising results in correcting specific genetic mutations with minimal off-target effects.",
 							 Category = "Biotechnology",
-							 Picture = new PictureModel() { PictureByteArray = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 }},
+							 Picture = "string.Empty",
 							 Reviews = new List<Review>()
 					 },
 
@@ -52,7 +52,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
 							 KeyValues = "smart cities, sustainability, urban planning, IoT integration",
 							 AbstractText = "This paper presents a comprehensive framework for implementing smart city solutions in urban development. By integrating IoT sensors, renewable energy systems, and adaptive traffic management, our approach has demonstrated significant improvements in urban efficiency and sustainability. Case studies from three major cities show reductions in energy consumption and traffic congestion.",
 							 Category = "Urban Development",
-							 Picture = new PictureModel() { PictureByteArray = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 }},
+							 Picture = "string.Empty",
 							 Reviews = new List<Review>()
 					 }
 			 };
