@@ -1,50 +1,38 @@
-﻿@inject IUploadImageService UploadFileService
+﻿@inject IUploadFileService UploadFileService
 @inject IJSRuntime JSRuntime
 
+
 <div class="upload-container">
-    <InputFile OnChange="@HandleSelectedFile" accept=".jpg,.jpeg,.png"></InputFile>
-    @if (!string.IsNullOrEmpty(_imageUrl))
-    {
-        <div class="image-preview">
-            <img src="@_imageUrl" alt="Image preview" style="max-width: 300px; max-height: 300px;" />
-        </div>
-    }
+	<InputFile OnChange="@HandleSelectedFile" accept="@AcceptedFileTypes"></InputFile>
+	@if (!string.IsNullOrEmpty(_imageUrl))
+	{
+		<div class="image-preview">
+			<img src="@_imageUrl" alt="Image preview" style="max-width: 300px; max-height: 300px;" />
+		</div>
+	}
 </div>
 
 @code {
-    [Parameter]
-    public Abstract _abstract { get; set; } = new();
-    private string? _imageUrl { get; set; }
-    private bool _isLoading { get; set; }
+	[Parameter]
+	public EventCallback<string> OnFileUploaded { get; set; }
+	[Parameter]
+	public string AcceptedFileTypes { get; set; }
+	[Parameter]
+	public int AcceptedSize { get; set; }
+	private string? _imageUrl { get; set; }
 
-    private async Task HandleSelectedFile(InputFileChangeEventArgs e)
-    {
-        try
-        {
-            _isLoading = true;
-            var file = e.File;
+	private async Task HandleSelectedFile(InputFileChangeEventArgs e)
+	{
+		var file = e.File;
+		var imgString= await UploadFileService.ConvertToBase64String(file);
+		PreviewImage(file, imgString);
+		await OnFileUploaded.InvokeAsync(imgString);
+	}
 
-            if (file.Size > 10 *1024 *1024)
-            {
-                await JSRuntime.InvokeVoidAsync("alert", "Filen må maks være 20MB");
-                return;
-            }
+	private async Task PreviewImage(IBrowserFile file, string imgstring)
+	{
+		_imageUrl = $"data:{file.ContentType};base64,{imgstring}";
+		StateHasChanged();
+	}
 
-            // Create a preview URL
-            var buffer = new byte[file.Size];
-            await file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).ReadAsync(buffer);
-            _imageUrl = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
-
-            // Upload the image
-            await UploadFileService.UploadImage(file, _abstract);
-        }
-        catch (Exception ex)
-        {
-            await JSRuntime.InvokeVoidAsync("alert", ex.Message);
-        }
-        finally
-        {
-            _isLoading = false;
-        }
-    }
 }

@@ -16,4 +16,8 @@
       <ProjectReference Include="..\conferencePlannerCore\conferencePlannerCore.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Services\Implementations\" />
+    </ItemGroup>
+
 </Project>

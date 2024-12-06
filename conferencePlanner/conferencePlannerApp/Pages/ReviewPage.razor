@@ -124,7 +124,7 @@
         : "col-10 sidebar-transition content-column sidebar-column-expanded";
     protected override async Task OnInitializedAsync()
     {
-        _abstractList = await AbstractService.GetAllAbstracts();
+        _abstractList = await AbstractService.GetAbstracts();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
