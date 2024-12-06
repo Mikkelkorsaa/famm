@@ -3,11 +3,16 @@ on:
   push:
     branches:
       - development
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
 
 jobs:
-  build-and-deploy:
+  create-pr:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/development'
     runs-on: ubuntu-latest
-    
     steps:
     - uses: actions/checkout@v2
     
@@ -22,12 +27,16 @@ jobs:
           
           This PR was automatically created by the Azure Web App deployment workflow.
           Please review the changes before merging.
-        
         base: main
         draft: false
-        
+
+  deploy:
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      
     - name: Deploy to Azure Web App
-      if: github.event.pull_request.merged == true
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
