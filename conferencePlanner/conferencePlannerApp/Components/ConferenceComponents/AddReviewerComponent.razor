@@ -1,0 +1,104 @@
+﻿// AddReviewerComponent.razor
+@inject IUserService UserHandler
+
+<EditForm Model="@reviewerModel" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <InputText @bind-Value="userFilter.Email" class="form-control" />
+        <button type="button" class="btn btn-outline-secondary mt-2" @onclick="SearchUser">Søg bruger</button>
+    </div>
+
+    @if (foundUsers.Any())
+    {
+        <div class="mb-3">
+            <label class="form-label">Vælg bruger</label>
+            <select class="form-select" @bind="selectedUserId">
+                <option value="">Vælg bruger...</option>
+                @foreach (var user in foundUsers)
+                {
+                    <option value="@user">@user.Name (@user.Email)</option>
+                }
+            </select>
+        </div>
+    }
+
+    @if (selectedUserId != 0)
+    {
+        <div class="mb-3">
+            <label class="form-label">Kategorier</label>
+            <div class="mt-2">
+                @foreach (var category in ConferenceCategories)
+                {
+                    <div class="form-check">
+                        <InputCheckbox class="form-check-input"
+                                       @bind-Value="selectedCategories[category]" />
+                        <label class="form-check-label">@category</label>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary me-2">Tilføj</button>
+        <button type="button" class="btn btn-secondary" @onclick="OnCancel">Annuller</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public List<string> ConferenceCategories { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<Reviewer> OnSave { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    [Parameter]
+    public Conference conference { get; set; }
+
+    private UserFilter userFilter = new();
+    private List<User> foundUsers = new();
+    private User? selectedUser;
+    private Dictionary<string, bool> selectedCategories = new();
+    private Reviewer reviewerModel = new();
+
+    protected override void OnParametersSet()
+    {
+        selectedCategories = ConferenceCategories.ToDictionary(c => c, _ => false);
+    }
+
+    private async Task SearchUser()
+    {
+        foundUsers = await UserHandler.SearchUsers(userFilter);
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (selectedUser != null)
+        {
+            var reviewer = new Reviewer
+                {
+                    User = selectedUser,
+                    Category = selectedCategories
+                        .Where(kvp => kvp.Value)
+                        .Select(kvp => kvp.Key)
+                        .ToList()
+                };
+
+            await OnSave.InvokeAsync(reviewer);
+        }
+    }
+
+    private void RemoveReviewer(Reviewer reviewer){
+        conference.reviewers.Remove(reviewer);
+
+
+    }
+
+}
+}

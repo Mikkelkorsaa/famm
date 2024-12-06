@@ -8,7 +8,7 @@ namespace conferencePlannerCore.Models
 {
     public class Reviewer
     {
-        public int UserID { get; set; }
+        public User User { get; set; }
         public List<string> Category { get; set; }
     }
 }

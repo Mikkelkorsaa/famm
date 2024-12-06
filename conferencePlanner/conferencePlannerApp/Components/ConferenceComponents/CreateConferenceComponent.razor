@@ -82,17 +82,33 @@
         </button>
         <div class="mb-3">
             <label class="form-label">Bedømmelseskomite</label>
-            @if (conference.Reviewers.Count>0)
+            @if (conference.reviewers.Any())
             {
                 <div class="card mb-2">
-                    <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">@conference.Location.Name</h6>
-                        <p class="card-text">@conference.Location.Address</p>
+                    <div class="list-group list-group-flush">
+                        @foreach (var reviewer in conference.reviewers)
+                        {
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">@reviewer.User</h6>
+                                        <small class="text-muted">
+                                            Kategorier: @string.Join(", ", reviewer.Category)
+                                        </small>
+                                    </div>
+                                    <button type="button" class="btn-close" @onclick="() => RemoveReviewer(reviewer)">
+                                    </button>
+                                </div>
+                            </div>
+
+                        }
                     </div>
                 </div>
+
             }
-            <button type="button" class="btn btn-outline-primary" @onclick="ShowVenueModal">
-                @(conference.Location == null ? "Select Venue" : "Change Venue")
+
+            <button type="button" class="btn btn-outline-primary" @onclick="ShowReviewerModal">
+                Tilføj bedømmer
             </button>
         </div>
 
@@ -100,7 +116,20 @@
     <button type="submit" class="btn btn-primary">Gem konference</button>
 </EditForm>
 
-@if (showVenueModal)
+@if (showAddReviewerModal)
+{
+    <ModalComponent OnClose="() => showAddReviewerModal = false">
+        <AddReviewerComponent
+                
+        
+        >
+
+        </AddReviewerComponent>
+    </ModalComponent>    
+
+}
+
+@if(showVenueModal)
 {
     <ModalComponent OnClose="() => showVenueModal = false">
         <CreateVenueComponent 
@@ -126,8 +155,9 @@
             Location = new Venue { Id = 0, Name = "", Address = "" }
         };
 
-    [Parameter] public EventCallback<Conference> OnSave { get; set; }
-
+    [Parameter] 
+    public EventCallback<Conference> OnSave { get; set; }
+    public bool showAddReviewerModal = false;
     private bool showVenueModal = false;
     private string newCategory = "";
     private string newCriteria = "";
