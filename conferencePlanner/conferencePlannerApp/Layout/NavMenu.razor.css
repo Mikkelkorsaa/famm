@@ -3,13 +3,14 @@
 }
 
 .navbar-brand {
-    font-size: 1.1rem;
+    font-size: 8rem;
+    font-family: "Barlow Semi Condensed", sans-serif; /* Apply custom font */
 }
 
 .bi {
     display: inline-block;
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 2rem;
+    height: 2rem;
     margin-right: 0.75rem;
     background-size: cover;
 }
@@ -27,26 +28,31 @@
 }
 
 .nav-item {
-    font-size: 0.9rem;
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+    font-family: "Barlow Semi Condensed", sans-serif; /* Apply custom font */
+    margin-right: 30px;
+    color:white;
 }
 
-    .nav-item ::deep a {
-        color: #d7d7d7;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        padding: 0.5rem 1rem;
+.nav-item ::deep a {
+    color: #d7d7d7;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    font-family: "Barlow Semi Condensed", sans-serif; /* Apply custom font */
+}
+
+    .nav-item ::deep a.active {
+        background-color: rgba(55, 127, 166,0.37);
+        color: white;
     }
 
-        .nav-item ::deep a.active {
-            background-color: rgba(255,255,255,0.37);
-            color: white;
-        }
-
-        .nav-item ::deep a:hover {
-            background-color: rgba(255,255,255,0.1);
-            color: white;
-        }
+    .nav-item ::deep a:hover {
+        background-color: rgba(55, 127, 166,0.1);
+        color: white;
+    }
 
 @media (min-width: 641px) {
     .navbar-toggler {
@@ -60,4 +66,14 @@
 
 .navbar-nav .bi::before {
     content: none !important;
+}
+
+.custom-navbar {
+    background-color: #204c64;
+}
+
+.custom-navbar svg {
+    width: 200px; /* Adjust the width as needed */
+    height: 40px; /* Adjust the height as needed */
+    vertical-align: middle; /* Align the SVG vertically with the text */
 }
