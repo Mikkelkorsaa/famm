@@ -3,8 +3,6 @@ using conferencePlannerCore.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Json;
 
-// Test the ci cd pipeline
-
 namespace conferencePlannerApi.Controllers
 {
 	[ApiController]
