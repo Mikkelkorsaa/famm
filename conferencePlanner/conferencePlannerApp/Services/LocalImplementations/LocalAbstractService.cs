@@ -2,6 +2,7 @@
 using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerCore.Models;
 using Blazored.LocalStorage;
+using System.Net.Http.Json;
 
 namespace conferencePlannerApp.Services.LocalImplementations
 {
@@ -14,7 +15,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
 			_httpClient = httpClient;
 		}
 
-/* 
+
 		public async Task<Abstract> AddAbstract(Abstract @abstract)
 		{
 			var response = await _httpClient.PostAsJsonAsync("https://localhost:7000/api/abstract/createabstract", @abstract);
@@ -33,7 +34,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
 				throw new InvalidOperationException("Failed to retrieve abstracts.");
 			}
 			return abstracts;
-		} */
+		} 
 
 		public Task UpdateAbstract(Abstract _abstract)
 		{
