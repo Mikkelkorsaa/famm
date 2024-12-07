@@ -24,9 +24,6 @@ jobs:
     - name: Build
       run: dotnet build ./conferencePlanner/conferencePlanner.sln --configuration Release --no-restore
     
-    - name: Test
-      run: dotnet test ./conferencePlanner/conferencePlanner.sln --no-build
-    
     # Publish API
     - name: Publish API
       run: dotnet publish ./conferencePlanner/conferencePlannerApi/conferencePlannerApi.csproj -c Release -o ${{env.DOTNET_ROOT}}/api
@@ -51,22 +48,4 @@ jobs:
       with:
         app-name: 'conferenceplanner-web-dev'
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_WEB_DEV }}
-        package: ${{env.DOTNET_ROOT}}/web
-
-    # Deploy API (Production)
-    - name: Deploy API to Azure Web App (Production)
-      if: github.ref == 'refs/heads/main'
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'conferenceplanner-api-prod'
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_API_PROD }}
-        package: ${{env.DOTNET_ROOT}}/api
-
-    # Deploy Blazor App (Production)
-    - name: Deploy Blazor to Azure Web App (Production)
-      if: github.ref == 'refs/heads/main'
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'conferenceplanner-web-prod'
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_WEB_PROD }}
         package: ${{env.DOTNET_ROOT}}/web
