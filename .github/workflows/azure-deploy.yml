@@ -1,0 +1,72 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches: [ development, main ]
+  pull_request:
+    branches: [ development, main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '8.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore ./conferencePlanner/conferencePlanner.sln
+    
+    - name: Build
+      run: dotnet build ./conferencePlanner/conferencePlanner.sln --configuration Release --no-restore
+    
+    - name: Test
+      run: dotnet test ./conferencePlanner/conferencePlanner.sln --no-build
+    
+    # Publish API
+    - name: Publish API
+      run: dotnet publish ./conferencePlanner/conferencePlannerApi/conferencePlannerApi.csproj -c Release -o ${{env.DOTNET_ROOT}}/api
+    
+    # Publish Blazor App
+    - name: Publish Blazor App
+      run: dotnet publish ./conferencePlanner/conferencePlannerApp/conferencePlannerApp.csproj -c Release -o ${{env.DOTNET_ROOT}}/web
+
+    # Deploy API (Development)
+    - name: Deploy API to Azure Web App (Development)
+      if: github.ref == 'refs/heads/development'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'conferenceplanner-api-dev'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_API_DEV }}
+        package: ${{env.DOTNET_ROOT}}/api
+
+    # Deploy Blazor App (Development)
+    - name: Deploy Blazor to Azure Web App (Development)
+      if: github.ref == 'refs/heads/development'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'conferenceplanner-web-dev'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_WEB_DEV }}
+        package: ${{env.DOTNET_ROOT}}/web
+
+    # Deploy API (Production)
+    - name: Deploy API to Azure Web App (Production)
+      if: github.ref == 'refs/heads/main'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'conferenceplanner-api-prod'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_API_PROD }}
+        package: ${{env.DOTNET_ROOT}}/api
+
+    # Deploy Blazor App (Production)
+    - name: Deploy Blazor to Azure Web App (Production)
+      if: github.ref == 'refs/heads/main'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'conferenceplanner-web-prod'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_WEB_PROD }}
+        package: ${{env.DOTNET_ROOT}}/web
