@@ -1,0 +1,175 @@
+﻿@page "/Review"
+@using conferencePlannerApp.Components
+@using conferencePlannerCore.Models
+@inject HttpClient Http
+@inject IAbstractService AbstractService
+@inject IJSRuntime JSRuntime
+
+<div class="container-fluid">
+    <div class="filler"/>
+    <div class="row no-gutters">
+        <div class="@sidebarColumnClass">
+            <AbstractListComponent @ref="_abstractListComponent"
+                                   _abstractList="@_abstractList"
+                                   OnAbstractSelected="SetAbstract"
+                                   OnCollapseChanged="HandleCollapseChanged">
+            </AbstractListComponent>
+        </div>
+        <div class="@contentColumnClass">
+            <div class="row">
+                <div class="view-abstract-column">
+                    @if (_currentAbstract != null)
+                    {
+                        <ViewAbstractComponent SelectedAbstract="@_currentAbstract"></ViewAbstractComponent>
+                    }
+                </div>
+                <div class="review-column">
+                    @if (_currentAbstract != null)
+                    {
+                        <ReviewComponent SelectedAbstract="@_currentAbstract"></ReviewComponent>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.registerHandlers = (sidebarRef, dotNetHelper) => {
+        document.addEventListener("click", (event) => {
+            const sidebarElement = sidebarRef && sidebarRef.getBoundingClientRect();
+            const isClickInside =
+                sidebarElement &&
+                event.clientX >= sidebarElement.left &&
+                event.clientX <= sidebarElement.right &&
+                event.clientY >= sidebarElement.top &&
+                event.clientY <= sidebarElement.bottom;
+            if (!isClickInside) {
+                dotNetHelper.invokeMethodAsync("CollapseSidebar");
+            }
+        });
+
+        window.addEventListener("resize", () => {
+            dotNetHelper.invokeMethodAsync("OnResize", window.innerWidth);
+        });
+    };
+
+    window.unregisterHandlers = () => {
+        document.removeEventListener("click");
+        window.removeEventListener("resize");
+    };
+</script>
+
+<style>
+    &::-webkit-scrollbar {
+        display: none; /* Hides the scrollbar */
+    }
+
+    -ms-overflow-style: none; /* Hides scrollbar for Internet Explorer */
+    scrollbar-width: none; /* Hides scrollbar for Firefox */
+    .sidebar-transition {
+        transition: width 0.5s ease, margin 0.5s ease;
+    }
+   
+    .content-column {
+        flex-wrap: wrap;
+        transition: margin-left 0.5s ease;
+    }
+
+    .view-abstract-column {
+        width: 70%; /* Fixed width for the abstract column */
+        flex-shrink: 0; /* Prevents it from shrinking */
+        flex-grow: 0; /* Prevents it from growing */
+      
+    }
+
+    .review-column {
+        flex: 0 0 30%;
+        max-width: 30%;
+        min-width: 30%;
+        margin-left: -12px;
+    }
+
+    /* Adjustments for when the sidebar is collapsed or expanded */
+    .sidebar-column-expanded {
+        margin-left: 270px;
+    }
+
+    .sidebar-column-collapsed {
+        margin-left: 60px;
+    }
+    .filler {
+        margin-top:10px;
+    }
+
+    .sidebar-column-expanded,
+    .sidebar-column-collapsed {
+        transition: all 0.5s ease;
+    }
+</style>
+
+@code {
+    private AbstractListComponent _abstractListComponent;
+    private List<Abstract> _abstractList = new();
+    private Abstract _currentAbstract;
+    private bool isSidebarCollapsed;
+    private int windowWidth;
+
+    private string sidebarColumnClass => isSidebarCollapsed
+      ? "col-2 sidebar-transition sidebar-column-collapsed"
+      : "col-1 sidebar-transition sidebar-column-expanded";
+
+    private string contentColumnClass => isSidebarCollapsed
+        ? "col-11 sidebar-transition content-column sidebar-column-collapsed"
+        : "col-10 sidebar-transition content-column sidebar-column-expanded";
+    protected override async Task OnInitializedAsync()
+    {
+        _abstractList = await AbstractService.GetAbstracts();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var dotNetRef = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("registerHandlers", _abstractListComponent?.PublicSidebarRef, dotNetRef);
+            windowWidth = await JSRuntime.InvokeAsync<int>("eval", "window.innerWidth");
+        }
+    }
+
+    [JSInvokable]
+    public void OnResize(int width)
+    {
+        windowWidth = width;
+        StateHasChanged();
+    }
+
+    private void SetAbstract(Abstract abs)
+    {
+        _currentAbstract = abs;
+    }
+
+    private void HandleCollapseChanged(bool isCollapsed)
+    {
+        if (isSidebarCollapsed != isCollapsed)
+        {
+            isSidebarCollapsed = isCollapsed;
+            StateHasChanged();
+        }
+    }
+
+    [JSInvokable]
+    public void CollapseSidebar()
+    {
+        if (!isSidebarCollapsed)
+        {
+            isSidebarCollapsed = true;
+            StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("unregisterHandlers");
+    }
+}
