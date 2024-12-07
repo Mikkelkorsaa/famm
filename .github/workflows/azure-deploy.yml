@@ -30,7 +30,7 @@ jobs:
     
     # Publish Blazor App
     - name: Publish Blazor App
-      run: dotnet publish ./conferencePlanner/conferencePlannerApp/conferencePlannerApp.csproj -c Release -o ${{env.DOTNET_ROOT}}/web
+      run: dotnet publish ./conferencePlanner/conferencePlannerApp/conferencePlannerApp.csproj -c Release -o ${{env.DOTNET_ROOT}}/app
 
     # Deploy API (Development)
     - name: Deploy API to Azure Web App (Development)
@@ -46,6 +46,6 @@ jobs:
       if: github.ref == 'refs/heads/development'
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'conferenceplanner-web-dev'
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_WEB_DEV }}
-        package: ${{env.DOTNET_ROOT}}/web
+        app-name: 'conferenceplanner-app-dev'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_APP_DEV }}
+        package: ${{env.DOTNET_ROOT}}/app
