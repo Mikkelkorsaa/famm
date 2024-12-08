@@ -1,0 +1,144 @@
+﻿@page "/uploadabstract"
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@inject IAbstractService abstractService;
+
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="col-md-8 bg-light rounded shadow p-4">
+        <h1 class="mb-3 mt-3 text-center">Indsend Abstrakt</h1>
+        <EditForm EditContext="@_editcontext" OnSubmit="@HandleSubmit" class="row p-3">
+            <DataAnnotationsValidator/>
+
+            <div class="col-md-6 mb-3">
+                <label for="Kategori">Kategori</label>
+                <InputSelect id="Kategori" @bind-Value="@_abstractModel.Category" class="form-control">
+                    <option value="">Vælg kategori &#11167;</option>
+                    @foreach (var cat in _categories)
+                    {
+                        <option value="@cat">@cat</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="col-md-12 mb-3">
+                <label for="Name">Navn på indsender</label>
+                <InputText id="Name" @bind-Value="@_abstractModel.SenderName" class="form-control" />
+            </div>
+            <div class="col-md-12 mb-3">
+                <label for="PresenterEmail">Oplægsholder email</label>
+                <InputText id="PresenterEmail" @bind-Value="@_abstractModel.PresenterEmail" class="form-control" />
+            </div>
+            <div class="col-md-12 mb-3">
+                <label for="Medforfattere">Medforfattere</label>
+                <div class="d-flex gap-2">
+                    <InputText id="Medforfattere" @bind-Value="@_newCoAuthor" class="form-control" />
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-primary" @onclick="AddCoAuthor">Tilføj Medforfatter</button>
+                    </div>
+                </div>
+            </div>
+            @if (_abstractModel.CoAuthors?.Any() == true)
+            {
+                <div class="col-12 mb-3">
+                    <h5>Medforfattere:</h5>
+                    @foreach (var coAuth in _abstractModel.CoAuthors)
+                    {
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span>@coAuth</span>
+                            <button type="button" class="btn btn-sm btn-danger" @onclick="() => RemoveCoAuthor(coAuth)">Fjern</button>
+                        </div>
+                    }
+                </div>
+            }
+            <div class="col-md-6 mb-3">
+                <label for="Organisation">Organisation</label>
+                <InputText id="Organisation" @bind-Value="@_abstractModel.Organization" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="Titel">Titel</label>
+                <InputText id="Titel" @bind-Value="@_abstractModel.Title" class="form-control" />
+            </div>
+            <div class="col-md-12 mb-3">
+                <label for="Nøgleværdier">Nøgleværdier</label>
+                <InputTextArea id="Nøgleværdier" @bind-Value="@_abstractModel.KeyValues" class="form-control" />
+            </div>
+            <div class="col-md-12 mb-3">
+                <label for="AbstraktTekst">Abstrakt tekst</label>
+                <InputTextArea id="AbstraktTekst" @bind-Value="@_abstractModel.KeyValues" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="Kategori">Kategori</label>
+                <InputSelect id="Kategori" @bind-Value="@_abstractModel.Category" class="form-control">
+                    <option value="">Vælg kategori &#11167;</option>
+                    @foreach (var cat in _categories)
+                    {
+                        <option value="@cat">@cat</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="Upload Fil">Upload Fil</label>
+                <UploadImageComponent OnFileUploaded="HandleFileData" AcceptedFileTypes="_imgFileTypes" AcceptedSize="_maxImgSize"/>
+            </div>
+            <div class="col-12 mb-3">
+                <button type="submit" class="btn btn-primary">Indsend</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private Abstract _abstractModel = new() { CoAuthors = new List<string>() };
+    private string _abstractKey = "abstract";
+    private List<string> _categories = new List<string> { "Soda", "Kamboocha", "Coffee", "Tee" };
+    private string _newCoAuthor = "";
+    private EditContext _editcontext;
+    private Conference _conference;
+    private string _imgFileTypes = ".jpeg, .png, .jpg";
+    private int _maxImgSize = 10 * 1024 * 1024;
+
+    private void HandleFileData(string data)
+    {
+        _abstractModel.Picture = data;
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _editcontext = new EditContext(_abstractModel);
+        var storedAbstract = await localStorage.GetItemAsync<Abstract>(_abstractKey);
+        if (storedAbstract != null)
+        {
+            _abstractModel = storedAbstract;
+            _abstractModel.CoAuthors ??= new List<string>();
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        if(_editcontext.Validate())
+        await abstractService.AddAbstract(_abstractModel);
+        _abstractModel = new Abstract{CoAuthors = new List<string>()};
+        await UpdateLocalStorage();
+    }
+
+    private async Task AddCoAuthor()
+    {
+        if (!string.IsNullOrWhiteSpace(_newCoAuthor))
+        {
+            _abstractModel.CoAuthors.Add(_newCoAuthor);
+            _newCoAuthor = "";
+            await UpdateLocalStorage();
+            StateHasChanged();
+        }
+    }
+
+    private async Task RemoveCoAuthor(string coAuthor)
+    {
+        _abstractModel.CoAuthors.Remove(coAuthor);
+        await UpdateLocalStorage();
+        StateHasChanged();
+    }
+
+    private async Task UpdateLocalStorage() =>
+        await localStorage.SetItemAsync(_abstractKey, _abstractModel);
+}

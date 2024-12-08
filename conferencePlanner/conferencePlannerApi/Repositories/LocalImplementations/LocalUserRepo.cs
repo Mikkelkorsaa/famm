@@ -74,9 +74,9 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
             var index = _users.FindIndex(u => u.Id == user.Id);
             if (index == -1) return null;
 
-            var updatedUser = user with { };
+            var updatedUser = user with { Id = _users[index].Id };
             _users[index] = updatedUser;
-            return await Task.FromResult(updatedUser);
+            return await Task.FromResult<User?>(updatedUser);
         }
 
         public async Task<bool> DeleteAsync(int id)

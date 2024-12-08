@@ -1,0 +1,134 @@
+﻿@using conferencePlannerCore.Models
+@if (SelectedAbstract != null)
+{
+    <div class="container-fluid">
+        <div class="col-12">
+            <div class="view-abstract-card">
+                <div class="card-header">
+                    <h4 class="card-title text-truncate">@SelectedAbstract.Title</h4>
+                    <h6 class="card-subtitle mb-2 text-muted">@SelectedAbstract.Category</h6>
+                </div>
+                <div class="card-body">
+                    <div class="abstract-detail-row">
+                        <span class="detail-label">Id:</span>
+                        <span class="detail-value">@SelectedAbstract.Id</span>
+                    </div>
+                    <div class="abstract-detail-row">
+                        <span class="detail-label">Conference Id:</span>
+                        <span class="detail-value">@SelectedAbstract.ConferenceId</span>
+                    </div>
+                    <div class="abstract-detail-row">
+                        <span class="detail-label">Sender Name:</span>
+                        <span class="detail-value">@SelectedAbstract.SenderName</span>
+                    </div>
+                    <div class="abstract-detail-row">
+                        <span class="detail-label">Presenter Email:</span>
+                        <span class="detail-value">@SelectedAbstract.PresenterEmail</span>
+                    </div>
+                    <div class="abstract-detail-row">
+                        <span class="detail-label">Organization:</span>
+                        <span class="detail-value">@SelectedAbstract.Organization</span>
+                    </div>
+                    <div class="abstract-detail-row">
+                        <span class="detail-label">Key Values:</span>
+                        <span class="detail-value">@SelectedAbstract.KeyValues</span>
+                    </div>
+                    <div class="abstract-detail-row abstract-text">
+                        <span class="detail-label">Abstract Text:</span>
+                        <p class="detail-value">@SelectedAbstract.AbstractText</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p class="text-center text-muted no-abstract-selected">No abstract selected.</p>
+}
+@code {
+    [Parameter]
+    public Abstract SelectedAbstract { get; set; }
+}
+
+<style>
+    .view-abstract-card {
+        background-color: #ffffff;
+        border: 1px solid #d6d8db;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-top: 0px;
+        transition: box-shadow 0.3s ease;
+    }
+
+        .view-abstract-card:hover {
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .view-abstract-card .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #d6d8db;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .view-abstract-card .card-title {
+            color: #004085;
+            margin-bottom: 5px;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .view-abstract-card .card-subtitle {
+            font-size: 0.875rem;
+            margin-bottom: 0;
+        }
+
+        .view-abstract-card .card-body {
+            padding: 15px;
+        }
+
+    .abstract-detail-row {
+        display: flex;
+        margin-bottom: 10px;
+        align-items: flex-start;
+    }
+
+    .detail-label {
+        font-weight: bold;
+        color: #495057;
+        min-width: 150px;
+        margin-right: 10px;
+    }
+
+    .detail-value {
+        color: #212529;
+        flex-grow: 1;
+    }
+
+    .abstract-text .detail-label {
+        align-self: flex-start;
+    }
+
+    .abstract-text .detail-value {
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .no-abstract-selected {
+        margin-top: 20px;
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    
+
+    .detail-label {
+        margin-bottom: 5px;
+        min-width: auto;
+    }
+
+    }
+</style>
