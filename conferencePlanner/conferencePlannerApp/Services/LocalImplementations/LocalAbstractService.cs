@@ -21,7 +21,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
 			var response = await _httpClient.PostAsJsonAsync("https://localhost:7000/api/abstract/createabstract", @abstract);
 			response.EnsureSuccessStatusCode();
 			var newAbstract = await response.Content.ReadFromJsonAsync<Abstract>();
-			return newAbstract;
+			return newAbstract!;
 		}
 
 		public async Task<List<Abstract>> GetAbstracts()

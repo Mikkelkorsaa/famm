@@ -188,7 +188,7 @@
 
 @code {
     [Parameter]
-    public Abstract SelectedAbstract { get; set; }
+    public Abstract? SelectedAbstract { get; set; }
 
     private bool isSaving = false;
 
@@ -197,7 +197,7 @@
         isSaving = true;
         try
         {
-            await AbstractService.UpdateAbstract(SelectedAbstract);
+            await AbstractService.UpdateAbstract(SelectedAbstract!);
             // Optionally, display a success toast or notification
         }
         catch (Exception ex)

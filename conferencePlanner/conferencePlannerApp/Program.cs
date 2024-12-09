@@ -4,8 +4,6 @@ using conferencePlannerApp;
 using Blazored.LocalStorage;
 using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerApp.Services.LocalImplementations;
-using Microsoft.AspNetCore.Components.Forms;
-using conferencePlannerCore.Models;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -19,6 +17,13 @@ builder.Services.AddScoped<IUserService, LocalUserService>();
 builder.Services.AddScoped<IUploadFileService, LocalUploadFileService>();
 builder.Services.AddScoped<IConferenceHandler, LocalConferenceHandler>();
 builder.Services.AddScoped<IAbstractService, LocalStorageAbstractService>();
+builder.Services.AddScoped<IApiAddressService, ApiAddressService>();
+
+builder.Services.AddScoped(sp => 
+{
+    var apiAddress = sp.GetRequiredService<IApiAddressService>();
+    return new HttpClient { BaseAddress = new Uri(apiAddress.BaseAddress) };
+});
 
 
 await builder.Build().RunAsync();
