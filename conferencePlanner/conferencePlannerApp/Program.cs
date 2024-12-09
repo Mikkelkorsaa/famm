@@ -19,12 +19,14 @@ builder.Services.AddScoped<IApiAddressService, ApiAddressService>();
 
 builder.Services.AddScoped(sp =>
 {
-    var config = sp.GetRequiredService<IConfiguration>();
-    var environment = sp.GetRequiredService<IWebAssemblyHostEnvironment>();
-    var baseAddress = environment.IsDevelopment() 
-        ? config["ApiBaseAddress:Local"] 
-        : config["ApiBaseAddress:Production"];
-    return new HttpClient { BaseAddress = new Uri(baseAddress!) };
+    var baseAddress = builder.HostEnvironment.IsDevelopment() 
+        ? builder.Configuration["ApiBaseAddress:Local"] 
+        : builder.Configuration["ApiBaseAddress:Production"];
+    
+    if (string.IsNullOrEmpty(baseAddress))
+        throw new InvalidOperationException("API base address not configured");
+        
+    return new HttpClient { BaseAddress = new Uri(baseAddress) };
 });
 
 
