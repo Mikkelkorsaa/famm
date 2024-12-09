@@ -27,15 +27,11 @@ builder.Services.AddScoped(sp =>
     }
     else
     {
-        baseAddress = builder.Configuration.GetValue<string>("API_BASE_URL") 
+        baseAddress = "conferenceplanner-api-dev-euhdb7g8cxceg8ax.westeurope-01.azurewebsites.net"
             ?? throw new InvalidOperationException("API_BASE_URL environment variable not configured");
     }
+    Console.WriteLine($"API_BASE_URL: {baseAddress}");
     return new HttpClient { BaseAddress = new Uri(baseAddress) };
 });
-
-Console.WriteLine($"Environment: {builder.HostEnvironment.Environment}");
-Console.WriteLine($"API_BASE_URL: {Environment.GetEnvironmentVariable("APPSETTING_API_BASE_URL")}");
-Console.WriteLine(JsonSerializer.Serialize(Environment.GetEnvironmentVariables()));
-
 
 await builder.Build().RunAsync();
