@@ -1,11 +1,9 @@
 name: Deploy to Azure
-
 on:
   push:
     branches: [ development, main ]
   pull_request:
     branches: [ development, main ]
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -18,6 +16,9 @@ jobs:
       with:
         dotnet-version: '8.0.x'
     
+    - name: Clean
+      run: dotnet clean ./conferencePlanner/conferencePlanner.sln
+
     - name: Restore dependencies
       run: dotnet restore ./conferencePlanner/conferencePlanner.sln
     
@@ -31,7 +32,7 @@ jobs:
     # Publish Blazor App
     - name: Publish Blazor App
       run: dotnet publish ./conferencePlanner/conferencePlannerApp/conferencePlannerApp.csproj -c Release -o ${{env.DOTNET_ROOT}}/app
-
+    
     # Deploy API (Development)
     - name: Deploy API to Azure Web App (Development)
       if: github.ref == 'refs/heads/development'
@@ -40,7 +41,7 @@ jobs:
         app-name: 'conferenceplanner-api-dev'
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_API_DEV }}
         package: ${{env.DOTNET_ROOT}}/api
-
+    
     # Deploy Blazor App (Development)
     - name: Deploy Blazor to Azure Web App (Development)
       if: github.ref == 'refs/heads/development'
