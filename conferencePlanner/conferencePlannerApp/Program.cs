@@ -33,7 +33,7 @@ builder.Services.AddScoped(sp =>
 });
 
 Console.WriteLine($"Environment: {builder.HostEnvironment.Environment}");
-Console.WriteLine($"API_BASE_URL: {Environment.GetEnvironmentVariable("API_BASE_URL")}");
+Console.WriteLine($"API_BASE_URL: {Environment.GetEnvironmentVariable("APPSETTING_API_BASE_URL")}");
 
 
 await builder.Build().RunAsync();
