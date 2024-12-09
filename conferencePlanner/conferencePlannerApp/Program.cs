@@ -4,6 +4,7 @@ using conferencePlannerApp;
 using Blazored.LocalStorage;
 using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerApp.Services.LocalImplementations;
+using System.Text.Json;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -34,6 +35,7 @@ builder.Services.AddScoped(sp =>
 
 Console.WriteLine($"Environment: {builder.HostEnvironment.Environment}");
 Console.WriteLine($"API_BASE_URL: {Environment.GetEnvironmentVariable("APPSETTING_API_BASE_URL")}");
+Console.WriteLine(JsonSerializer.Serialize(Environment.GetEnvironmentVariables()));
 
 
 await builder.Build().RunAsync();
