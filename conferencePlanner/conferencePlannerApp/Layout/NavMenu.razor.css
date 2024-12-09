@@ -32,7 +32,7 @@
     letter-spacing: 2px;
     font-family: "Barlow Semi Condensed", sans-serif; /* Apply custom font */
     margin-right: 30px;
-    color:white;
+    color: white;
 }
 
 .nav-item ::deep a {
