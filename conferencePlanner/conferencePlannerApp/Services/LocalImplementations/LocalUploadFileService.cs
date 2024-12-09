@@ -16,7 +16,7 @@ public class LocalUploadFileService : IUploadFileService
 
 	public async Task<byte[]> ConvertToByteArray(IBrowserFile file)
 	{
-		if (file == null || file.Size == 0) return null;
+		if (file == null || file.Size == 0) throw new Exception("File is empty");
 		using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
 		using var ms = new MemoryStream();
 		await stream.CopyToAsync(ms);

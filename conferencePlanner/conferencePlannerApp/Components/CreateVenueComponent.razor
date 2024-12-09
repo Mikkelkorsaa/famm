@@ -4,7 +4,7 @@
 
     <div class="mb-3">
         <label class="form-label">Lokationens navn</label>
-        <InputText @bind-Value="venue.Name" class="form-control" />
+        <InputText @bind-Value="venue!.Name" class="form-control" />
     </div>
 
     <div class="mb-3">
@@ -28,7 +28,7 @@
     [Parameter] public EventCallback<Venue> OnSave { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
 
-    private Venue venue;
+    private Venue? venue;
 
     protected override void OnInitialized()
     {
