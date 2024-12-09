@@ -1,6 +1,7 @@
 ﻿@page "/uploadabstract"
 @inject Blazored.LocalStorage.ILocalStorageService localStorage;
 @inject IAbstractService abstractService;
+@attribute [Authorize(Roles = "Admin")]
 
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
     <div class="col-md-8 bg-light rounded shadow p-4">

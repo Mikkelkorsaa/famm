@@ -16,18 +16,13 @@ namespace conferencePlannerApp.Services.RoleAutherization
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var user = await _localStorage.GetItemAsync<User>("user");
+            var user = await _localStorage.GetItemAsync<User>("currentUser");
 
             if (user == null)
-            {
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
-            }
+            
 
-            var claims = new[]
-            {
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
-        };
+            var claims = new[] { new Claim(ClaimTypes.Role, user.Role.ToString()) };
 
             var identity = new ClaimsIdentity(claims, "custom");
             var principal = new ClaimsPrincipal(identity);
