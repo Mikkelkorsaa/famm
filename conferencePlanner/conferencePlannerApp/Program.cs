@@ -19,10 +19,13 @@ builder.Services.AddScoped<IApiAddressService, ApiAddressService>();
 
 builder.Services.AddScoped(sp =>
 {
-    var baseAddress = builder.HostEnvironment.IsDevelopment() 
-        ? builder.Configuration["ApiBaseAddress:Local"] 
-        : builder.Configuration["ApiBaseAddress:Production"];
+    var envBaseAddress = Environment.GetEnvironmentVariable("API_BASE_URL");
+    var baseAddress = !string.IsNullOrEmpty(envBaseAddress)
+        ? envBaseAddress 
+        : "https://localhost:7000";
     
+    Console.WriteLine($"API base address: {baseAddress}");
+
     if (string.IsNullOrEmpty(baseAddress))
         throw new InvalidOperationException("API base address not configured");
         
