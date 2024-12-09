@@ -38,7 +38,7 @@ namespace conferencePlannerApi.Services.Implementations
             }
         }
 
-        public async Task SendEmailWithTemplateAsync(string to, string templateName, object model)
+        public void SendEmailWithTemplate(string to, string templateName, object model)
         {
             throw new NotImplementedException("Template-based emails not yet implemented");
         }
