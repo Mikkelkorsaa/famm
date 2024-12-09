@@ -27,7 +27,7 @@ builder.Services.AddScoped(sp =>
     }
     else
     {
-        baseAddress = "conferenceplanner-api-dev-euhdb7g8cxceg8ax.westeurope-01.azurewebsites.net"
+        baseAddress = "https://conferenceplanner-api-dev-euhdb7g8cxceg8ax.westeurope-01.azurewebsites.net"
             ?? throw new InvalidOperationException("API_BASE_URL environment variable not configured");
     }
     Console.WriteLine($"API_BASE_URL: {baseAddress}");
