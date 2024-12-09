@@ -15,7 +15,7 @@
     {
         <div class="mb-3">
             <label class="form-label">Vælg bruger</label>
-            <select class="form-select" @bind="selectedUserId">
+            <select class="form-select" @bind="selectedUser">
                 <option value="">Vælg bruger...</option>
                 @foreach (var user in foundUsers)
                 {
@@ -25,7 +25,7 @@
         </div>
     }
 
-    @if (selectedUserId != 0)
+    @if (selectedUser != null)
     {
         <div class="mb-3">
             <label class="form-label">Kategorier</label>
@@ -74,7 +74,7 @@
 
     private async Task SearchUser()
     {
-        foundUsers = await UserHandler.SearchUsers(userFilter);
+        foundUsers = await UserHandler.GetOrFilterUserAsync(userFilter);
     }
 
     private async Task HandleSubmit()
@@ -92,12 +92,6 @@
 
             await OnSave.InvokeAsync(reviewer);
         }
-    }
-
-    private void RemoveReviewer(Reviewer reviewer){
-        conference.reviewers.Remove(reviewer);
-
-
     }
 
 }

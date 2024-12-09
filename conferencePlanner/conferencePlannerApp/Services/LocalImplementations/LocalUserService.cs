@@ -26,6 +26,11 @@ namespace conferencePlannerApp.Services.LocalImplementations
             return users;
         }
 
+        public Task<List<User>> GetOrFilterUserAsync(UserFilter filter)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task UpdateUserAsync(User user)
         {
             var users = await GetAllUsersAsync();
@@ -42,5 +47,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
             var updatedUsers = await GetAllUsersAsync();
         }
     }
+
+    
 
 }
