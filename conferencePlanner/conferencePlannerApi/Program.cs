@@ -6,33 +6,38 @@ using conferencePlannerCore.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Dependency Injection for Repositories
 builder.Services.AddSingleton<IUserRepo, LocalUserRepo>();
 builder.Services.AddSingleton<IConferenceRepo, LocalConferenceRepo>();
 builder.Services.AddSingleton<IAbstractRepo, LocalAbstractRepo>();
 
+// Configuration for Email Service
 builder.Services.Configure<EmailConfiguration>(
     builder.Configuration.GetSection("EmailConfiguration"));
 builder.Services.AddScoped<IEmailService, EmailService>();
 
-// Configure the CORS policy
+// CORS Policy
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
-        builder => builder
+        policy => policy
             .AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader());
 });
 
+// Application configuration
+var apiBaseUrl = builder.Configuration["ApiBaseUrl"];
+Console.WriteLine($"Configured API Base URL: {apiBaseUrl}");
+
 var app = builder.Build();
 
-app.UseCors("AllowAll");
-
-// Configure the HTTP request pipeline.
+// Configure the middleware pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -40,8 +45,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
