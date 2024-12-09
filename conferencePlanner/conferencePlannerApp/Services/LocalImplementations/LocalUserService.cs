@@ -7,13 +7,10 @@ namespace conferencePlannerApp.Services.LocalImplementations
 {
     public class LocalUserService : IUserService
     {
-        private readonly ILocalStorageService _localStorage;
         private readonly HttpClient _httpClient;
-        private const string StorageKey = "users";
 
-        public LocalUserService(ILocalStorageService localStorage, HttpClient httpClient)
+        public LocalUserService(HttpClient httpClient)
         {
-            _localStorage = localStorage;
             _httpClient = httpClient;
         }
 

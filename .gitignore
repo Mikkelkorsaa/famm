@@ -101,4 +101,4 @@ artifacts/
 **/node_modules/
 
 # Appsettings
-conferencePlannerApi/appsettings.json
+appsettings.json

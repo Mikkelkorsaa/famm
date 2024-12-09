@@ -11,12 +11,10 @@ namespace conferencePlannerCore.Models
         public List<string> CoAuthors { get; set; } = new List<string>();
         public string Organization { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
-        [StringLength(400)]
         public string KeyValues { get; set; } = string.Empty;
-        [StringLength(2000)]
         public string AbstractText { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
-        public PictureModel Picture { get; set; }
+        public string Picture { get; set; } = string.Empty;
         public List<Review> Reviews { get; set; } = new List<Review>();
     }
 }
