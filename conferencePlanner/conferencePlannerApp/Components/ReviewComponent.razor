@@ -4,39 +4,35 @@
     <div class="abstract-review">
         @if (SelectedAbstract?.Reviews != null && SelectedAbstract.Reviews.Any())
         {
-            <div class="reviews-grid">
-                @foreach (var review in SelectedAbstract.Reviews)
-                {
-                    <div class="review-card">
-                        <div class="review-criteria">
-                            @foreach (var criteria in review.Criterias)
-                            {
-                                <div class="form-group">
-                                    <label class="criteria-label">@criteria.Name</label>
-                                    <div class="grade-selector">
-                                        @for (int i = 1; i <= 5; i++)
-                                        {
-                                            int gradeValue = i;
-                                            <button type="button"
-                                                    class="grade-button @(criteria.Grade == gradeValue ? "selected" : "")"
-                                                    @onclick="() => criteria.Grade = gradeValue">
-                                                @gradeValue
-                                            </button>
-                                        }
-                                    </div>
-                                </div>
-                            }
-
-                            <div class="form-group">
-                                <label class="comment-label">Comment</label>
-                                <textarea class="comment-textarea"
-                                          rows="4"
-                                          @bind="review.Comment"
-                                          placeholder="Enter your detailed observations..."></textarea>
+            var review = SelectedAbstract.Reviews.First();
+            <div class="review-card">
+                <div class="review-criteria">
+                    @foreach (var criteria in review.Criterias)
+                    {
+                        <div class="form-group">
+                            <label class="criteria-label">@criteria.Name</label>
+                            <div class="grade-selector">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    int gradeValue = i;
+                                    <button type="button"
+                                            class="grade-button @(criteria.Grade == gradeValue ? "selected" : "")"
+                                            @onclick="() => criteria.Grade = gradeValue">
+                                        @gradeValue
+                                    </button>
+                                }
                             </div>
                         </div>
+                    }
+
+                    <div class="form-group">
+                        <label class="comment-label">Comment</label>
+                        <textarea class="comment-textarea"
+                                  rows="4"
+                                  @bind="review.Comment"
+                                  placeholder="Enter your detailed observations..."></textarea>
                     </div>
-                }
+                </div>
             </div>
         }
         else
@@ -53,7 +49,7 @@
     <div class="button-container">
         <button type="button"
                 class="save-button"
-                @onclick="UpdateAbstract"
+                @onclick="UpdateReview"
                 disabled="@(isSaving)">
             @if (isSaving)
             {
@@ -69,8 +65,6 @@
 </div>
 
 <style>
-    
-
     .abstract-review-header {
         background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
         color: white;
@@ -98,8 +92,6 @@
         padding: 1.5rem;
         transition: all 0.3s ease;
     }
-
-       
 
     .grade-selector {
         display: flex;
@@ -192,12 +184,13 @@
 
     private bool isSaving = false;
 
-    private async Task UpdateAbstract()
+    private async Task UpdateReview()
     {
         isSaving = true;
         try
         {
-            await AbstractService.UpdateAbstract(SelectedAbstract);
+            var review = SelectedAbstract.Reviews.First();
+            await AbstractService.UpdateReview(SelectedAbstract.Id, review);
             // Optionally, display a success toast or notification
         }
         catch (Exception ex)

@@ -1,0 +1,134 @@
+﻿@page "/average-review"
+@inject IAbstractService AbstractService
+
+<div class="abstract-review-wrapper">
+    <div class="abstract-review">
+        @if (SelectedAbstract?.Reviews != null && SelectedAbstract.Reviews.Any())
+        {
+            <div class="reviews-grid">
+                @foreach (var criteria in GetAverageCriteriaGrades())
+                {
+                    <div class="review-card">
+                        <div class="review-criteria">
+                            <div class="form-group">
+                                <label class="criteria-label">@criteria.Name</label>
+                                <div class="grade-selector">
+                                    <span class="average-grade">@criteria.AverageGrade</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="no-reviews-placeholder">
+                <div class="no-reviews-icon">
+                    <i class="bi bi-clipboard-x"></i>
+                </div>
+                <p>No reviews available for this abstract.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .abstract-review-wrapper {
+        padding: 1rem;
+    }
+
+    .abstract-review {
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .reviews-grid {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .review-card {
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .review-criteria {
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .criteria-label {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .grade-selector {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .average-grade {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #3b82f6;
+    }
+
+    .no-reviews-placeholder {
+        text-align: center;
+        color: #6b7280;
+        padding: 2rem;
+    }
+
+    .no-reviews-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: #9ca3af;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public Abstract SelectedAbstract { get; set; }
+
+    private List<AverageCriteria> GetAverageCriteriaGrades()
+    {
+        var averageCriteriaGrades = new List<AverageCriteria>();
+
+        if (SelectedAbstract?.Reviews != null)
+        {
+            var criteriaGroups = SelectedAbstract.Reviews
+                .SelectMany(r => r.Criterias)
+                .GroupBy(c => c.Name);
+
+            foreach (var group in criteriaGroups)
+            {
+                var averageGrade = group.Average(c => c.Grade);
+                averageCriteriaGrades.Add(new AverageCriteria
+                    {
+                        Name = group.Key,
+                        AverageGrade = averageGrade
+                    });
+            }
+        }
+
+        return averageCriteriaGrades;
+    }
+
+    private class AverageCriteria
+    {
+        public string Name { get; set; }
+        public double? AverageGrade { get; set; }
+    }
+}
