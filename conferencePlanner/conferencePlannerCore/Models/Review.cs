@@ -15,6 +15,6 @@ public record Review
     public List<Criteria> Criterias { get; set; } = new List<Criteria>();
 
     [StringLength(200)]
-    public string Comment { get; set; }
+    public string? Comment { get; set; }
 }
 
