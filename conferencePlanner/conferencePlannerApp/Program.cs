@@ -17,6 +17,7 @@ builder.Services.AddScoped<IUploadFileService, LocalUploadFileService>();
 builder.Services.AddScoped<IConferenceHandler, LocalConferenceHandler>();
 builder.Services.AddScoped<IAbstractService, LocalStorageAbstractService>();
 builder.Services.AddScoped<IApiAddressService, ApiAddressService>();
+builder.Services.AddScoped<IImageService, LocalImageService>();
 
 builder.Services.AddScoped(sp =>
 {
