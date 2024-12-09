@@ -1,4 +1,4 @@
-using conferencePlannerCore.Models;
+using conferencePlannerCore.Configurations;
 using conferencePlannerApi.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using MimeKit;
