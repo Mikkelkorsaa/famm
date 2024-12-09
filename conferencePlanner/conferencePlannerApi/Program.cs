@@ -3,6 +3,7 @@ using conferencePlannerApi.Repositories.LocalImplementations;
 using conferencePlannerApi.Services.Interfaces;
 using conferencePlannerApi.Services.Implementations;
 using conferencePlannerCore.Models;
+using conferencePlannerApi.Repositories.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IUserRepo, LocalUserRepo>();
+builder.Services.AddSingleton<IUserRepo, MongoDBUserRepo>();
 builder.Services.AddSingleton<IConferenceRepo, LocalConferenceRepo>();
 builder.Services.AddSingleton<IAbstractRepo, LocalAbstractRepo>();
 
