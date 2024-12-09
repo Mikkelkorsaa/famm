@@ -6,7 +6,7 @@ using System.Net.Http.Json;
 
 namespace conferencePlannerApp.Services.LocalImplementations
 {
-	public class LocalStorageAbstractService : IAbstractService
+    public class LocalStorageAbstractService : IAbstractService
 	{
 		private readonly HttpClient _httpClient;
 
@@ -45,5 +45,10 @@ namespace conferencePlannerApp.Services.LocalImplementations
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+        public Task<Abstract> UpdateReview(int abstractId, Review review)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

@@ -128,5 +128,10 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
       _conferences.Remove(existing);
       return await Task.FromResult(true);
     }
-  }
+
+        public Task<List<string>> ListAllCriteria(Conference conference)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
