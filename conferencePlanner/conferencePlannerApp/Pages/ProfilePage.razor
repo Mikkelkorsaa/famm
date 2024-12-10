@@ -139,13 +139,13 @@
   {
     var updatedUser = CurrentUser! with { IsActive = false };
     await Http.PutAsJsonAsync("https://localhost:7000/api/user/updateuser", updatedUser);
-    await AuthService.ClearCurrentUser();
+    await AuthService.Logout();
     NavigationManager.NavigateTo("/");
   }
 
   private void LogOut()
   {
-    AuthService.ClearCurrentUser();
+    AuthService.Logout();
     NavigationManager.NavigateTo("/");
   }
 
