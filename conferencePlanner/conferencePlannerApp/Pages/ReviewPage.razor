@@ -14,6 +14,7 @@
                                    OnAbstractSelected="SetAbstract"
                                    OnCollapseChanged="HandleCollapseChanged">
             </AbstractListComponent>
+            
         </div>
         <div class="@contentColumnClass">
             <div class="row">
@@ -27,6 +28,7 @@
                     @if (_currentAbstract != null)
                     {
                         <ReviewComponent SelectedAbstract="@_currentAbstract"></ReviewComponent>
+                        <FinalReviewComponent SelectedAbstract="@_currentAbstract"/>
                     }
                 </div>
             </div>
