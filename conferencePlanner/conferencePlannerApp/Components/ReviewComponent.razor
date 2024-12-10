@@ -186,10 +186,14 @@
 
     private async Task UpdateReview()
     {
+        if (SelectedAbstract?.Reviews == null || !SelectedAbstract.Reviews.Any())
+        {
+            return;
+        }
+
         isSaving = true;
         try
         {
-
             var review = SelectedAbstract.Reviews.First();
             await AbstractService.UpdateReview(SelectedAbstract.Id, review);
 
