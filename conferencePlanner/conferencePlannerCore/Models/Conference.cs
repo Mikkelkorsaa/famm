@@ -2,7 +2,7 @@
 {
     public record Conference
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public DateTime AbstractDeadLine { get; set; }
         public DateTime ReviewDeadline { get; set; }
