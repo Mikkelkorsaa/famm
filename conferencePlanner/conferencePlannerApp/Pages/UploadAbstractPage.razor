@@ -6,7 +6,8 @@
     <div class="col-md-8 bg-light rounded shadow p-4">
         <h1 class="mb-3 mt-3 text-center">Indsend Abstrakt</h1>
         <EditForm EditContext="@_editcontext" OnSubmit="@HandleSubmit" class="row p-3">
-            <DataAnnotationsValidator/>
+            <FluentValidationValidator/>
+            <ValidationSummary/>
 
             <div class="col-md-6 mb-3">
                 <label for="Kategori">Kategori</label>
