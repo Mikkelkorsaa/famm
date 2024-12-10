@@ -1,4 +1,4 @@
-namespace conferencePlannerCore.Models
+namespace conferencePlannerCore.Configurations
 {
     public class EmailConfiguration
     {

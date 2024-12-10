@@ -16,7 +16,7 @@
 	[Parameter]
 	public EventCallback<string> OnFileUploaded { get; set; }
 	[Parameter]
-	public string AcceptedFileTypes { get; set; }
+	public string? AcceptedFileTypes { get; set; }
 	[Parameter]
 	public int AcceptedSize { get; set; }
 	private string? _imageUrl { get; set; }
@@ -29,7 +29,7 @@
 		await OnFileUploaded.InvokeAsync(imgString);
 	}
 
-	private async Task PreviewImage(IBrowserFile file, string imgstring)
+	private void PreviewImage(IBrowserFile file, string imgstring)
 	{
 		_imageUrl = $"data:{file.ContentType};base64,{imgstring}";
 		StateHasChanged();
