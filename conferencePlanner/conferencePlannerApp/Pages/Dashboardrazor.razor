@@ -1,0 +1,11 @@
+﻿@page "/dashboard"
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@attribute [Authorize(Roles = "Admin")]
+
+<AutherizeView Roles="Admin">
+
+</AutherizeView>
+
+@code {
+
+}
