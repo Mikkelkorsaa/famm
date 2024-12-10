@@ -20,7 +20,7 @@ public class AbstractModelValidator : AbstractValidator<Abstract>
             .NotEmpty()
             .WithMessage("Email må ikke være tom")
             .EmailAddress()
-            .WithMessage("Det skaæ være en gyldig email");
+            .WithMessage("Det skal være en gyldig email");
 
         RuleFor(x => x.Organization)
             .NotEmpty()
