@@ -4,15 +4,9 @@ using conferencePlannerApp;
 using Blazored.LocalStorage;
 using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerApp.Services.LocalImplementations;
-<<<<<<<<< Temporary merge branch 1
-using Microsoft.AspNetCore.Components.Forms;
-using conferencePlannerCore.Models;
+using conferencePlannerApp.Services.Implementations;
 using Microsoft.AspNetCore.Components.Authorization;
 using conferencePlannerApp.Services.RoleAutherization;
-=========
-using conferencePlannerApp.Services.Implementations;
-using System.Text.Json;
->>>>>>>>> Temporary merge branch 2
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
