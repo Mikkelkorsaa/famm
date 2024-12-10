@@ -1,7 +1,7 @@
-using System.Net.Http.Json;
+using System.Text.Json;
+using Microsoft.AspNetCore.Components.Forms;
 using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerCore.Models;
-using Microsoft.AspNetCore.Components.Forms;
 
 namespace conferencePlannerApp.Services.LocalImplementations
 {
@@ -19,13 +19,11 @@ namespace conferencePlannerApp.Services.LocalImplementations
     public async Task<ImageUploadResult> UploadImageAsync(IBrowserFile file)
     {
       if (file == null)
-        throw new ArgumentNullException(nameof(file));
+        throw new ArgumentNullException(nameof(file), "No file provided");
 
-      // Check file size (e.g., 10MB limit)
-      if (file.Size > 10 * 1024 * 1024)
-        throw new InvalidOperationException("File size exceeds 10MB limit.");
+      if (file.Size == 0)
+        throw new InvalidOperationException("File is empty");
 
-      // Check file type
       var allowedTypes = new[] { "image/jpeg", "image/png", "image/gif" };
       if (!allowedTypes.Contains(file.ContentType.ToLower()))
         throw new InvalidOperationException("Invalid file type. Only JPEG, PNG, and GIF are allowed.");
@@ -36,16 +34,28 @@ namespace conferencePlannerApp.Services.LocalImplementations
         using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
         using var streamContent = new StreamContent(stream);
 
+        streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
         content.Add(streamContent, "file", file.Name);
 
         var response = await _httpClient.PostAsync("api/images/upload", content);
-        response.EnsureSuccessStatusCode();
 
-        var result = await response.Content.ReadFromJsonAsync<ImageUploadResult>();
-        if (result == null)
-          throw new InvalidOperationException("Failed to parse upload response");
+        var responseContent = await response.Content.ReadAsStringAsync();
+        Console.WriteLine($"Raw Response: {responseContent}"); // Debug logging
 
-        return result;
+        if (response.IsSuccessStatusCode)
+        {
+          var options = new JsonSerializerOptions
+          {
+            PropertyNameCaseInsensitive = true
+          };
+
+          var result = JsonSerializer.Deserialize<ImageUploadResult>(responseContent, options);
+          if (result == null)
+            throw new InvalidOperationException("Failed to parse upload response");
+          return result;
+        }
+
+        throw new InvalidOperationException(responseContent);
       }
       catch (HttpRequestException ex)
       {
@@ -53,30 +63,80 @@ namespace conferencePlannerApp.Services.LocalImplementations
       }
     }
 
-    public async Task<byte[]> GetImageAsync(string fileName)
+    public async Task<ImageResponse> GetImageAsync(string fileName)
     {
+      if (string.IsNullOrWhiteSpace(fileName))
+        throw new ArgumentException("File name cannot be empty", nameof(fileName));
+
       try
       {
         var response = await _httpClient.GetAsync($"api/images/get/{fileName}");
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadAsByteArrayAsync();
+
+        switch (response.StatusCode)
+        {
+          case System.Net.HttpStatusCode.OK:
+            var contentType = response.Content.Headers.ContentType?.MediaType ?? "application/octet-stream";
+            var imageData = await response.Content.ReadAsByteArrayAsync();
+            return new ImageResponse
+            {
+              Data = imageData,
+              ContentType = contentType,
+              FileName = fileName
+            };
+
+          case System.Net.HttpStatusCode.NotFound:
+            throw new FileNotFoundException($"Image not found: {fileName}");
+
+          case System.Net.HttpStatusCode.InternalServerError:
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new InvalidOperationException($"Server error: {errorContent}");
+
+          default:
+            throw new InvalidOperationException($"Unexpected response: {response.StatusCode}");
+        }
       }
       catch (HttpRequestException ex)
       {
-        throw new InvalidOperationException($"Failed to retrieve image: {ex.Message}", ex);
+        throw new InvalidOperationException("Failed to communicate with the server", ex);
+      }
+      catch (Exception ex) when (ex is not InvalidOperationException && ex is not FileNotFoundException)
+      {
+        throw new InvalidOperationException("An unexpected error occurred while retrieving the image", ex);
       }
     }
 
     public async Task DeleteImageAsync(string fileName)
     {
+      if (string.IsNullOrWhiteSpace(fileName))
+        throw new ArgumentException("File name cannot be empty", nameof(fileName));
+
       try
       {
         var response = await _httpClient.DeleteAsync($"api/images/delete/{fileName}");
-        response.EnsureSuccessStatusCode();
+
+        switch (response.StatusCode)
+        {
+          case System.Net.HttpStatusCode.OK:
+            return;
+
+          case System.Net.HttpStatusCode.NotFound:
+            throw new FileNotFoundException($"Image not found: {fileName}");
+
+          case System.Net.HttpStatusCode.InternalServerError:
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new InvalidOperationException($"Server error: {errorContent}");
+
+          default:
+            throw new InvalidOperationException($"Unexpected response: {response.StatusCode}");
+        }
       }
       catch (HttpRequestException ex)
       {
-        throw new InvalidOperationException($"Failed to delete image: {ex.Message}", ex);
+        throw new InvalidOperationException("Failed to communicate with the server", ex);
+      }
+      catch (Exception ex) when (ex is not InvalidOperationException && ex is not FileNotFoundException)
+      {
+        throw new InvalidOperationException("An unexpected error occurred while deleting the image", ex);
       }
     }
   }

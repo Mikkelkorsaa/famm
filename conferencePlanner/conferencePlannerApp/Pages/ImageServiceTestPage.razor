@@ -1,0 +1,204 @@
+@page "/image-test"
+@using Microsoft.AspNetCore.Components.Forms
+@inject IImageService ImageService
+@inject IJSRuntime JSRuntime
+
+<div class="container my-4">
+    <h2>Image Service Test</h2>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Upload Image</h4>
+        </div>
+        <div class="card-body">
+            <InputFile OnChange="@HandleFileSelection" accept=".jpg,.jpeg,.png,.gif" />
+            
+            @if (isUploading)
+            {
+                <div class="mt-2">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span class="ms-2">Uploading...</span>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(uploadError))
+            {
+                <div class="alert alert-danger mt-2">
+                    <strong>Error:</strong>
+                    <pre>@uploadError</pre>
+                </div>
+            }
+
+            @if (lastUploadResult != null)
+            {
+                <div class="alert alert-success mt-2">
+                    <div class="row">
+                        <div class="col-md-4">
+                            @if (!string.IsNullOrEmpty(previewUrl))
+                            {
+                                <img src="@previewUrl" 
+                                     class="img-fluid rounded" 
+                                     alt="@lastUploadResult.Metadata.OriginalName"
+                                     style="max-height: 300px; width: auto;" />
+                            }
+                        </div>
+                        <div class="col-md-8">
+                            <h5>Upload Successful!</h5>
+                            <div>File Name: @lastUploadResult.FileName</div>
+                            <div>Original Name: @lastUploadResult.Metadata.OriginalName</div>
+                            <div>Content Type: @lastUploadResult.Metadata.ContentType</div>
+                            <div>Size: @FormatFileSize(lastUploadResult.Metadata.Size)</div>
+                            <div>Upload Date: @lastUploadResult.Metadata.UploadDate.ToString("g")</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h4>Uploaded Images</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Preview</th>
+                            <th>File Name</th>
+                            <th>Original Name</th>
+                            <th>Type</th>
+                            <th>Size</th>
+                            <th>Upload Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var (result, imageUrl) in uploadedImages)
+                        {
+                            <tr>
+                                <td style="width: 150px">
+                                    @if (!string.IsNullOrEmpty(imageUrl))
+                                    {
+                                        <img src="@imageUrl" 
+                                             class="img-thumbnail" 
+                                             alt="@result.Metadata.OriginalName"
+                                             style="max-height: 100px; width: auto;" />
+                                    }
+                                </td>
+                                <td>@result.FileName</td>
+                                <td>@result.Metadata.OriginalName</td>
+                                <td>@result.Metadata.ContentType</td>
+                                <td>@FormatFileSize(result.Metadata.Size)</td>
+                                <td>@result.Metadata.UploadDate.ToString("g")</td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteImage(result)">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (!uploadedImages.Any())
+            {
+                <div class="text-center text-muted my-4">
+                    <p>No images uploaded yet.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isUploading = false;
+    private string uploadError = string.Empty;
+    private string lastApiUrl = string.Empty;
+    private ImageUploadResult? lastUploadResult;
+    private string previewUrl = string.Empty;
+    private List<(ImageUploadResult Result, string ImageUrl)> uploadedImages = new();
+
+    private async Task HandleFileSelection(InputFileChangeEventArgs e)
+    {
+        isUploading = true;
+        uploadError = string.Empty;
+        previewUrl = string.Empty;
+
+        try
+        {
+            var file = e.File;
+            lastUploadResult = await ImageService.UploadImageAsync(file);
+            await LoadImageData(lastUploadResult);
+        }
+        catch (Exception ex)
+        {
+            uploadError = $"Error: {ex.Message}";
+            await JSRuntime.InvokeVoidAsync("console.error", "Upload Error:", ex);
+        }
+        finally
+        {
+            isUploading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadImageData(ImageUploadResult result)
+    {
+        try
+        {
+            lastApiUrl = $"api/Images/get/{result.FileName}";
+            var imageResponse = await ImageService.GetImageAsync(result.FileName);
+            var base64Data = Convert.ToBase64String(imageResponse.Data);
+            var imageUrl = $"data:{result.Metadata.ContentType};base64,{base64Data}";
+            
+            previewUrl = imageUrl;
+            uploadedImages.Add((result, imageUrl));
+            
+            await JSRuntime.InvokeVoidAsync("console.log", "Image loaded:", result.FileName);
+        }
+        catch (Exception ex)
+        {
+            uploadError = $"Error loading preview: {ex.Message}";
+            await JSRuntime.InvokeVoidAsync("console.error", "Error loading image:", ex);
+        }
+    }
+
+    private async Task DeleteImage(ImageUploadResult image)
+    {
+        try
+        {
+            await ImageService.DeleteImageAsync(image.FileName);
+            uploadedImages.RemoveAll(x => x.Result.FileName == image.FileName);
+            if (lastUploadResult?.FileName == image.FileName)
+            {
+                lastUploadResult = null;
+                previewUrl = string.Empty;
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            uploadError = $"Failed to delete image: {ex.Message}";
+        }
+    }
+
+    private string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        int order = 0;
+        double size = bytes;
+
+        while (size >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            size /= 1024;
+        }
+
+        return $"{size:0.##} {sizes[order]}";
+    }
+}
