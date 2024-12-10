@@ -72,5 +72,10 @@ namespace conferencePlannerApi.Repositories.Implementations
 
             return (result != null ? result["maxUserId"].AsInt32 + 1 : 0) + 1;
         }
+
+        public Task<List<string>> ListAllCriteria(Conference conference)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
