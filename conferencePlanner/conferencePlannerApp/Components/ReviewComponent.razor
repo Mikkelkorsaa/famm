@@ -180,7 +180,7 @@
 
 @code {
     [Parameter]
-    public Abstract SelectedAbstract { get; set; }
+    public Abstract? SelectedAbstract { get; set; }
 
     private bool isSaving = false;
 
@@ -189,8 +189,10 @@
         isSaving = true;
         try
         {
+
             var review = SelectedAbstract.Reviews.First();
             await AbstractService.UpdateReview(SelectedAbstract.Id, review);
+
             // Optionally, display a success toast or notification
         }
         catch (Exception ex)
