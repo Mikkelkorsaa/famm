@@ -103,15 +103,14 @@
             Name = "",
             Category = new List<string>(),
             ReviewCriteria = new List<string>(),
-            AbstractDeadLine = DateTime.Now,
-            ReviewDeadline = DateTime.Now,
-            StartDate = DateTime.Now,
-            EndDate = DateTime.Now,
+            AbstractDeadLine = DateTime.MinValue,
+            ReviewDeadline = DateTime.MinValue,
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MinValue,
             Location = new Venue { Id = 0, Name = "", Address = "" }
         };
 
     [Parameter] public EventCallback<Conference> OnSave { get; set; }
-
     private bool showVenueModal = false;
     private string newCategory = "";
     private string newCriteria = "";
@@ -171,6 +170,5 @@
     private async Task HandleValidSubmit()
     {
         await conferenceHandler.createConference(conference);
-        await OnSave.InvokeAsync(conference);
     }
 }
