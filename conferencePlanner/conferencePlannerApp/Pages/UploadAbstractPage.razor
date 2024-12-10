@@ -1,13 +1,13 @@
 ﻿@page "/uploadabstract"
 @inject Blazored.LocalStorage.ILocalStorageService localStorage;
 @inject IAbstractService abstractService;
+@attribute [Authorize(Roles = "Admin")]
 
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
     <div class="col-md-8 bg-light rounded shadow p-4">
         <h1 class="mb-3 mt-3 text-center">Indsend Abstrakt</h1>
         <EditForm EditContext="@_editcontext" OnSubmit="@HandleSubmit" class="row p-3">
-            <DataAnnotationsValidator/>
-
+            <FluentValidationValidator/>
             <div class="col-md-6 mb-3">
                 <label for="Kategori">Kategori</label>
                 <InputSelect id="Kategori" @bind-Value="@_abstractModel.Category" class="form-control">
@@ -18,13 +18,16 @@
                     }
                 </InputSelect>
             </div>
+
             <div class="col-md-12 mb-3">
                 <label for="Name">Navn på indsender</label>
                 <InputText id="Name" @bind-Value="@_abstractModel.SenderName" class="form-control" />
+                <ValidationMessage For="@(() => _abstractModel.SenderName)" class="text-danger" />
             </div>
             <div class="col-md-12 mb-3">
                 <label for="PresenterEmail">Oplægsholder email</label>
                 <InputText id="PresenterEmail" @bind-Value="@_abstractModel.PresenterEmail" class="form-control" />
+                <ValidationMessage For="@(() => _abstractModel.PresenterEmail)" class="text-danger" />
             </div>
             <div class="col-md-12 mb-3">
                 <label for="Medforfattere">Medforfattere</label>
@@ -51,18 +54,22 @@
             <div class="col-md-6 mb-3">
                 <label for="Organisation">Organisation</label>
                 <InputText id="Organisation" @bind-Value="@_abstractModel.Organization" class="form-control" />
+                <ValidationMessage For="@(() => _abstractModel.Organization)" class="text-danger" />
             </div>
             <div class="col-md-6 mb-3">
                 <label for="Titel">Titel</label>
                 <InputText id="Titel" @bind-Value="@_abstractModel.Title" class="form-control" />
+                <ValidationMessage For="@(() => _abstractModel.Title)" class="text-danger" />
             </div>
             <div class="col-md-12 mb-3">
                 <label for="Nøgleværdier">Nøgleværdier</label>
                 <InputTextArea id="Nøgleværdier" @bind-Value="@_abstractModel.KeyValues" class="form-control" />
+                <ValidationMessage For="@(() => _abstractModel.KeyValues)" class="text-danger" />
             </div>
             <div class="col-md-12 mb-3">
                 <label for="AbstraktTekst">Abstrakt tekst</label>
-                <InputTextArea id="AbstraktTekst" @bind-Value="@_abstractModel.KeyValues" class="form-control" />
+                <InputTextArea id="AbstraktTekst" @bind-Value="@_abstractModel.AbstractText" class="form-control" />
+                <ValidationMessage For="@(() => _abstractModel.AbstractText)" class="text-danger" />
             </div>
             <div class="col-md-6 mb-3">
                 <label for="Kategori">Kategori</label>
@@ -73,11 +80,12 @@
                         <option value="@cat">@cat</option>
                     }
                 </InputSelect>
+                <ValidationMessage For="@(() => _abstractModel.Category)" class="text-danger" />
             </div>
 
             <div class="col-md-6 mb-3">
                 <label for="Upload Fil">Upload Fil</label>
-                <UploadImageComponent OnFileUploaded="HandleFileData" AcceptedFileTypes="_imgFileTypes" AcceptedSize="_maxImgSize"/>
+                <UploadImageComponent OnFileUploaded="HandleFileData" AcceptedFileTypes="@_imgFileTypes" AcceptedSize="_maxImgSize"/>
             </div>
             <div class="col-12 mb-3">
                 <button type="submit" class="btn btn-primary">Indsend</button>
@@ -91,10 +99,10 @@
     private string _abstractKey = "abstract";
     private List<string> _categories = new List<string> { "Soda", "Kamboocha", "Coffee", "Tee" };
     private string _newCoAuthor = "";
-    private EditContext _editcontext;
-    private Conference _conference;
-    private string _imgFileTypes = ".jpeg, .png, .jpg";
+    private EditContext? _editcontext;
+    private string _imgFileTypes = "image/jpeg, image/png, image/jpg";
     private int _maxImgSize = 10 * 1024 * 1024;
+    private AbstractModelValidator? _validator;
 
     private void HandleFileData(string data)
     {
@@ -104,18 +112,22 @@
 
     protected override async Task OnInitializedAsync()
     {
+        _validator = new AbstractModelValidator();
+        _abstractModel = new Abstract { CoAuthors = new List<string>() };
         _editcontext = new EditContext(_abstractModel);
+
         var storedAbstract = await localStorage.GetItemAsync<Abstract>(_abstractKey);
         if (storedAbstract != null)
         {
             _abstractModel = storedAbstract;
             _abstractModel.CoAuthors ??= new List<string>();
+            _editcontext = new EditContext(_abstractModel);
         }
     }
 
     private async Task HandleSubmit()
     {
-        if(_editcontext.Validate())
+        if(_editcontext!.Validate())
         await abstractService.AddAbstract(_abstractModel);
         _abstractModel = new Abstract{CoAuthors = new List<string>()};
         await UpdateLocalStorage();

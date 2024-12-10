@@ -4,6 +4,7 @@ using conferencePlannerApi.Services.Interfaces;
 using conferencePlannerApi.Services.Implementations;
 using conferencePlannerCore.Models;
 using conferencePlannerApi.Repositories.Implementations;
+using conferencePlannerCore.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 

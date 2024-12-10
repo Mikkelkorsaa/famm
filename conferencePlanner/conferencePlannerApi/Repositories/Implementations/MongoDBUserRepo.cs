@@ -31,7 +31,7 @@ namespace conferencePlannerApi.Repositories.Implementations
                 return user;
             }
             else
-                return null;
+                throw new Exception("email in use");
         }
 
         public async Task<bool> DeleteAsync(int id)

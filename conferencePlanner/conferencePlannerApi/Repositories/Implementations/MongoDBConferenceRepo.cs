@@ -21,7 +21,7 @@ namespace conferencePlannerApi.Repositories.Implementations
             _conferenceCollection = _database.GetCollection<Conference>("Conferences");
         }
 
-        public async Task<Conference> CreateAsync(Conference conference)
+        public async Task<Conference?> CreateAsync(Conference conference)
         {
             conference.Id = await GetNextConferenceIdAsync();
             _conferenceCollection.InsertOne(conference);
@@ -71,6 +71,11 @@ namespace conferencePlannerApi.Repositories.Implementations
                 .FirstOrDefaultAsync();
 
             return (result != null ? result["maxUserId"].AsInt32 + 1 : 0) + 1;
+        }
+
+        public Task<List<string>> ListAllCriteria(Conference conference)
+        {
+            throw new NotImplementedException();
         }
     }
 }
