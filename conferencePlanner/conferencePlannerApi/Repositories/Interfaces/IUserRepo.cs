@@ -15,7 +15,7 @@ namespace conferencePlannerApi.Repositories.Interfaces
         // Input: User object without ID
         // Manipulation: Saves to database
         // Output: User object with generated ID
-        Task<User> CreateAsync(User user);
+        Task<User?> CreateAsync(User user);
 
         // Input: User ID and updated User object
         // Manipulation: Updates existing record
