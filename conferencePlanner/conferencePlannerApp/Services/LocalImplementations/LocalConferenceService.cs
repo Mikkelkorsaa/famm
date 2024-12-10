@@ -4,11 +4,11 @@ using conferencePlannerCore.Models;
 
 namespace conferencePlannerApp.Services.LocalImplementations
 {
-    public class LocalConferenceHandler : IConferenceHandler
+    public class LocalConferenceService : IConferenceService
     {
         public ILocalStorageService localStorage { get; set; }
 
-        public LocalConferenceHandler(ILocalStorageService localStorage)
+        public LocalConferenceService(ILocalStorageService localStorage)
         {
             this.localStorage = localStorage;
         }
@@ -31,6 +31,11 @@ namespace conferencePlannerApp.Services.LocalImplementations
                 }
             }
             return result;
+        }
+
+        public async Task<List<string>> getCategories()
+        {
+            return new List<string> { "Soda", "Kamboocha", "Coffee", "Tee" };
         }
     }
 }

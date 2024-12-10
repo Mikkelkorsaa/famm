@@ -68,27 +68,6 @@ namespace conferencePlannerApi.Controllers
             return user;
         }
 
-        [HttpPost]
-        [Route("Register")]
-        public async Task<IActionResult> Register(RegisterModel request)
-        {
-            if (await _repo.GetByEmailAsync(request.Email) != null)
-            {
-                return BadRequest("Email already registered");
-            }
-
-            var user = new User
-            {
-                Name = request.Name,
-                Email = request.Email,
-                Password = request.Password
-            };
-
-            await _repo.CreateAsync(user);
-
-            return Ok();
-        }
-
         [HttpGet]
         [Route("GetUserByEmail/{email}")]
         public async Task<ActionResult<User>> GetUserByEmail(string email)

@@ -17,7 +17,7 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<IAuthService, LocalStorageAuthService>();
 builder.Services.AddScoped<IUserService, LocalUserService>();
 builder.Services.AddScoped<IUploadFileService, LocalUploadFileService>();
-builder.Services.AddScoped<IConferenceHandler, LocalConferenceHandler>();
+builder.Services.AddScoped<IConferenceService, LocalConferenceService>();
 builder.Services.AddScoped<IAbstractService, LocalStorageAbstractService>();
 
 

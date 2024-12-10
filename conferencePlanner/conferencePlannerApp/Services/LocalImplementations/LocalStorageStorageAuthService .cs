@@ -29,23 +29,9 @@ namespace conferencePlannerApp.Services.LocalImplementations
             await _localStorage.RemoveItemAsync(StorageKey);
         }
 
-        public async Task<User?> Login(LoginModel loginModel)
+        public async Task<(User?, string)> Login(LoginModel loginModel)
         {
-            return new User {
-                Id = 0,
-                Name = "admin",
-                Email = "admin",
-                Password = "1234",
-                Role = 0,
-                Organization = "admin",
-                CreatedAt = DateTime.Now,
-                IsActive = true
-            };
-        }
-
-        public async Task<User> CreateUser(User user)
-        {
-            return new User
+            User user = new User
             {
                 Id = 0,
                 Name = "admin",
@@ -56,6 +42,14 @@ namespace conferencePlannerApp.Services.LocalImplementations
                 CreatedAt = DateTime.Now,
                 IsActive = true
             };
+            await SetCurrentUser(user);
+            return (user, string.Empty);
+        }
+
+        public async Task<(User?, string)> CreateUser(User user)
+        {
+            await SetCurrentUser(user);
+            return (user, string.Empty);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿@using System.ComponentModel.DataAnnotations
-@inject IConferenceHandler conferenceHandler
+@inject IConferenceService conferenceHandler
 
 <EditForm Model="@conference" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />

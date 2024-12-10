@@ -12,7 +12,7 @@
                 <label for="Kategori">Kategori</label>
                 <InputSelect id="Kategori" @bind-Value="@_abstractModel.Category" class="form-control">
                     <option value="">Vælg kategori &#11167;</option>
-                    @foreach (var cat in _categories)
+                    @foreach (string cat in _categories)
                     {
                         <option value="@cat">@cat</option>
                     }
@@ -68,7 +68,7 @@
                 <label for="Kategori">Kategori</label>
                 <InputSelect id="Kategori" @bind-Value="@_abstractModel.Category" class="form-control">
                     <option value="">Vælg kategori &#11167;</option>
-                    @foreach (var cat in _categories)
+                    @foreach (string cat in _categories)
                     {
                         <option value="@cat">@cat</option>
                     }
