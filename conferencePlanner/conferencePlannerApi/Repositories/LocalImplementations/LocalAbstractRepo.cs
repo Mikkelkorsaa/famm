@@ -137,13 +137,13 @@ new Abstract
 			return await Task.FromResult(true);
 		}
 
-        public async Task<Abstract?> UpdateReview(int abstractId, Review review)
+        public async Task<Abstract> UpdateReview(int abstractId, Review review)
         {
             var abstractToUpdate = _abstracts.FirstOrDefault(a => a.Id == abstractId);
-            if (abstractToUpdate == null) return null;
+            if (abstractToUpdate == null) throw new MissingFieldException("Abstract not found");
 
             var reviewIndex = abstractToUpdate.Reviews.FindIndex(r => r.Id == review.Id);
-            if (reviewIndex == -1) return null;
+            if (reviewIndex == -1) throw new MissingFieldException("Review not found");
 
             abstractToUpdate.Reviews[reviewIndex] = review;
             return await Task.FromResult(abstractToUpdate);

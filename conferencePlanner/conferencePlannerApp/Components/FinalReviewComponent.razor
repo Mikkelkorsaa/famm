@@ -4,7 +4,7 @@
 <div class="abstract-review-wrapper">
     <div class="abstract-review">
 
-        @if (SelectedAbstract?.Reviews != null && SelectedAbstract.Reviews.Any())
+        @if (SelectedAbstract!.Reviews != null && SelectedAbstract.Reviews.Any())
         {
             var review = SelectedAbstract.Reviews.First();
             <div class="reviews-grid">
