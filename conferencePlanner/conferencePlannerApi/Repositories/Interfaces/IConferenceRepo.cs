@@ -25,5 +25,9 @@ namespace conferencePlannerApi.Repositories.Interfaces
     // Manipulation: Removes from database
     // Output: True if deleted, false if not found
     Task<bool> DeleteAsync(int id);
-  }
+
+        //Input: Conference object
+        //Output: List of all criteria for the conference
+        Task<List<string>> ListAllCriteria(Conference conference);
+    }
 }

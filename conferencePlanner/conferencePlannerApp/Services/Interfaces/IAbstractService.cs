@@ -20,5 +20,7 @@ namespace conferencePlannerApp.Services.Interfaces
 		//Manipulation: Find abstract with matching id in DB and then deletes it
 		
 		Task DeleteAbstract (Abstract _abstract);
+
+		Task<Abstract> UpdateReview(int abstractId, Review review);
     }
 }
