@@ -33,7 +33,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
             return result;
         }
 
-        public async Task<List<string>> getCategories()
+        public async Task<List<string>> getCategories(int conferenceId)
         {
             return new List<string> { "Soda", "Kamboocha", "Coffee", "Tee" };
         }

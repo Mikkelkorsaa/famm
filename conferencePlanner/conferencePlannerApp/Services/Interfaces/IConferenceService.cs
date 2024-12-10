@@ -11,6 +11,13 @@ namespace conferencePlannerApp.Services.Interfaces
         //The method will return all conferences with a EndDate in the future.
         public Task<List<Conference>> getActiveConferences(ConferenceFilter filter);
 
-        public Task<List<string>> getCategories();
+        /// <summary>
+        /// Input: int conferences Id.
+        /// Return: A list of categories for that conference.
+        /// </summary>
+        /// <returns>List of categories, as strings</returns>
+        public Task<List<string>> getCategories(int conferenceId);
+
+
     }
 }
