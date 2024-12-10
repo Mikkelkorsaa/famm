@@ -1,5 +1,5 @@
 ﻿@using System.ComponentModel.DataAnnotations
-@inject IConferenceHandler conferenceHandler
+@inject IConferenceService conferenceService
 
 <EditForm Model="@conference" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -170,7 +170,7 @@
 
     private async Task HandleValidSubmit()
     {
-        await conferenceHandler.createConference(conference);
+        await conferenceService.CreateConferenceAsync(conference);
         await OnSave.InvokeAsync(conference);
     }
 }

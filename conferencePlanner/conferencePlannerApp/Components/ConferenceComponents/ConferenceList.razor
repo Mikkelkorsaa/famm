@@ -1,14 +1,14 @@
-﻿@inject IConferenceHandler conferenceService;
+﻿@inject IConferenceService conferenceService;
 
 @code {
 	[Parameter]
-	public List<Conference>? Conferences { get; set; }
+	public IEnumerable<Conference>? Conferences { get; set; }
 	[Parameter]
 	public ConferenceFilter Filter { get; set; } = new ConferenceFilter();
 
 	protected override async Task OnInitializedAsync()
 	{
-		Conferences = await conferenceService.getActiveConferences(Filter);
+		Conferences = await conferenceService.GetActiveConferencesAsync();
 	}
 
 }

@@ -9,6 +9,6 @@ namespace conferencePlannerApp.Services.Interfaces
         Task CreateConferenceAsync(Conference conference);
         //A user want to see all conferences that have not yet concluded.
         //The method will return all conferences with a EndDate in the future.
-        Task<IEnumerable<Conference>> GetActiveConferencesAsync(ConferenceFilter filter);
+        Task<IEnumerable<Conference>> GetActiveConferencesAsync();
     }
 }

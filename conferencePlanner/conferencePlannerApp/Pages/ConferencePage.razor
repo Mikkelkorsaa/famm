@@ -1,4 +1,4 @@
-﻿@inject IConferenceHandler conferenceHandler
+﻿@inject IConferenceService conferenceService
 @page "/conference"
 
 <h3>ConferencePage</h3>
@@ -12,13 +12,13 @@
 }
 <button type="button" class="btn btn-primary w-50 btn-sm" @onclick="showActiveConferences">Vis active konferencer</button>
 
-@if (conferences.Count > 0){
+@if (conferences.Count() > 0){
     <ConfrenceTableComponent conferences="@conferences"/>
 }
 
 @code {
     private bool showModal = false;
-    private List<Conference> conferences = new();
+    private IEnumerable<Conference> conferences = new List<Conference>();
 
     private void createConference()
     {
@@ -29,7 +29,7 @@
 
     private async Task showActiveConferences()
     {
-        conferences = await conferenceHandler.getActiveConferences(new ConferenceFilter());
+        conferences = await conferenceService.GetActiveConferencesAsync();
     }
 
     private void HandleSave(Conference conference)

@@ -30,12 +30,10 @@ namespace conferencePlannerApp.Services.Implementations
             }
         }
 
-        public async Task<IEnumerable<Conference>> GetActiveConferencesAsync(ConferenceFilter filter)
+        public async Task<IEnumerable<Conference>> GetActiveConferencesAsync()
         {
             try
             {
-                ArgumentNullException.ThrowIfNull(filter);
-
                 var conferences = await GetConferencesAsync();
                 var denmarkZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Copenhagen");
                 var currentDate = TimeZoneInfo.ConvertTime(DateTime.UtcNow, denmarkZone);
