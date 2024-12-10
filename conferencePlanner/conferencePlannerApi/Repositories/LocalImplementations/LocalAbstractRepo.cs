@@ -89,15 +89,15 @@ new Abstract
         {
             Id = 5,
             UserId = 105,
-            Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 5 }, new Criteria { Name = "Originality", Grade = 4 } },
-            Comment = "Highly relevant and practical framework for urban development."
+            Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 3 }, new Criteria { Name = "Originality", Grade = 4 } },
+            Comment = "Test112"
         },
         new Review
         {
             Id = 6,
             UserId = 106,
             Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 4 }, new Criteria { Name = "Originality", Grade = 5 } },
-            Comment = "Innovative use of technology for sustainable development."
+            Comment = "Test"
         }
     }
 }};
