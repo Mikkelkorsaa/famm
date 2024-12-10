@@ -20,6 +20,7 @@ builder.Services.AddScoped<IAbstractService, LocalStorageAbstractService>();
 builder.Services.AddScoped<IApiAddressService, ApiAddressService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 
+
 builder.Services.AddScoped(sp =>
 {
     string baseAddress;
