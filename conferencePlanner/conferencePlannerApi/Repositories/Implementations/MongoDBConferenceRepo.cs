@@ -21,7 +21,7 @@ namespace conferencePlannerApi.Repositories.Implementations
             _conferenceCollection = _database.GetCollection<Conference>("Conferences");
         }
 
-        public async Task<Conference> CreateAsync(Conference conference)
+        public async Task<Conference?> CreateAsync(Conference conference)
         {
             conference.Id = await GetNextConferenceIdAsync();
             _conferenceCollection.InsertOne(conference);

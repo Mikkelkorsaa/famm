@@ -14,7 +14,7 @@ namespace conferencePlannerApi.Repositories.Interfaces
     // Input: Conference object without ID
     // Manipulation: Saves to database
     // Output: Conference object with generated ID
-    Task<Conference> CreateAsync(Conference conference);
+    Task<Conference?> CreateAsync(Conference conference);
 
     // Input: Conference ID and updated Conference object
     // Manipulation: Updates existing record
