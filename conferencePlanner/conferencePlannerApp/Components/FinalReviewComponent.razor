@@ -23,7 +23,7 @@
                 }
             </div>
             <div class="comments-section">
-                <h3>Comments</h3>
+                <h3>Kommentar</h3>
                 @foreach (var comment in SelectedAbstract.Reviews.Select(r => r.Comment).Where(c => !string.IsNullOrEmpty(c)))
                 {
                     <div class="comment-card">
@@ -129,7 +129,7 @@
     {
         var averageCriteriaGrades = new List<AverageCriteria>();
 
-        if (SelectedAbstract?.Reviews != null)
+        if (SelectedAbstract!.Reviews != null)
         {
             var criteriaGroups = SelectedAbstract.Reviews
                 .SelectMany(r => r.Criterias)

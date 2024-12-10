@@ -2,7 +2,7 @@
 
 <div class="abstract-review-wrapper">
     <div class="abstract-review">
-        @if (SelectedAbstract?.Reviews != null && SelectedAbstract.Reviews.Any())
+        @if (SelectedAbstract!.Reviews != null && SelectedAbstract.Reviews.Any())
         {
             var review = SelectedAbstract.Reviews.First();
             <div class="review-card">
@@ -26,7 +26,7 @@
                     }
 
                     <div class="form-group">
-                        <label class="comment-label">Comment</label>
+                        <label class="comment-label">Kommentar</label>
                         <textarea class="comment-textarea"
                         rows="4"
                         @bind="review.Comment"
@@ -186,7 +186,7 @@
 
     private async Task UpdateReview()
     {
-        if (SelectedAbstract?.Reviews == null || !SelectedAbstract.Reviews.Any())
+        if (SelectedAbstract!.Reviews == null || !SelectedAbstract.Reviews.Any())
         {
             return;
         }

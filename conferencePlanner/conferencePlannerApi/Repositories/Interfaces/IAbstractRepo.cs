@@ -26,6 +26,10 @@ namespace conferencePlannerApi.Repositories.Interfaces
                 // Output: True if deleted, false if not found
                 Task<bool> DeleteAsync(int id);
 
-                Task<Abstract?> UpdateReview(int abstractId, Review review);
+
+                //Input: Abstract Id & Review
+                //Manipulation: Updates the abstract with the review
+                //Output: Updated abstract
+                Task<Abstract> UpdateReview(int abstractId, Review review);
     }
 }
