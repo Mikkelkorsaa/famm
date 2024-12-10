@@ -30,17 +30,15 @@
         </div>
     }
 </div>
-
 <style>
-    /* Sidebar Container */
     .abstract-sidebar {
-        position: fixed; /* Change from absolute to fixed */
-        top: 66px; /* Keeps your current top positioning */
+        position: fixed;
+        top: 76px; /* Initial top position */
         left: 5px;
         bottom: 10px;
-        height: calc(100vh - 76px); /* Subtract the top offset */
-        max-height: calc(100vh - 76px); /* Ensure it doesn't exceed viewport */
-        overflow-y: auto; /* Allow scrolling within sidebar if content exceeds height */
+        height: calc(100vh - 40px); /* Adjust height */
+        max-height: calc(100vh - 40px); /* Ensure it doesn't exceed viewport */
+        overflow-y: auto;
         transition: width 0.5s ease, box-shadow 0.5s ease;
         background-color: #f8f9fa;
         border-right: 1px solid #d6d8db;
@@ -121,6 +119,19 @@
         display: none;
     }
 </style>
+<script>
+    window.addEventListener('scroll', function () {
+        var sidebar = document.querySelector('.abstract-sidebar');
+        var navMenuHeight = document.querySelector('.custom-navbar').offsetHeight;
+        var scrollTop = window.scrollY;
+
+        if (scrollTop > navMenuHeight - 10) {
+            sidebar.style.top = '10px';
+        } else {
+            sidebar.style.top = (navMenuHeight - scrollTop + 10) + 'px';
+        }
+    });
+</script>
 
 @code {
     [Parameter]
