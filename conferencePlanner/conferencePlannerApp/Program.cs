@@ -4,12 +4,15 @@ using conferencePlannerApp;
 using Blazored.LocalStorage;
 using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerApp.Services.LocalImplementations;
-using conferencePlannerApp.Services.Implementations;
-using System.Text.Json;
+<<<<<<<<< Temporary merge branch 1
 using Microsoft.AspNetCore.Components.Forms;
 using conferencePlannerCore.Models;
 using Microsoft.AspNetCore.Components.Authorization;
 using conferencePlannerApp.Services.RoleAutherization;
+=========
+using conferencePlannerApp.Services.Implementations;
+using System.Text.Json;
+>>>>>>>>> Temporary merge branch 2
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -24,5 +27,23 @@ builder.Services.AddScoped<IAbstractService, LocalStorageAbstractService>();
 builder.Services.AddScoped<IApiAddressService, ApiAddressService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddAuthorizationCore();
+
+builder.Services.AddScoped(sp =>
+{
+    string baseAddress;
+    if (builder.HostEnvironment.IsDevelopment())
+    {
+        baseAddress = "https://localhost:7000";
+    }
+    else
+    {
+        baseAddress = "https://conferenceplanner-api-dev-euhdb7g8cxceg8ax.westeurope-01.azurewebsites.net"
+            ?? throw new InvalidOperationException("API_BASE_URL environment variable not configured");
+    }
+    Console.WriteLine($"API_BASE_URL: {baseAddress}");
+    return new HttpClient { BaseAddress = new Uri(baseAddress) };
+});
 
 await builder.Build().RunAsync();
