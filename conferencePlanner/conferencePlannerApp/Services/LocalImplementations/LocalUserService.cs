@@ -1,6 +1,5 @@
 using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerCore.Models;
-using Blazored.LocalStorage;
 using System.Net.Http.Json;
 
 namespace conferencePlannerApp.Services.LocalImplementations
@@ -16,7 +15,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
 
         public async Task<List<User>> GetAllUsersAsync()
         {
-            var response = await _httpClient.GetAsync("https://localhost:7000/api/user/getallusers");
+            var response = await _httpClient.GetAsync("/api/user/getallusers");
             response.EnsureSuccessStatusCode();
             var users = await response.Content.ReadFromJsonAsync<List<User>>();
             if (users == null)
@@ -37,7 +36,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
             }
             users[index] = user;
 
-            var response = await _httpClient.PutAsJsonAsync("https://localhost:7000/api/user/updateuser", user);
+            var response = await _httpClient.PutAsJsonAsync("/api/user/updateuser", user);
             response.EnsureSuccessStatusCode();
             var updatedUsers = await GetAllUsersAsync();
         }

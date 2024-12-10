@@ -2,7 +2,7 @@ using conferencePlannerApi.Repositories.Interfaces;
 using conferencePlannerApi.Repositories.LocalImplementations;
 using conferencePlannerApi.Services.Interfaces;
 using conferencePlannerApi.Services.Implementations;
-using conferencePlannerCore.Models;
+using conferencePlannerCore.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 

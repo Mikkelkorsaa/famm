@@ -78,7 +78,7 @@
 
             <div class="col-md-6 mb-3">
                 <label for="Upload Fil">Upload Fil</label>
-                <UploadImageComponent OnFileUploaded="HandleFileData" AcceptedFileTypes="_imgFileTypes" AcceptedSize="_maxImgSize"/>
+                <UploadImageComponent OnFileUploaded="HandleFileData" AcceptedFileTypes="@_imgFileTypes" AcceptedSize="@_maxImgSize"/>
             </div>
             <div class="col-12 mb-3">
                 <button type="submit" class="btn btn-primary">Indsend</button>
@@ -92,8 +92,7 @@
     private string _abstractKey = "abstract";
     private List<string> _categories = new List<string> { "Soda", "Kamboocha", "Coffee", "Tee" };
     private string _newCoAuthor = "";
-    private EditContext _editcontext;
-    private Conference _conference;
+    private EditContext? _editcontext;
     private string _imgFileTypes = ".jpeg, .png, .jpg";
     private int _maxImgSize = 10 * 1024 * 1024;
 
@@ -116,7 +115,7 @@
 
     private async Task HandleSubmit()
     {
-        if(_editcontext.Validate())
+        if(_editcontext!.Validate())
         await abstractService.AddAbstract(_abstractModel);
         _abstractModel = new Abstract{CoAuthors = new List<string>()};
         await UpdateLocalStorage();
