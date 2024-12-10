@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using conferencePlannerCore.Models;
 using Microsoft.AspNetCore.Components.Authorization;
 using conferencePlannerApp.Services.RoleAutherization;
+using conferencePlannerApp.Services.Implementations;
 using System.Text.Json;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -21,6 +22,7 @@ builder.Services.AddScoped<IUploadFileService, LocalUploadFileService>();
 builder.Services.AddScoped<IConferenceHandler, LocalConferenceHandler>();
 builder.Services.AddScoped<IAbstractService, LocalStorageAbstractService>();
 builder.Services.AddScoped<IApiAddressService, ApiAddressService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddAuthorizationCore();
