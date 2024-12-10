@@ -6,7 +6,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (Conference conference in conferences)
+        @foreach (Conference conference in conferences!)
         {
             <tr @onclick="() => displayConference(conference)">
                 <td>@conference.Name</td>
@@ -44,7 +44,7 @@
 
 @code {
     [Parameter]
-    public List<Conference> conferences { get; set; }
+    public List<Conference>? conferences { get; set; }
     public bool showConference = false;
     public Conference? selectedConference;
 
