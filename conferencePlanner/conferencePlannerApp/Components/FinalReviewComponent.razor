@@ -3,8 +3,10 @@
 
 <div class="abstract-review-wrapper">
     <div class="abstract-review">
+
         @if (SelectedAbstract?.Reviews != null && SelectedAbstract.Reviews.Any())
         {
+            var review = SelectedAbstract.Reviews.First();
             <div class="reviews-grid">
                 @foreach (var criteria in GetAverageCriteriaGrades())
                 {
@@ -17,6 +19,15 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                }
+            </div>
+            <div class="comments-section">
+                <h3>Comments</h3>
+                @foreach (var comment in SelectedAbstract.Reviews.Select(r => r.Comment).Where(c => !string.IsNullOrEmpty(c)))
+                {
+                    <div class="comment-card">
+                        <p>@comment</p>
                     </div>
                 }
             </div>
@@ -83,6 +94,18 @@
         font-size: 1.5rem;
         font-weight: bold;
         color: #3b82f6;
+    }
+
+    .comments-section {
+        margin-top: 2rem;
+    }
+
+    .comment-card {
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
     }
 
     .no-reviews-placeholder {
