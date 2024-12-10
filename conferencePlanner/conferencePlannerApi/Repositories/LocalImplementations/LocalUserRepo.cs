@@ -53,36 +53,53 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
         };
         private int _lastId = 4;
 
-        public async Task<User?> GetByIdAsync(int id)
-            => await Task.FromResult(_users.FirstOrDefault(u => u.Id == id));
+        public async Task<User> GetByIdAsync(int id)
+        {
+            var response = _users.FirstOrDefault(u => u.Id == id);
+            return await Task.FromResult(response != null ? response : throw new Exception("User not found"));
+        }
 
-        public async Task<User?> GetByEmailAsync(string email)
-            => await Task.FromResult(_users.FirstOrDefault(u => u.Email == email));
+        public async Task<User> GetByEmailAsync(string email)
+        {
+            var response = _users.FirstOrDefault(u => u.Email == email);
+            return await Task.FromResult(response != null ? response : throw new Exception("User not found"));
+        }
 
         public async Task<IEnumerable<User>> GetAllAsync()
-            => await Task.FromResult(_users);
+        {
+            var result = _users;
+            return await Task.FromResult(result.Any() ? result : throw new Exception("No users found"));
+        }
 
         public async Task<User> CreateAsync(User user)
         {
-            var newUser = user with { Id = ++_lastId, CreatedAt = DateTime.UtcNow };
-            _users.Add(newUser);
-            return await Task.FromResult(newUser);
+            var response = _users.FirstOrDefault(u => u.Email == user.Email);
+            if (response == null)
+            {
+                var newUser = user with { Id = ++_lastId, CreatedAt = DateTime.UtcNow };
+                _users.Add(newUser);
+                return await Task.FromResult(newUser);
+            }
+            else
+                throw new Exception("Email already exists");
         }
 
-        public async Task<User?> UpdateAsync(User user)
+        public async Task<User> UpdateAsync(User user)
         {
             var index = _users.FindIndex(u => u.Id == user.Id);
-            if (index == -1) return null;
+            if (index == -1)
+                throw new Exception("User not found");
 
             var updatedUser = user with { Id = _users[index].Id };
             _users[index] = updatedUser;
-            return await Task.FromResult<User?>(updatedUser);
+            return await Task.FromResult(updatedUser);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
             var index = _users.FindIndex(u => u.Id == id);
-            if (index == -1) return false;
+            if (index == -1)
+                throw new Exception("User not found");
 
             _users.RemoveAt(index);
             return await Task.FromResult(true);

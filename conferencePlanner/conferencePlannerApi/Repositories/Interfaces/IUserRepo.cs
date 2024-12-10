@@ -7,7 +7,7 @@ namespace conferencePlannerApi.Repositories.Interfaces
     {
         // Input: User ID
         // Output: User object or null if not found
-        Task<User?> GetByIdAsync(int id);
+        Task<User> GetByIdAsync(int id);
 
         // Output: Collection of all User objects
         Task<IEnumerable<User>> GetAllAsync();
@@ -15,12 +15,12 @@ namespace conferencePlannerApi.Repositories.Interfaces
         // Input: User object without ID
         // Manipulation: Saves to database
         // Output: User object with generated ID
-        Task<User?> CreateAsync(User user);
+        Task<User> CreateAsync(User user);
 
         // Input: User ID and updated User object
         // Manipulation: Updates existing record
         // Output: Updated User object or null if not found
-        Task<User?> UpdateAsync(User user);
+        Task<User> UpdateAsync(User user);
 
         // Input: User ID
         // Manipulation: Removes from database
@@ -29,6 +29,6 @@ namespace conferencePlannerApi.Repositories.Interfaces
 
         // Input: Email string
         // Output: User object or null if not found
-        Task<User?> GetByEmailAsync(string email);
+        Task<User> GetByEmailAsync(string email);
     }
 }

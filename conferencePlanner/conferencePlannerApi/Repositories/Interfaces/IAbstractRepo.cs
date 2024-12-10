@@ -6,7 +6,7 @@ namespace conferencePlannerApi.Repositories.Interfaces
         {
                 // Input: Abstract ID
                 // Output: Abstract object or null if not found
-                Task<Abstract?> GetByIdAsync(int id);
+                Task<Abstract> GetByIdAsync(int id);
 
                 // Output: Collection of all Abstract objects
                 Task<IEnumerable<Abstract>> GetAllAsync();
@@ -19,7 +19,7 @@ namespace conferencePlannerApi.Repositories.Interfaces
                 // Input: Abstract ID and updated Abstract object
                 // Manipulation: Updates existing record
                 // Output: Updated Abstract object or null if not found
-                Task<Abstract?> UpdateAsync(Abstract @abstract);
+                Task<Abstract> UpdateAsync(Abstract @abstract);
 
                 // Input: Abstract ID
                 // Manipulation: Removes from database
