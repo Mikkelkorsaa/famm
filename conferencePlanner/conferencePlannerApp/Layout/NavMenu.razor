@@ -25,6 +25,31 @@
 								<span aria-hidden="true"></span> Min Profil
 							</NavLink>
 						</li>
+						<li class="nav-item">
+							<NavLink class="nav-link" href="" style="color: white;">
+								<span aria-hidden="true"></span> Se konferencer
+							</NavLink>
+						</li>
+						<li class="nav-item">
+							<NavLink class="nav-link" href="conference" style="color: white;">
+								<span aria-hidden="true"></span> Opret Konference
+							</NavLink>
+						</li>
+						<li class="nav-item">
+							<NavLink class="nav-link" href="review" style="color: white;">
+								<span aria-hidden="true"></span> Se reviews
+							</NavLink>
+						</li>
+						<li class="nav-item">
+							<NavLink class="nav-link" href="createprogram" style="color: white;">
+								<span aria-hidden="true"></span> Opret Program
+							</NavLink>
+						</li>
+						<li class="nav-item">
+							<NavLink class="nav-link" href="uploadabstract" style="color: white;">
+								<span aria-hidden="true"></span> Indsend abstrakt
+							</NavLink>
+						</li>
 					</Authorized>
 				</AuthorizeView>
 
@@ -37,7 +62,7 @@
 						</li>
 						<li class="nav-item">
 							<NavLink class="nav-link" href="conference" style="color: white;">
-								<span aria-hidden="true"></span> Opret Conference
+								<span aria-hidden="true"></span> Opret Konference
 							</NavLink>
 						</li>
 						<li class="nav-item">
@@ -86,17 +111,17 @@
 
 			</ul>
 			<ul class="navbar-nav ms-auto">
-						<li class="nav-item">
-							<NavLink class="nav-link" @onclick="OnSignOut" style="color: white;">
-								<span aria-hidden="true"></span> Logud
-							</NavLink>
-						</li>
-					
-						<li class="nav-item">
-							<NavLink class="nav-link" href="login" style="color: white;">
-								<span aria-hidden="true"></span> Login
-							</NavLink>
-						</li>
+				<li class="nav-item">
+					<NavLink class="nav-link" @onclick="OnSignOut" style="color: white;">
+						<span aria-hidden="true"></span> Logud
+					</NavLink>
+				</li>
+
+				<li class="nav-item">
+					<NavLink class="nav-link" href="login" style="color: white;">
+						<span aria-hidden="true"></span> Login
+					</NavLink>
+				</li>
 			</ul>
 		</div>
 	</div>
