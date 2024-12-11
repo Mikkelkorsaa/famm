@@ -1,6 +1,6 @@
 namespace conferencePlannerCore.Models
 {
-  public class ImageResponse
+  public record ImageResponse
   {
     public byte[] Content { get; set; } = Array.Empty<byte>();
     public string ContentType { get; set; } = string.Empty;

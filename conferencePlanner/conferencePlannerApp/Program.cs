@@ -13,16 +13,14 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddScoped<IAuthService, LocalStorageAuthService>();
-builder.Services.AddScoped<IUserService, LocalUserService>();
-builder.Services.AddScoped<IUploadFileService, LocalUploadFileService>();
-builder.Services.AddScoped<IConferenceHandler, LocalConferenceHandler>();
-builder.Services.AddScoped<IAbstractService, LocalStorageAbstractService>();
-builder.Services.AddScoped<IApiAddressService, ApiAddressService>();
+builder.Services.AddScoped<IAuthService, LocalStorageUserService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IConferenceService, LocalStorageConferenceService>();
+builder.Services.AddScoped<IAbstractService, AbstractService>();
 builder.Services.AddScoped<IImageService, ImageService>();
-
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddAuthorizationCore();
+
 
 builder.Services.AddScoped(sp =>
 {

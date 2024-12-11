@@ -33,7 +33,7 @@ namespace conferencePlannerApi.Controllers
         public async Task<ActionResult<Conference>> CreateConference(Conference conference)
         {
             var newConference = await _repo.CreateAsync(conference);
-            return CreatedAtAction(nameof(GetConferenceById), new { id = newConference.Id }, newConference);
+            return CreatedAtAction(nameof(GetConferenceById), new { id = newConference!.Id }, newConference);
         }
 
         [HttpPut]
