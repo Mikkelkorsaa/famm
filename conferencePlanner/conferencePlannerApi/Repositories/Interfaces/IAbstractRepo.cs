@@ -9,12 +9,12 @@ namespace conferencePlannerApi.Repositories.Interfaces
                 Task<Abstract> GetByIdAsync(int id);
 
                 // Output: Collection of all Abstract objects
-                Task<IEnumerable<Abstract>> GetAllAsync();
+                Task<List<Abstract>> GetAllAsync();
 
                 // Input: Abstract object without ID
                 // Manipulation: Saves to database
                 // Output: Abstract object with generated ID
-                Task<Abstract> CreateAsync(Abstract @abstract);
+                Task<Abstract?> CreateAsync(Abstract @abstract);
 
                 // Input: Abstract ID and updated Abstract object
                 // Manipulation: Updates existing record

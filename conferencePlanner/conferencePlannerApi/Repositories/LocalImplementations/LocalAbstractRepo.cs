@@ -111,7 +111,7 @@ new Abstract
             return await Task.FromResult(response != null ? response : throw new Exception("Abstract not found"));
         }
 
-        public async Task<IEnumerable<Abstract>> GetAllAsync()
+        public async Task<List<Abstract>> GetAllAsync()
         {
             var result = _abstracts;
             return await Task.FromResult(result.Any() ? result : throw new Exception("No abstracts found"));

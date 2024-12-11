@@ -54,11 +54,6 @@ namespace conferencePlannerApi.Controllers
        {
            try
            {
-               if (!ModelState.IsValid)
-               {
-                   return BadRequest(ModelState);
-               }
-
                var newUser = await _repo.CreateAsync(user);
                return CreatedAtAction(nameof(GetUserById), new { id = newUser!.Id }, newUser);
            }

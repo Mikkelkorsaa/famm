@@ -17,8 +17,8 @@ namespace conferencePlannerApi.Repositories.Implementations
         {
             _config = config;
             _mongoClient = new MongoClient(_config["ConnectionStrings:mongoDB"]);
-            _database = _mongoClient.GetDatabase("ConferencePlaner");
-            _userCollection = _database.GetCollection<User>("Users");
+            _database = _mongoClient.GetDatabase("ThriftShop");
+            _userCollection = _database.GetCollection<User>("Items");
         }
 
         public async Task<User> CreateAsync(User user)

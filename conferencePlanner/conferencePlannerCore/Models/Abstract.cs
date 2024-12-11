@@ -4,8 +4,9 @@ namespace conferencePlannerCore.Models
 {
     public record Abstract
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public int ConferenceId { get; init; }
+        public int UserId { get; set; } = -1;
         public string SenderName { get; set; } = string.Empty;
         public string PresenterEmail { get; set; } = string.Empty;
         public List<string> CoAuthors { get; set; } = new List<string>();
