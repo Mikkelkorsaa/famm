@@ -12,16 +12,17 @@ namespace conferencePlannerApp.Services.LocalImplementations
         {
             this.localStorage = localStorage;
         }
-        public async Task createConference(Conference conference)
+        public async Task<Conference> createConference(Conference conference)
         {
             List<Conference> conferences = await localStorage.GetItemAsync<List<Conference>>("conferences");
             if (conferences == null)
                 conferences = new();
             conferences.Add(conference);
             await localStorage.SetItemAsync<List<Conference>>("conferences", conferences);
+            return conference;
         }
 
-        public async Task<List<Conference>> getActiveConferences(ConferenceFilter filter)
+        public async Task<List<Conference>> GetActiveConferences(ConferenceFilter filter)
         {
             List<Conference> result = new();
             List<Conference> conferences = await localStorage.GetItemAsync<List<Conference>>("conferences");
@@ -33,7 +34,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
             return result;
         }
 
-        public async Task<List<string>> getCategories(int conferenceId)
+        public async Task<List<string>> GetCategories(int conferenceId)
         {
             await localStorage.GetItemAsync<User?>("user");
             return new List<string> { "Soda", "Kamboocha", "Coffee", "Tee" };

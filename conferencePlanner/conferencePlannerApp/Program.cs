@@ -8,14 +8,15 @@ using conferencePlannerApp.Services.Implementations;
 using Microsoft.AspNetCore.Components.Authorization;
 using conferencePlannerApp.Services.RoleAutherization;
 
+
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddScoped<IAuthService, LocalStorageUserService>();
+builder.Services.AddScoped<IAuthService, AuthServiceImpl>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IConferenceService, LocalStorageConferenceService>();
+builder.Services.AddScoped<IConferenceService, ConferenceServiceImpl>();
 builder.Services.AddScoped<IAbstractService, AbstractService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();

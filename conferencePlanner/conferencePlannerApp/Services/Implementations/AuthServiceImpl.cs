@@ -29,7 +29,7 @@ namespace conferencePlannerApp.Services.Implementations
 
         public async Task<(User?, string)> Login(LoginModel loginModel)
         {
-            var response = await _httpClient.PostAsJsonAsync("https://localhost:7000/api/user/login", loginModel);
+            var response = await _httpClient.PostAsJsonAsync("/api/user/login", loginModel);
             if (response.IsSuccessStatusCode)
             {
                 var user = await response.Content.ReadFromJsonAsync<User>();
@@ -56,7 +56,7 @@ namespace conferencePlannerApp.Services.Implementations
 
         public async Task<(User?, string)> CreateUser(User newUser)
         {
-            var response = await _httpClient.PostAsJsonAsync("https://localhost:7000/api/user/CreateUser", newUser);
+            var response = await _httpClient.PostAsJsonAsync("/api/user/CreateUser", newUser);
             if (response.IsSuccessStatusCode)
             {
                 var user = await response.Content.ReadFromJsonAsync<User>();

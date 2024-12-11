@@ -18,7 +18,11 @@
 
 @code {
     private bool showModal = false;
-    private IEnumerable<Conference> conferences = new List<Conference>();
+    private List<Conference> conferences = new List<Conference>();
+    public ConferenceFilter conferenceFilter { get; set; } = new ConferenceFilter
+        {
+            EndDate = DateTime.Now
+        };
 
     private void createConference()
     {
@@ -29,7 +33,7 @@
 
     private async Task showActiveConferences()
     {
-        conferences = await conferenceService.GetActiveConferencesAsync();
+        conferences = await conferenceService.GetActiveConferencesAsync(conferenceFilter);
     }
 
     private void HandleSave(Conference conference)
