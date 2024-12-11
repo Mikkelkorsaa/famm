@@ -5,116 +5,205 @@ using conferencePlannerApi.Services.Interfaces;
 
 namespace conferencePlannerApi.Controllers
 {
-  [ApiController]
-  [Route("api/[controller]")]
-  public class UserController : ControllerBase
-  {
-    private readonly IUserRepo _repo;
-    private readonly IEmailService _emailService;
+   [ApiController]
+   [Route("api/[controller]")]
+   public class UserController : ControllerBase
+   {
+       private readonly IUserRepo _repo;
+       private readonly IEmailService _emailService;
 
-    public UserController(IUserRepo repo, IEmailService emailService)
-    {
-      _repo = repo;
-      _emailService = emailService;
-    }
+       public UserController(IUserRepo repo, IEmailService emailService)
+       {
+           _repo = repo;
+           _emailService = emailService;
+       }
 
-    [HttpGet]
-    [Route("GetAllUsers")]
-    public async Task<IEnumerable<User>> GetAllUsers()
-        => await _repo.GetAllAsync();
+       [HttpGet]
+       [Route("GetAllUsers")]
+       public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+       {
+           try
+           {
+               var users = await _repo.GetAllAsync();
+               return Ok(users);
+           }
+           catch
+           {
+               return StatusCode(500, "An error occurred while retrieving users");
+           }
+       }
 
-    [HttpGet]
-    [Route("GetUserById/{id}")]
-    public async Task<ActionResult<User>> GetUserById(int id)
-    {
-      var user = await _repo.GetByIdAsync(id);
-      return user == null ? NotFound() : user;
-    }
+       [HttpGet]
+       [Route("GetUserById/{id}")]
+       public async Task<ActionResult<User>> GetUserById(int id)
+       {
+           try
+           {
+               var user = await _repo.GetByIdAsync(id);
+               return user == null ? NotFound($"User with ID {id} not found") : Ok(user);
+           }
+           catch
+           {
+               return StatusCode(500, "An error occurred while retrieving the user");
+           }
+       }
 
-    [HttpPost]
-    [Route("CreateUser")]
-    public async Task<ActionResult<User>> CreateUser(User user)
-    {
-      var newUser = await _repo.CreateAsync(user);
-      return CreatedAtAction(nameof(GetUserById), new { id = newUser!.Id }, newUser);
-    }
+       [HttpPost]
+       [Route("CreateUser")]
+       public async Task<ActionResult<User>> CreateUser(User user)
+       {
+           try
+           {
+               if (!ModelState.IsValid)
+               {
+                   return BadRequest(ModelState);
+               }
 
-    [HttpPut]
-    [Route("UpdateUser")]
-    public async Task<ActionResult<User>> UpdateUser(User user)
-    {
-      var updatedUser = await _repo.UpdateAsync(user);
-      return updatedUser == null ? NotFound() : updatedUser;
-    }
+               var newUser = await _repo.CreateAsync(user);
+               return CreatedAtAction(nameof(GetUserById), new { id = newUser!.Id }, newUser);
+           }
+           catch
+           {
+               return StatusCode(500, "An error occurred while creating the user");
+           }
+       }
 
-    [HttpDelete]
-    [Route("DeleteUser/{id}")]
-    public async Task<ActionResult> DeleteUser(int id)
-        => await _repo.DeleteAsync(id) ? NoContent() : NotFound();
+       [HttpPut]
+       [Route("UpdateUser")]
+       public async Task<ActionResult<User>> UpdateUser(User user)
+       {
+           try
+           {
+               if (!ModelState.IsValid)
+               {
+                   return BadRequest(ModelState);
+               }
 
-    [HttpPost]
-    [Route("Login")]
-    public async Task<ActionResult<User>> Login(LoginModel model)
-    {
-      var user = await _repo.GetByEmailAsync(model.Email);
-      if (user == null || !ValidatePassword(user, model.Password))
-      {
-        return Unauthorized();
-      }
-      else if (!user.IsActive)
-      {
-        return Forbid();
-      }
-      return user;
-    }
+               var updatedUser = await _repo.UpdateAsync(user);
+               return updatedUser == null 
+                   ? NotFound($"User with ID {user.Id} not found") 
+                   : Ok(updatedUser);
+           }
+           catch
+           {
+               return StatusCode(500, "An error occurred while updating the user");
+           }
+       }
 
-    [HttpPost]
-    [Route("Register")]
-    public async Task<IActionResult> Register(RegisterModel request)
-    {
-      if (await _repo.GetByEmailAsync(request.Email) != null)
-      {
-        return BadRequest("Email already registered");
-      }
+       [HttpDelete]
+       [Route("DeleteUser/{id}")]
+       public async Task<ActionResult> DeleteUser(int id)
+       {
+           try
+           {
+               var result = await _repo.DeleteAsync(id);
+               return result ? NoContent() : NotFound($"User with ID {id} not found");
+           }
+           catch
+           {
+               return StatusCode(500, "An error occurred while deleting the user");
+           }
+       }
 
-      var user = new User
-      {
-        Name = request.Name,
-        Email = request.Email,
-        Password = request.Password
-      };
+       [HttpPost]
+       [Route("Login")]
+       public async Task<ActionResult<User>> Login(LoginModel model)
+       {
+           try
+           {
+               if (!ModelState.IsValid)
+               {
+                   return BadRequest(ModelState);
+               }
 
-      await _repo.CreateAsync(user);
+               var user = await _repo.GetByEmailAsync(model.Email);
+               if (user == null || !ValidatePassword(user, model.Password))
+               {
+                   return Unauthorized("Invalid email or password");
+               }
+               
+               if (!user.IsActive)
+               {
+                   return Forbid("Account is not active");
+               }
+               
+               return Ok(user);
+           }
+           catch
+           {
+               return StatusCode(500, "An error occurred during login");
+           }
+       }
 
-      return Ok();
-    }
+       [HttpPost]
+       [Route("Register")]
+       public async Task<IActionResult> Register(RegisterModel request)
+       {
+           try
+           {
+               if (!ModelState.IsValid)
+               {
+                   return BadRequest(ModelState);
+               }
 
-    private bool ValidatePassword(User user, string password)
-    {
-      if (user.Password != password)
-      {
-        return false;
-      }
-      return true;
-    }
+               if (await _repo.GetByEmailAsync(request.Email) != null)
+               {
+                   return BadRequest("Email already registered");
+               }
 
-    [HttpGet]
-    [Route("GetUserByEmail/{email}")]
-    public async Task<ActionResult<User>> GetUserByEmail(string email)
-    {
-      var user = await _repo.GetByEmailAsync(email);
-      return user == null ? NotFound() : user;
-    }
+               var user = new User
+               {
+                   Name = request.Name,
+                   Email = request.Email,
+                   Password = request.Password
+               };
 
-    [HttpPost]
-    public async Task<IActionResult> SendEmail()
-    {
-        await _emailService.SendEmailAsync(
-            "mikkelkorsaa@gmail.com",
-            "Test Subject",
-            "<h1>Hello</h1><p>This is a test email.</p>"
-        );
-        return Ok();
-    }
-  }
+               await _repo.CreateAsync(user);
+               return Ok();
+           }
+           catch
+           {
+               return StatusCode(500, "An error occurred during registration");
+           }
+       }
+
+       [HttpGet]
+       [Route("GetUserByEmail/{email}")]
+       public async Task<ActionResult<User>> GetUserByEmail(string email)
+       {
+           try
+           {
+               var user = await _repo.GetByEmailAsync(email);
+               return user == null ? NotFound($"User with email {email} not found") : Ok(user);
+           }
+           catch
+           {
+               return StatusCode(500, "An error occurred while retrieving the user");
+           }
+       }
+
+       [HttpPost]
+       [Route("SendEmail")]
+       public async Task<IActionResult> SendEmail()
+       {
+           try
+           {
+               await _emailService.SendEmailAsync(
+                   "mikkelkorsaa@gmail.com",
+                   "Test Subject",
+                   "<h1>Hello</h1><p>This is a test email.</p>"
+               );
+               return Ok("Email sent successfully");
+           }
+           catch
+           {
+               return StatusCode(500, "An error occurred while sending the email");
+           }
+       }
+
+       private bool ValidatePassword(User user, string password)
+       {
+           return user.Password == password;
+       }
+   }
 }
