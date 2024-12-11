@@ -106,7 +106,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
       return await Task.FromResult(result.Any() ? result : throw new Exception("No conferences found"));
     }
 
-    public async Task<Conference?> CreateAsync(Conference conference)
+    public async Task<Conference> CreateAsync(Conference conference)
     {
       var response = _conferences.FirstOrDefault(c => c.Id == conference.Id);
       if (response == null)
