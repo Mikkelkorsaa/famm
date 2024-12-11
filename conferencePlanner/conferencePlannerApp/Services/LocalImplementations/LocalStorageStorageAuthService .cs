@@ -25,13 +25,11 @@ namespace conferencePlannerApp.Services.LocalImplementations
 		public async Task SetCurrentUser(User user)
 		{
 			await _localStorage.SetItemAsync(StorageKey, user);
-		
 		}
 
 		public async Task ClearCurrentUser()
 		{
 			await _localStorage.RemoveItemAsync(StorageKey);
-			
 		}
 	}
 }
