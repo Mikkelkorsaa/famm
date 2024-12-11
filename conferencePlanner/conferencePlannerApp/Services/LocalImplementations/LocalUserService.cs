@@ -1,45 +1,71 @@
 using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerCore.Models;
-using System.Net.Http.Json;
 
-namespace conferencePlannerApp.Services.LocalImplementations
+namespace conferencePlannerApp.Services.Implementations
 {
     public class LocalUserService : IUserService
     {
-        private readonly HttpClient _httpClient;
+        private readonly List<User> _users;
 
-        public LocalUserService(HttpClient httpClient)
+        public LocalUserService()
         {
-            _httpClient = httpClient;
+            _users = new List<User>
+            {
+                new User
+                {
+                    Id = 1,
+                    Name = "John Smith",
+                    Email = "john.smith@example.com",
+                    Role = UserRole.Reviewer,
+                    Organization = "Tech University"
+                },
+                new User
+                {
+                    Id = 2,
+                    Name = "Alice Johnson",
+                    Email = "alice.johnson@research.org",
+                    Role = UserRole.Admin,
+                    Organization = "Research Institute"
+                },
+                new User
+                {
+                    Id = 3,
+                    Name = "Carlos Rodriguez",
+                    Email = "c.rodriguez@science.edu",
+                    Role = UserRole.Organizer,
+                    Organization = "Science Academy"
+                }
+            };
         }
 
         public async Task<List<User>> GetAllUsersAsync()
         {
-            var response = await _httpClient.GetAsync("/api/user/getallusers");
-            response.EnsureSuccessStatusCode();
-            var users = await response.Content.ReadFromJsonAsync<List<User>>();
-            if (users == null)
+            try
             {
-                throw new InvalidOperationException("Failed to retrieve users.");
+                return await Task.FromResult(_users.ToList());
             }
-            return users;
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to fetch users from the local service.", ex);
+            }
         }
 
         public async Task UpdateUserAsync(User user)
         {
-            var users = await GetAllUsersAsync();
-
-            var index = users.FindIndex(u => u.Id == user.Id);
-            if (index == -1)
+            try
             {
-                throw new ArgumentException("User not found");
-            }
-            users[index] = user;
+                var existingUser = _users.FirstOrDefault(u => u.Id == user.Id)
+                    ?? throw new InvalidOperationException($"User with ID {user.Id} not found.");
 
-            var response = await _httpClient.PutAsJsonAsync("/api/user/updateuser", user);
-            response.EnsureSuccessStatusCode();
-            var updatedUsers = await GetAllUsersAsync();
+                var index = _users.IndexOf(existingUser);
+                _users[index] = user;
+
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to update user with ID {user.Id}.", ex);
+            }
         }
     }
-
 }
