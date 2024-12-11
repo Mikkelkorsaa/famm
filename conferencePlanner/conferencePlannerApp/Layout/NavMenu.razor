@@ -1,4 +1,5 @@
 ﻿@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
 
 <nav class="navbar navbar-expand-sm navbar-light custom-navbar">
 	<div class="container-fluid d-flex justify-content-start">
@@ -111,17 +112,25 @@
 
 			</ul>
 			<ul class="navbar-nav ms-auto">
-				<li class="nav-item">
-					<NavLink class="nav-link" @onclick="OnSignOut" style="color: white;">
-						<span aria-hidden="true"></span> Logud
-					</NavLink>
-				</li>
+				<AuthorizeView Roles="Admin, Organizer, Reviewer, Applicant">
+					<Authorized>
+						<li class="nav-item">
+							<NavLink class="nav-link" @onclick="OnSignOut" style="color: white;">
+								<span aria-hidden="true"></span> Logud
+							</NavLink>
+						</li>
+					</Authorized>
+					<NotAuthorized>
+						<li class="nav-item">
+							<NavLink class="nav-link" href="login" style="color: white;">
+								<span aria-hidden="true"></span> Login
+							</NavLink>
+						</li>
+					</NotAuthorized>
+				</AuthorizeView>
 
-				<li class="nav-item">
-					<NavLink class="nav-link" href="login" style="color: white;">
-						<span aria-hidden="true"></span> Login
-					</NavLink>
-				</li>
+
+				
 			</ul>
 		</div>
 	</div>
@@ -138,6 +147,6 @@
 	public async Task OnSignOut()
 	{
 		await AuthService.ClearCurrentUser();
-		StateHasChanged();
+		NavigationManager.NavigateTo("/", forceLoad: true);
 	}
 }

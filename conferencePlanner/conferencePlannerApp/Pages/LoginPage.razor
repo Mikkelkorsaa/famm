@@ -102,7 +102,7 @@
 				if (user != null)
 				{
 					await AuthService.SetCurrentUser(user);
-					NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+					NavigationManager.NavigateTo("/dashboard", forceLoad: true);
 				}
 				else
 				{
