@@ -15,11 +15,12 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<IAuthService, LocalStorageUserService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IConferenceService, LocalStorageConferenceService>();
+builder.Services.AddScoped<IConferenceService, LocalConferenceService>();
 builder.Services.AddScoped<IAbstractService, AbstractService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddAuthorizationCore();
+
 
 
 builder.Services.AddScoped(sp =>

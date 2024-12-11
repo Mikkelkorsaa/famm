@@ -64,5 +64,10 @@ namespace conferencePlannerApp.Services.Implementations
                 throw new InvalidOperationException("Failed to retrieve conferences.");
             }
         }
+
+        public Task<Conference> GetByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

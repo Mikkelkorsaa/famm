@@ -12,7 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IUserRepo, MongoDBUserRepo>();
+builder.Services.AddSingleton<IUserRepo, LocalUserRepo>();
 builder.Services.AddSingleton<IConferenceRepo, LocalConferenceRepo>();
 builder.Services.AddSingleton<IAbstractRepo, LocalAbstractRepo>();
 

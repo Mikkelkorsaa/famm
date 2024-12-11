@@ -1,9 +1,16 @@
-using conferencePlannerApi.Repositories.Interfaces;
+﻿using Blazored.LocalStorage;
+using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerCore.Models;
-namespace conferencePlannerApi.Repositories.LocalImplementations
+using Microsoft.AspNetCore.Components;
+
+
+namespace conferencePlannerApp.Services.LocalImplementations
 {
-    public class LocalConferenceRepo : IConferenceRepo
+
+    public class LocalConferenceService : IConferenceService
     {
+        private readonly ILocalStorageService _localStorage;
+        private const string StorageKey = "currentConferenceId";
         private readonly List<Conference> _conferences = new()
         {
             new Conference
@@ -193,59 +200,47 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
               }
             }
         };
-        private int _lastId = 3;
-
-        public async Task<Conference> GetByIdAsync(int id)
+        public LocalConferenceService(ILocalStorageService localStorage)
         {
-            var response = _conferences.FirstOrDefault(c => c.Id == id);
-            return await Task.FromResult(response != null ? response : throw new Exception("Conference not found"));
+            _localStorage = localStorage;
         }
-
-        public async Task<IEnumerable<Conference>> GetAllAsync()
-        {
-            var result = _conferences;
-            return await Task.FromResult(result.Any() ? result : throw new Exception("No conferences found"));
-        }
-
-        public async Task<Conference> CreateAsync(Conference conference)
-        {
-            var response = _conferences.FirstOrDefault(c => c.Id == conference.Id);
-            if (response == null)
-            {
-                var newConference = conference with { Id = ++_lastId };
-                _conferences.Add(newConference);
-                return await Task.FromResult(newConference);
-            }
-            else
-                throw new Exception("Conference ID already exists");
-        }
-
-        public async Task<Conference> UpdateAsync(Conference conference)
-        {
-            var existing = _conferences.FirstOrDefault(c => c.Id == conference.Id);
-            if (existing == null)
-                throw new Exception("Conference not found");
-
-            existing.Name = conference.Name;
-            existing.StartDate = conference.StartDate;
-            existing.EndDate = conference.EndDate;
-
-            return await Task.FromResult(existing);
-        }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-            var existing = _conferences.FirstOrDefault(c => c.Id == id);
-            if (existing == null)
-                throw new Exception("Conference not found");
-
-            _conferences.Remove(existing);
-            return await Task.FromResult(true);
-        }
-
-        public Task<List<string>> ListAllCriteria(Conference conference)
+        public Task CreateConferenceAsync(Conference conference)
         {
             throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Conference>> GetActiveConferencesAsync()
+        {
+            IEnumerable<Conference> Result = _conferences;
+            return Task.FromResult(Result);
+        }
+
+        public Task<Conference> GetByIdAsync(int id)
+        {
+            var result = _conferences.FirstOrDefault(item => item.Id == id);
+            if (result != null)
+                return Task.FromResult(result);
+            else
+                throw new Exception("Id doesnt match any existing conferences");
+        }
+
+        public async Task<Conference> GetCurrentConferenceIdAsync()
+        {
+            var conference = await _localStorage.GetItemAsync<Conference>(StorageKey);
+            if (conference == null)
+                throw new NotImplementedException();
+            else
+                return conference;
+        }
+
+        public async Task<Conference> SetCurrentConferenceAsync(int id)
+        {
+            
+            await _localStorage.SetItemAsync(StorageKey, id);
+            
+            var conference = await GetByIdAsync(id);
+            return conference;
+
         }
     }
 }
