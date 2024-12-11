@@ -1,0 +1,33 @@
+﻿@page "/dashboard"
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@inject NavigationManager navigationManager;
+@attribute [Authorize(Roles = "Admin, Organizer, Reviewer, Applicant")]
+
+<div class="container dashboardContainer">
+	<AuthorizeView Roles="Admin">
+		<Authorized>
+			<AdminDashboardComponent></AdminDashboardComponent>
+		</Authorized>
+	</AuthorizeView>
+	<AuthorizeView Roles="Organizer">
+		<Authorized>
+		</Authorized>
+	</AuthorizeView>
+	<AuthorizeView Roles="Reviewer">
+		<Authorized>
+		</Authorized>
+	</AuthorizeView>
+	<AuthorizeView Roles="Applicant">
+		<Authorized>
+		</Authorized>
+	</AuthorizeView>
+</div>
+
+
+@code {
+	private User? _user;
+	protected override async Task OnInitializedAsync()
+	{
+		_user = await localStorage.GetItemAsync<User>("user");
+	}
+}

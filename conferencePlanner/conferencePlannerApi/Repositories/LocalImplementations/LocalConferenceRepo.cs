@@ -94,23 +94,36 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
     private int _lastId = 3;
 
 
-    public async Task<Conference?> GetByIdAsync(int id)
-      => await Task.FromResult(_conferences.FirstOrDefault(c => c.Id == id));
-
-    public async Task<IEnumerable<Conference>> GetAllAsync()
-      => await Task.FromResult(_conferences);
-
-    public async Task<Conference?> CreateAsync(Conference conference)
+    public async Task<Conference> GetByIdAsync(int id)
     {
-      var newConference = conference with { Id = ++_lastId };
-      _conferences.Add(newConference);
-      return await Task.FromResult(newConference);
+      var response = _conferences.FirstOrDefault(c => c.Id == id);
+      return await Task.FromResult(response != null ? response : throw new Exception("Conference not found"));
     }
 
-    public async Task<Conference?> UpdateAsync(Conference conference)
+    public async Task<IEnumerable<Conference>> GetAllAsync()
+    {
+      var result = _conferences;
+      return await Task.FromResult(result.Any() ? result : throw new Exception("No conferences found"));
+    }
+
+    public async Task<Conference> CreateAsync(Conference conference)
+    {
+      var response = _conferences.FirstOrDefault(c => c.Id == conference.Id);
+      if (response == null)
+      {
+        var newConference = conference with { Id = ++_lastId };
+        _conferences.Add(newConference);
+        return await Task.FromResult(newConference);
+      }
+      else
+        throw new Exception("Conference ID already exists");
+    }
+
+    public async Task<Conference> UpdateAsync(Conference conference)
     {
       var existing = _conferences.FirstOrDefault(c => c.Id == conference.Id);
-      if (existing == null) return null;
+      if (existing == null)
+        throw new Exception("Conference not found");
 
       existing.Name = conference.Name;
       existing.StartDate = conference.StartDate;
@@ -123,15 +136,15 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
     {
       var existing = _conferences.FirstOrDefault(c => c.Id == id);
       if (existing == null)
-        return false;
+        throw new Exception("Conference not found");
 
       _conferences.Remove(existing);
       return await Task.FromResult(true);
     }
 
-        public Task<List<string>> ListAllCriteria(Conference conference)
-        {
-            throw new NotImplementedException();
-        }
+    public Task<List<string>> ListAllCriteria(Conference conference)
+    {
+      throw new NotImplementedException();
     }
+  }
 }

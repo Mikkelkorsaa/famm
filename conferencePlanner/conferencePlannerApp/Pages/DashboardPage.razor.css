@@ -1,0 +1,15 @@
+﻿.dashboardContainer {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 2rem;
+	padding: 2rem;
+	width: 100%;
+	min-height: 100vh;
+	
+}
+@media (max-width: 768px) {
+	.dashboardContainer {
+		grid-template-columns: 1fr;
+		padding: 1rem;
+	}
+}
