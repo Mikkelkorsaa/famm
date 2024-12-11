@@ -35,7 +35,13 @@ namespace conferencePlannerApp.Services.LocalImplementations
 
         public async Task<List<string>> getCategories(int conferenceId)
         {
+            await localStorage.GetItemAsync<User?>("user");
             return new List<string> { "Soda", "Kamboocha", "Coffee", "Tee" };
+        }
+
+        public Task CreateConferenceAsync(Conference conference)
+        {
+            throw new NotImplementedException();
         }
     }
 }

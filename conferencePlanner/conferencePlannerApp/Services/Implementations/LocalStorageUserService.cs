@@ -49,5 +49,20 @@ namespace conferencePlannerApp.Services.Implementations
                 throw new InvalidOperationException("Failed to clear current user.");
             }
         }
+
+        public Task<(User?, string)> Login(LoginModel loginModel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Logout()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<(User?, string)> CreateUser(User user)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

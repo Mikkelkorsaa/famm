@@ -22,7 +22,7 @@ namespace conferencePlannerApp.Services.Implementations
             await _localStorage.SetItemAsync<User?>("user", null);
         }
 
-        public async Task<User?> GetCurrentUser()
+        public async Task<User> GetCurrentUser()
         {
             return await _localStorage.GetItemAsync<User>("user"); 
         }

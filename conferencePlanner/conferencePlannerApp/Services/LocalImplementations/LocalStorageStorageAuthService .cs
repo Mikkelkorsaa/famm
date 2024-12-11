@@ -14,9 +14,9 @@ namespace conferencePlannerApp.Services.LocalImplementations
             _localStorage = localStorage;
         }
 
-        public async Task<User?> GetCurrentUser()
+        public async Task<User> GetCurrentUser()
         {
-            return await _localStorage.GetItemAsync<User>(StorageKey) ?? null;
+            return await _localStorage.GetItemAsync<User>(StorageKey);
         }
 
         public async Task SetCurrentUser(User user)

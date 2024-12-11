@@ -64,5 +64,15 @@ namespace conferencePlannerApp.Services.Implementations
                 throw new InvalidOperationException("Failed to retrieve conferences.");
             }
         }
+
+        public Task<List<Conference>> getActiveConferences(ConferenceFilter filter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<string>> getCategories(int conferenceId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
