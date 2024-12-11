@@ -18,29 +18,43 @@ namespace conferencePlannerApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Review>> GetReviewById(int id)
         {
-            var review = await _repo.GetReviewByIdAsync(id);
-            if (review == null)
+            try
             {
-                return NotFound();
+                var review = await _repo.GetReviewByIdAsync(id);
+                return review == null 
+                    ? NotFound($"Review with ID {id} not found") 
+                    : Ok(review);
             }
-            return Ok(review);
+            catch
+            {
+                return StatusCode(500, "An error occurred while retrieving the review");
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<Review>> UpdateAbstract(int id, [FromBody] Review review)
         {
-            if (id != review.Id)
+            try
             {
-                return BadRequest();
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            var updatedReview = await _repo.UpdateAbstract(id, review);
-            if (updatedReview == null)
+                if (id != review.Id)
+                {
+                    return BadRequest("ID in URL does not match ID in review object");
+                }
+
+                var updatedReview = await _repo.UpdateAbstract(id, review);
+                return updatedReview == null 
+                    ? NotFound($"Review with ID {id} not found") 
+                    : Ok(updatedReview);
+            }
+            catch
             {
-                return NotFound();
+                return StatusCode(500, "An error occurred while updating the review");
             }
-
-            return Ok(updatedReview);
         }
     }
 }
