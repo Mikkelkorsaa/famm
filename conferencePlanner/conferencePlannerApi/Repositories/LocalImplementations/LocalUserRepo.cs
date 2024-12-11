@@ -37,7 +37,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
                 Role = UserRole.Reviewer,
                 Organization = "Review Panel Inc",
                 CreatedAt = DateTime.Parse("2024-02-01"),
-                IsActive = false
+                IsActive = true
             },
             new User
             {

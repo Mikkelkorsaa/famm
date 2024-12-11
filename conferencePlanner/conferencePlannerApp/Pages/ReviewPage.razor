@@ -4,9 +4,10 @@
 @inject HttpClient Http
 @inject IAbstractService AbstractService
 @inject IJSRuntime JSRuntime
-
+@attribute [Authorize(Roles = "Admin, Organizer, Reviewer")]
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
 <div class="container-fluid">
-    <div class="filler"/>
+    <div class="filler" />
     <div class="row no-gutters">
         <div class="@sidebarColumnClass">
             <AbstractListComponent @ref="_abstractListComponent"
@@ -14,7 +15,6 @@
                                    OnAbstractSelected="SetAbstract"
                                    OnCollapseChanged="HandleCollapseChanged">
             </AbstractListComponent>
-            
         </div>
         <div class="@contentColumnClass">
             <div class="row">
@@ -27,8 +27,16 @@
                 <div class="review-column">
                     @if (_currentAbstract != null)
                     {
-                        <ReviewComponent SelectedAbstract="@_currentAbstract"></ReviewComponent>
-                        <FinalReviewComponent SelectedAbstract="@_currentAbstract"/>
+                        <AuthorizeView Roles="Organizer">
+                            <Authorized>
+                                <FinalReviewComponent SelectedAbstract="@_currentAbstract" />
+                            </Authorized>
+                        </AuthorizeView>
+                        <AuthorizeView Roles="Reviewer">
+                            <Authorized>
+                                <ReviewComponent SelectedAbstract="@_currentAbstract" />
+                            </Authorized>
+                        </AuthorizeView>
                     }
                 </div>
             </div>
@@ -63,16 +71,25 @@
 </script>
 
 <style>
-    &::-webkit-scrollbar {
-        display: none; /* Hides the scrollbar */
+    /* Hides the scrollbar for WebKit browsers (Chrome, Safari) */
+    html::-webkit-scrollbar, body::-webkit-scrollbar {
+        display: none;
     }
 
-    -ms-overflow-style: none; /* Hides scrollbar for Internet Explorer */
-    scrollbar-width: none; /* Hides scrollbar for Firefox */
+    /* Hides scrollbar for Internet Explorer */
+    html, body {
+        -ms-overflow-style: none;
+    }
+
+    /* Hides scrollbar for Firefox */
+    html, body {
+        scrollbar-width: none;
+    }
+
     .sidebar-transition {
         transition: width 0.5s ease, margin 0.5s ease;
     }
-   
+
     .content-column {
         flex-wrap: wrap;
         transition: margin-left 0.5s ease;
@@ -82,7 +99,6 @@
         width: 70%; /* Fixed width for the abstract column */
         flex-shrink: 0; /* Prevents it from shrinking */
         flex-grow: 0; /* Prevents it from growing */
-      
     }
 
     .review-column {
@@ -100,14 +116,16 @@
     .sidebar-column-collapsed {
         margin-left: 60px;
     }
+
     .filler {
-        margin-top:10px;
+        margin-top: 10px;
     }
 
     .sidebar-column-expanded,
     .sidebar-column-collapsed {
         transition: all 0.5s ease;
     }
+
 </style>
 
 @code {
@@ -116,6 +134,7 @@
     private Abstract? _currentAbstract;
     private bool isSidebarCollapsed;
     private int windowWidth;
+    private User? _user;
 
     private string sidebarColumnClass => isSidebarCollapsed
       ? "col-2 sidebar-transition sidebar-column-collapsed"
@@ -124,9 +143,11 @@
     private string contentColumnClass => isSidebarCollapsed
         ? "col-11 sidebar-transition content-column sidebar-column-collapsed"
         : "col-10 sidebar-transition content-column sidebar-column-expanded";
+
     protected override async Task OnInitializedAsync()
     {
         _abstractList = await AbstractService.GetAbstracts();
+        _user = await localStorage.GetItemAsync<User>("user");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
