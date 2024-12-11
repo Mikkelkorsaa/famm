@@ -22,18 +22,16 @@ public class ImagesController : ControllerBase
 
     [HttpPost]
     [Route("upload")]
-    public async Task<ActionResult<object>> UploadImage(IFormFile file)
+    public async Task<IActionResult> UploadImage(IFormFile file)
     {
+        if (file == null || file.Length == 0)
+            return BadRequest("No file uploaded");
+
+        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var filePath = Path.Combine(_imageStoragePath, fileName);
+
         try
         {
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest("No file uploaded");
-            }
-
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            var filePath = Path.Combine(_imageStoragePath, fileName);
-
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
@@ -53,76 +51,63 @@ public class ImagesController : ControllerBase
 
             return Ok(new { fileName, metadata });
         }
-        catch
+        catch (Exception ex)
         {
-            return StatusCode(500, "An error occurred while uploading the image");
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
     [HttpGet]
     [Route("get/{fileName}")]
-    public ActionResult GetImage(string fileName)
+    public IActionResult GetImage(string fileName)
     {
-        try
+        var filePath = Path.Combine(_imageStoragePath, fileName);
+        
+        if (!System.IO.File.Exists(filePath))
+            return NotFound();
+
+        var metadataPath = Path.Combine(_imageStoragePath, $"{fileName}.json");
+        if (System.IO.File.Exists(metadataPath))
         {
-            var filePath = Path.Combine(_imageStoragePath, fileName);
-            
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound($"Image {fileName} not found");
-            }
-
-            var metadataPath = Path.Combine(_imageStoragePath, $"{fileName}.json");
-            if (System.IO.File.Exists(metadataPath))
-            {
-                var metadata = JsonSerializer.Deserialize<JsonElement>(
-                    System.IO.File.ReadAllText(metadataPath));
-                var contentType = metadata.GetProperty("ContentType").GetString();
-                return PhysicalFile(filePath, contentType ?? "application/octet-stream");
-            }
-
-            var ext = Path.GetExtension(fileName).ToLower();
-            var mimeType = ext switch
-            {
-                ".jpg" or ".jpeg" => "image/jpeg",
-                ".png" => "image/png",
-                ".gif" => "image/gif",
-                _ => "application/octet-stream"
-            };
-
-            return PhysicalFile(filePath, mimeType);
+            var metadata = JsonSerializer.Deserialize<JsonElement>(
+                System.IO.File.ReadAllText(metadataPath));
+            var contentType = metadata.GetProperty("ContentType").GetString();
+            return PhysicalFile(filePath, contentType ?? "application/octet-stream");
         }
-        catch
+
+        var ext = Path.GetExtension(fileName).ToLower();
+        var mimeType = ext switch
         {
-            return StatusCode(500, "An error occurred while retrieving the image");
-        }
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            _ => "application/octet-stream"
+        };
+
+        return PhysicalFile(filePath, mimeType);
     }
 
     [HttpDelete]
     [Route("delete/{fileName}")]
-    public ActionResult DeleteImage(string fileName)
+    public IActionResult DeleteImage(string fileName)
     {
+        var filePath = Path.Combine(_imageStoragePath, fileName);
+        var metadataPath = Path.Combine(_imageStoragePath, $"{fileName}.json");
+
+        if (!System.IO.File.Exists(filePath))
+            return NotFound();
+
         try
         {
-            var filePath = Path.Combine(_imageStoragePath, fileName);
-            var metadataPath = Path.Combine(_imageStoragePath, $"{fileName}.json");
-
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound($"Image {fileName} not found");
-            }
-
             System.IO.File.Delete(filePath);
             if (System.IO.File.Exists(metadataPath))
-            {
                 System.IO.File.Delete(metadataPath);
-            }
             
-            return NoContent();
+            return Ok();
         }
-        catch
+        catch (Exception ex)
         {
-            return StatusCode(500, "An error occurred while deleting the image");
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 }
