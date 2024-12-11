@@ -100,7 +100,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
     public async Task<IEnumerable<Conference>> GetAllAsync()
       => await Task.FromResult(_conferences);
 
-    public async Task<Conference> CreateAsync(Conference conference)
+    public async Task<Conference?> CreateAsync(Conference conference)
     {
       var newConference = conference with { Id = ++_lastId };
       _conferences.Add(newConference);

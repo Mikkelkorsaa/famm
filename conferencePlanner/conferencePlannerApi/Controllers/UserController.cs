@@ -36,7 +36,7 @@ namespace conferencePlannerApi.Controllers
     public async Task<ActionResult<User>> CreateUser(User user)
     {
       var newUser = await _repo.CreateAsync(user);
-      return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser);
+      return CreatedAtAction(nameof(GetUserById), new { id = newUser!.Id }, newUser);
     }
 
     [HttpPut]

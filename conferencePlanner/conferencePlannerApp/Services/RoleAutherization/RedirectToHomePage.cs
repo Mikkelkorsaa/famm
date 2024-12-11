@@ -6,11 +6,11 @@ namespace conferencePlannerApp.Services.RoleAutherization
     {
 
         [Inject]
-        private NavigationManager NavigationManager { get; set; }
+        private NavigationManager? NavigationManager { get; set; }
 
         protected override void OnInitialized()
         {
-            NavigationManager.NavigateTo("/");
+            NavigationManager?.NavigateTo("/");
         }
 
     }
