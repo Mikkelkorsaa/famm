@@ -18,9 +18,9 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IConferenceService, LocalStorageConferenceService>();
 builder.Services.AddScoped<IAbstractService, AbstractService>();
 builder.Services.AddScoped<IImageService, ImageService>();
-
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddAuthorizationCore();
+
 
 builder.Services.AddScoped(sp =>
 {

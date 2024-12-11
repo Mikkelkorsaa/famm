@@ -71,7 +71,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
             return await Task.FromResult(result.Any() ? result : throw new Exception("No users found"));
         }
 
-        public async Task<User> CreateAsync(User user)
+        public async Task<User?> CreateAsync(User user)
         {
             var response = _users.FirstOrDefault(u => u.Email == user.Email);
             if (response == null)

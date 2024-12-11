@@ -13,7 +13,7 @@ namespace conferencePlannerApp.Services.RoleAutherization
 
         protected override void OnInitialized()
         {
-            NavigationManager.NavigateTo("/");
+            NavigationManager?.NavigateTo("/");
         }
 
     }
