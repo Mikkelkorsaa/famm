@@ -9,7 +9,7 @@ namespace conferencePlannerApp.Services.Interfaces
     Task<(User?, string)> Login(LoginModel loginModel); 
     
     // Output: Current user or null if not logged in
-    Task<User?> GetCurrentUser();
+    Task<User> GetCurrentUser();
 
     // Input: User object
     // Manipulation: Saves to local storage

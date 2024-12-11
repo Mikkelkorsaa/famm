@@ -102,3 +102,6 @@ artifacts/
 
 # Appsettings
 appsettings.json
+
+# Launch file
+.vscode/

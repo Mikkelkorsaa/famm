@@ -27,10 +27,6 @@ public class ImagesController : ControllerBase
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded");
 
-        var allowedTypes = new[] { "image/jpeg", "image/png", "image/gif" };
-        if (!allowedTypes.Contains(file.ContentType.ToLower()))
-            return BadRequest("Invalid file type");
-
         var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
         var filePath = Path.Combine(_imageStoragePath, fileName);
 

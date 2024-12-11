@@ -1,6 +1,6 @@
 namespace conferencePlannerCore.Models
 {
-  public class PictureModel
+  public record PictureModel
   {
     private byte[]? _picture;
 
