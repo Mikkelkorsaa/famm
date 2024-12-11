@@ -62,7 +62,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
         public async Task<IEnumerable<User>> GetAllAsync()
             => await Task.FromResult(_users);
 
-        public async Task<User> CreateAsync(User user)
+        public async Task<User?> CreateAsync(User user)
         {
             var newUser = user with { Id = ++_lastId, CreatedAt = DateTime.UtcNow };
             _users.Add(newUser);
