@@ -22,10 +22,10 @@ namespace conferencePlannerApi.Repositories.Implementations
 
         public async Task<Conference> CreateAsync(Conference conference)
         {
+            conference.Id = await GetNextConferenceIdAsync();
             Conference response = await _conferenceCollection.Find(Builders<Conference>.Filter.Eq("_id", conference.Id)).FirstOrDefaultAsync();
             if (response == null)
             {
-                conference.Id = await GetNextConferenceIdAsync();
                 _conferenceCollection.InsertOne(conference);
                 return conference;
             }
