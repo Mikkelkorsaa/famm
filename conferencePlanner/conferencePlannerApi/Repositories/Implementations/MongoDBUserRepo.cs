@@ -21,50 +21,53 @@ namespace conferencePlannerApi.Repositories.Implementations
             _userCollection = _database.GetCollection<User>("Users");
         }
 
-        public async Task<User?> CreateAsync(User user)
+        public async Task<User> CreateAsync(User user)
         {
-            User? response = await _userCollection.Find(Builders<User>.Filter.Eq("Email", user.Email)).FirstOrDefaultAsync();
+            user.Id = await GetNextUserIdAsync();
+            User response = await _userCollection.Find(Builders<User>.Filter.Eq("Email", user.Email)).FirstOrDefaultAsync();
             if (response == null)
             {
-                user.Id = await GetNextUserIdAsync();
                 _userCollection.InsertOne(user);
                 return user;
             }
             else
-                throw new Exception("email in use");
+                throw new Exception("Email already in use");
         }
-
         public async Task<bool> DeleteAsync(int id)
         {
             var filter = Builders<User>.Filter.Eq("_id", id);
-            await _userCollection.DeleteOneAsync(filter);
-            return true;
+            var result = await _userCollection.DeleteOneAsync(filter);
+            return (result.DeletedCount == 0) ? throw new Exception("User not found") : true;
         }
 
         public async Task<IEnumerable<User>> GetAllAsync()
         {
             var filter = Builders<User>.Filter.Empty;
-            var result = await _userCollection.FindAsync(filter);
-            return await result.ToListAsync();
+            var response = await _userCollection.FindAsync(filter);
+            var result = response.ToListAsync();
+            return (result != null) ? result.Result : throw new Exception("No users found");
         }
 
-        public async Task<User?> GetByEmailAsync(string email)
+        public async Task<User> GetByEmailAsync(string email)
         {
             var filter = Builders<User>.Filter.Eq("Email", email);
-            return await _userCollection.Find(filter).FirstOrDefaultAsync();           
+            var response = await _userCollection.Find(filter).FirstOrDefaultAsync();
+            return (response != null) ? response : throw new Exception("User not found");
         }
 
-        public async Task<User?> GetByIdAsync(int id)
+        public async Task<User> GetByIdAsync(int id)
         {
             var filter = Builders<User>.Filter.Eq("_id", id);
-            return await _userCollection.Find(filter).FirstOrDefaultAsync();
+            var response = await _userCollection.Find(filter).FirstOrDefaultAsync();
+            return (response != null) ? response : throw new Exception("User not found");
         }
 
-        public async Task<User?> UpdateAsync(User user)
+        public async Task<User> UpdateAsync(User user)
         {
             var filter = Builders<User>.Filter.Eq("_id", user.Id);
-            await _userCollection.ReplaceOneAsync(filter, user);
-            return await _userCollection.Find(filter).FirstOrDefaultAsync();
+            var response = await _userCollection.ReplaceOneAsync(filter, user);
+            var updatedUser = await _userCollection.Find(filter).FirstOrDefaultAsync();
+            return (response.ModifiedCount == 0) ? throw new Exception("User not found") : updatedUser;
         }
 
 
@@ -85,7 +88,7 @@ namespace conferencePlannerApi.Repositories.Implementations
                 .Aggregate<BsonDocument>(pipeline)
                 .FirstOrDefaultAsync();
 
-            return (result != null ? result["maxUserId"].AsInt32 +1 : 0) + 1;
+            return (result != null ? result["maxUserId"].AsInt32 + 1 : 0) + 1;
         }
     }
 }

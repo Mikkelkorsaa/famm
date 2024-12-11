@@ -1,54 +1,123 @@
-﻿using conferencePlannerApp.Services.LocalImplementations;
-using conferencePlannerApp.Services.Interfaces;
+﻿using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerCore.Models;
-using Blazored.LocalStorage;
-using System.Net.Http.Json;
 
-namespace conferencePlannerApp.Services.LocalImplementations
+namespace conferencePlannerApp.Services.Implementations
 {
-    public class LocalStorageAbstractService : IAbstractService
-	{
-		private readonly HttpClient _httpClient;
+    public class LocalAbstractService : IAbstractService
+    {
+        private readonly List<Abstract> _abstracts;
+        private int _nextId = 4; // Start after our predefined abstracts
 
-		public LocalStorageAbstractService(HttpClient httpClient)
-		{
-			_httpClient = httpClient;
-		}
-
-
-		public async Task<Abstract> AddAbstract(Abstract @abstract)
-		{
-			var response = await _httpClient.PostAsJsonAsync("/api/abstract/createabstract", @abstract);
-			response.EnsureSuccessStatusCode();
-			var newAbstract = await response.Content.ReadFromJsonAsync<Abstract>();
-			return newAbstract!;
-		}
-
-		public async Task<List<Abstract>> GetAbstracts()
-		{
-			var response = await _httpClient.GetAsync("/api/abstract/getallabstracts");
-			response.EnsureSuccessStatusCode();
-			var abstracts = await response.Content.ReadFromJsonAsync<List<Abstract>>();
-			if (abstracts == null)
-			{
-				throw new InvalidOperationException("Failed to retrieve abstracts.");
-			}
-			return abstracts;
-		} 
-
-		public Task UpdateAbstract(Abstract _abstract)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task DeleteAbstract(Abstract _abstract)
-		{
-			throw new NotImplementedException();
-		}
-
-        public Task<Abstract> UpdateReview(int abstractId, Review review)
+        public LocalAbstractService()
         {
-            throw new NotImplementedException();
+            _abstracts = new List<Abstract>
+            {
+                new Abstract
+                {
+                    Id = 1,
+                    ConferenceId = 1,
+                    SenderName = "Dr. Sarah Johnson",
+                    PresenterEmail = "sarah.johnson@university.edu",
+                    CoAuthors = new List<string> { "Dr. Michael Chen", "Prof. Emma Williams" },
+                    Organization = "University of Science",
+                    Title = "Machine Learning Applications in Climate Change Prediction",
+                    KeyValues = "machine learning, climate change, predictive modeling",
+                    AbstractText = "This study presents a novel approach to climate change prediction using advanced machine learning algorithms...",
+                    Category = "Data Science",
+                    Picture = "profile1.jpg",
+                    Reviews = new List<Review>()
+                },
+                new Abstract
+                {
+                    Id = 2,
+                    ConferenceId = 1,
+                    SenderName = "Prof. David Martinez",
+                    PresenterEmail = "d.martinez@techlab.com",
+                    CoAuthors = new List<string> { "Dr. Lisa Brown" },
+                    Organization = "Tech Research Lab",
+                    Title = "Quantum Computing in Cryptography",
+                    KeyValues = "quantum computing, cryptography, security",
+                    AbstractText = "An exploration of how quantum computing developments will impact current cryptographic methods...",
+                    Category = "Quantum Computing",
+                    Picture = "profile2.jpg",
+                    Reviews = new List<Review>()
+                },
+                new Abstract
+                {
+                    Id = 3,
+                    ConferenceId = 1,
+                    SenderName = "Dr. Emily Parker",
+                    PresenterEmail = "eparker@biotech.org",
+                    CoAuthors = new List<string> { "Dr. James Wilson", "Dr. Maria Garcia", "Dr. Robert Lee" },
+                    Organization = "BioTech Institute",
+                    Title = "Advances in CRISPR Gene Editing Technology",
+                    KeyValues = "CRISPR, gene editing, biotechnology",
+                    AbstractText = "Recent developments in CRISPR technology have opened new possibilities in genetic research...",
+                    Category = "Biotechnology",
+                    Picture = "profile3.jpg",
+                    Reviews = new List<Review>()
+                }
+            };
+        }
+
+        public async Task<List<Abstract>> GetAbstracts()
+        {
+            return await Task.FromResult(_abstracts.ToList());
+        }
+
+        public async Task<Abstract> AddAbstract(Abstract @abstract)
+        {
+            var newAbstract = @abstract with { Id = _nextId++ };
+            _abstracts.Add(newAbstract);
+            return await Task.FromResult(newAbstract);
+        }
+
+        public async Task UpdateAbstract(Abstract @abstract)
+        {
+            var existingAbstract = _abstracts.FirstOrDefault(a => a.Id == @abstract.Id);
+            if (existingAbstract == null)
+            {
+                throw new KeyNotFoundException($"Abstract with ID {@abstract.Id} not found.");
+            }
+
+            var index = _abstracts.IndexOf(existingAbstract);
+            _abstracts[index] = @abstract;
+            await Task.CompletedTask;
+        }
+
+        public async Task DeleteAbstract(Abstract @abstract)
+        {
+            var existingAbstract = _abstracts.FirstOrDefault(a => a.Id == @abstract.Id);
+            if (existingAbstract == null)
+            {
+                throw new KeyNotFoundException($"Abstract with ID {@abstract.Id} not found.");
+            }
+
+            _abstracts.Remove(existingAbstract);
+            await Task.CompletedTask;
+        }
+
+        public async Task<Abstract> UpdateReview(int abstractId, Review review)
+        {
+            var @abstract = _abstracts.FirstOrDefault(a => a.Id == abstractId);
+            if (@abstract == null)
+            {
+                throw new KeyNotFoundException($"Abstract with ID {abstractId} not found.");
+            }
+
+            var existingReview = @abstract.Reviews.FirstOrDefault(r => r.Id == review.Id);
+            if (existingReview != null)
+            {
+                var index = @abstract.Reviews.IndexOf(existingReview);
+                @abstract.Reviews[index] = review;
+            }
+            else
+            {
+                review.Id = @abstract.Reviews.Count + 1;
+                @abstract.Reviews.Add(review);
+            }
+
+            return await Task.FromResult(@abstract);
         }
     }
 }

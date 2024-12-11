@@ -3,9 +3,9 @@ using conferencePlannerCore.Models;
 
 namespace conferencePlannerApi.Repositories.LocalImplementations
 {
-	public class LocalAbstractRepo : IAbstractRepo
-	{
-		List<Abstract> _abstracts = new()
+    public class LocalAbstractRepo : IAbstractRepo
+    {
+        List<Abstract> _abstracts = new()
              {
 new Abstract
 {
@@ -65,7 +65,7 @@ new Abstract
             Id = 4,
             UserId = 104,
             Criterias = new List<Criteria> { new Criteria { Name = "Relevance"}, new Criteria { Name = "Originality" } }
-            
+
         }
     }
 },
@@ -105,45 +105,61 @@ new Abstract
 
         private int _lastId = 3;
 
-		public async Task<Abstract?> GetByIdAsync(int id)
-			=> await Task.FromResult(_abstracts.FirstOrDefault(a => a.Id == id));
-		public async Task<IEnumerable<Abstract>> GetAllAsync()
-			=> await Task.FromResult(_abstracts);
+        public async Task<Abstract> GetByIdAsync(int id)
+        {
+            var response = _abstracts.FirstOrDefault(a => a.Id == id);
+            return await Task.FromResult(response != null ? response : throw new Exception("Abstract not found"));
+        }
 
-		public async Task<Abstract> CreateAsync(Abstract @abstract)
-		{
-			var newAbstract = @abstract with { Id = ++_lastId };
-			
-			_abstracts.Add(newAbstract);
-			return await Task.FromResult(newAbstract);
-		}
+        public async Task<IEnumerable<Abstract>> GetAllAsync()
+        {
+            var result = _abstracts;
+            return await Task.FromResult(result.Any() ? result : throw new Exception("No abstracts found"));
+        }
 
-		public async Task<Abstract?> UpdateAsync(Abstract @abstract)
-		{
-			var index = _abstracts.FindIndex(a => a.Id == @abstract.Id);
-			if (index == -1) return null;
+        public async Task<Abstract> CreateAsync(Abstract @abstract)
+        {
+            var response = _abstracts.FirstOrDefault(a => a.Id == @abstract.Id);
+            if (response == null)
+            {
+                var newAbstract = @abstract with { Id = ++_lastId };
+                _abstracts.Add(newAbstract);
+                return await Task.FromResult(newAbstract);
+            }
+            else
+                throw new Exception("Abstract ID already exists");
+        }
 
-			var updatedAbstract = @abstract with { Id = _abstracts[index].Id };
-			_abstracts[index] = updatedAbstract;
-			return await Task.FromResult<Abstract?>(@abstract);
-		}
+        public async Task<Abstract> UpdateAsync(Abstract @abstract)
+        {
+            var index = _abstracts.FindIndex(a => a.Id == @abstract.Id);
+            if (index == -1)
+                throw new Exception("Abstract not found");
 
-		public async Task<bool> DeleteAsync(int id)
-		{
-			var index = _abstracts.FindIndex(a => a.Id == id);
-			if (index == -1) return await Task.FromResult(false);
+            var updatedAbstract = @abstract with { Id = _abstracts[index].Id };
+            _abstracts[index] = updatedAbstract;
+            return await Task.FromResult(updatedAbstract);
+        }
 
-			_abstracts.RemoveAt(index);
-			return await Task.FromResult(true);
-		}
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var index = _abstracts.FindIndex(a => a.Id == id);
+            if (index == -1)
+                throw new Exception("Abstract not found");
+
+            _abstracts.RemoveAt(index);
+            return await Task.FromResult(true);
+        }
 
         public async Task<Abstract> UpdateReview(int abstractId, Review review)
         {
             var abstractToUpdate = _abstracts.FirstOrDefault(a => a.Id == abstractId);
-            if (abstractToUpdate == null) throw new MissingFieldException("Abstract not found");
+            if (abstractToUpdate == null)
+                throw new Exception("Abstract not found");
 
             var reviewIndex = abstractToUpdate.Reviews.FindIndex(r => r.Id == review.Id);
-            if (reviewIndex == -1) throw new MissingFieldException("Review not found");
+            if (reviewIndex == -1)
+                throw new Exception("Review not found");
 
             abstractToUpdate.Reviews[reviewIndex] = review;
             return await Task.FromResult(abstractToUpdate);
