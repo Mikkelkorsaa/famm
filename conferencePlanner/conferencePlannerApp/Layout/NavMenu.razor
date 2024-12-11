@@ -1,4 +1,5 @@
-@inject IAuthService AuthService
+﻿@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
 
 <nav class="navbar navbar-expand-sm navbar-light custom-navbar">
 	<div class="container-fluid d-flex justify-content-start">
@@ -16,13 +17,33 @@
 				<AuthorizeView Roles="Admin">
 					<Authorized>
 						<li class="nav-item">
-							<NavLink class="nav-link" href="conference" style="color: white;">
-								<span aria-hidden="true"></span> Conference
+							<NavLink class="nav-link" href="profile" style="color: white;">
+								<span aria-hidden="true"></span> Min Profil
 							</NavLink>
 						</li>
 						<li class="nav-item">
-							<NavLink class="nav-link" href="profile" style="color: white;">
-								<span aria-hidden="true"></span> Min Profil
+							<NavLink class="nav-link" href="" style="color: white;">
+								<span aria-hidden="true"></span> Se konferencer
+							</NavLink>
+						</li>
+						<li class="nav-item">
+							<NavLink class="nav-link" href="conference" style="color: white;">
+								<span aria-hidden="true"></span> Opret Konference
+							</NavLink>
+						</li>
+						<li class="nav-item">
+							<NavLink class="nav-link" href="review" style="color: white;">
+								<span aria-hidden="true"></span> Se Bedømmelser
+							</NavLink>
+						</li>
+						<li class="nav-item">
+							<NavLink class="nav-link" href="createprogram" style="color: white;">
+								<span aria-hidden="true"></span> Opret Program
+							</NavLink>
+						</li>
+						<li class="nav-item">
+							<NavLink class="nav-link" href="uploadabstract" style="color: white;">
+								<span aria-hidden="true"></span> Indsend Abstrakt
 							</NavLink>
 						</li>
 					</Authorized>
@@ -32,17 +53,17 @@
 					<Authorized>
 						<li class="nav-item">
 							<NavLink class="nav-link" href="" style="color: white;">
-								<span aria-hidden="true"></span> Se konferencer
+								<span aria-hidden="true"></span> Se Konferencer
 							</NavLink>
 						</li>
 						<li class="nav-item">
 							<NavLink class="nav-link" href="conference" style="color: white;">
-								<span aria-hidden="true"></span> Opret Conference
+								<span aria-hidden="true"></span> Opret Konference
 							</NavLink>
 						</li>
 						<li class="nav-item">
 							<NavLink class="nav-link" href="review" style="color: white;">
-								<span aria-hidden="true"></span> Se reviews
+								<span aria-hidden="true"></span> Bedøm Abstrakter
 							</NavLink>
 						</li>
 
@@ -86,17 +107,25 @@
 
 			</ul>
 			<ul class="navbar-nav ms-auto">
+				<AuthorizeView Roles="Admin, Organizer, Reviewer, Applicant">
+					<Authorized>
 						<li class="nav-item">
 							<NavLink class="nav-link" @onclick="OnSignOut" style="color: white;">
 								<span aria-hidden="true"></span> Logud
 							</NavLink>
 						</li>
-					
+					</Authorized>
+					<NotAuthorized>
 						<li class="nav-item">
 							<NavLink class="nav-link" href="login" style="color: white;">
 								<span aria-hidden="true"></span> Login
 							</NavLink>
 						</li>
+					</NotAuthorized>
+				</AuthorizeView>
+
+
+				
 			</ul>
 		</div>
 	</div>
@@ -113,6 +142,6 @@
 	public async Task OnSignOut()
 	{
 		await AuthService.ClearCurrentUser();
-		StateHasChanged();
+		NavigationManager.NavigateTo("/", forceLoad: true);
 	}
 }
