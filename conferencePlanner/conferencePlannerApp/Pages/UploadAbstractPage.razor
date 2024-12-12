@@ -1,146 +1,165 @@
-﻿@page "/uploadabstract"
-@inject Blazored.LocalStorage.ILocalStorageService localStorage;
-@inject IAbstractService abstractService;
-@attribute [Authorize(Roles = "Admin")]
+﻿@page "/upload-abstract"
+@using conferencePlannerCore.Models
+@using conferencePlannerApp.Services.Interfaces
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@inject IImageService ImageService
+@inject IAbstractService AbstractService
+@inject NavigationManager NavigationManager
 
-<div class="container d-flex justify-content-center align-items-center min-vh-100">
-    <div class="col-md-8 bg-light rounded shadow p-4">
-        <h1 class="mb-3 mt-3 text-center">Indsend Abstrakt</h1>
-        <EditForm EditContext="@_editcontext" OnSubmit="@HandleSubmit" class="row p-3">
-            <FluentValidationValidator/>
+<PageTitle>Upload Abstract</PageTitle>
 
-            <div class="col-md-12 mb-3">
-                <label for="Name">Navn på indsender</label>
-                <InputText id="Name" @bind-Value="@_abstractModel.SenderName" class="form-control" />
-                <ValidationMessage For="@(() => _abstractModel.SenderName)" class="text-danger" />
-            </div>
-            <div class="col-md-12 mb-3">
-                <label for="PresenterEmail">Oplægsholder email</label>
-                <InputText id="PresenterEmail" @bind-Value="@_abstractModel.PresenterEmail" class="form-control" />
-                <ValidationMessage For="@(() => _abstractModel.PresenterEmail)" class="text-danger" />
-            </div>
-            <div class="col-md-12 mb-3">
-                <label for="Medforfattere">Medforfattere</label>
-                <div class="d-flex gap-2">
-                    <InputText id="Medforfattere" @bind-Value="@_newCoAuthor" class="form-control" />
-                    <div class="col-auto">
-                        <button type="button" class="btn btn-primary" @onclick="AddCoAuthor">Tilføj Medforfatter</button>
-                    </div>
-                </div>
-            </div>
-            @if (_abstractModel.CoAuthors?.Any() == true)
-            {
-                <div class="col-12 mb-3">
-                    <h5>Medforfattere:</h5>
-                    @foreach (var coAuth in _abstractModel.CoAuthors)
-                    {
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <span>@coAuth</span>
-                            <button type="button" class="btn btn-sm btn-danger" @onclick="() => RemoveCoAuthor(coAuth)">Fjern</button>
-                        </div>
-                    }
-                </div>
-            }
-            <div class="col-md-6 mb-3">
-                <label for="Organisation">Organisation</label>
-                <InputText id="Organisation" @bind-Value="@_abstractModel.Organization" class="form-control" />
-                <ValidationMessage For="@(() => _abstractModel.Organization)" class="text-danger" />
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="Titel">Titel</label>
-                <InputText id="Titel" @bind-Value="@_abstractModel.Title" class="form-control" />
-                <ValidationMessage For="@(() => _abstractModel.Title)" class="text-danger" />
-            </div>
-            <div class="col-md-12 mb-3">
-                <label for="Nøgleværdier">Nøgleværdier</label>
-                <InputTextArea id="Nøgleværdier" @bind-Value="@_abstractModel.KeyValues" class="form-control" />
-                <ValidationMessage For="@(() => _abstractModel.KeyValues)" class="text-danger" />
-            </div>
-            <div class="col-md-12 mb-3">
-                <label for="AbstraktTekst">Abstrakt tekst</label>
-                <InputTextArea id="AbstraktTekst" @bind-Value="@_abstractModel.AbstractText" class="form-control" />
-                <ValidationMessage For="@(() => _abstractModel.AbstractText)" class="text-danger" />
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="Kategori">Kategori</label>
-                <InputSelect id="Kategori" @bind-Value="@_abstractModel.Category" class="form-control">
-                    <option value="">Vælg kategori &#11167;</option>
-                    @foreach (var cat in _categories)
-                    {
-                        <option value="@cat">@cat</option>
-                    }
-                </InputSelect>
-                <ValidationMessage For="@(() => _abstractModel.Category)" class="text-danger" />
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label for="Upload Fil">Upload Fil</label>
-                <UploadImageComponent OnFileUploaded="HandleFileData" AcceptedFileTypes="@_imgFileTypes" AcceptedSize="_maxImgSize"/>
-            </div>
-            <div class="col-12 mb-3">
-                <button type="submit" class="btn btn-primary">Indsend</button>
-            </div>
-        </EditForm>
-    </div>
-</div>
-
-@code {
-    private Abstract _abstractModel = new() { CoAuthors = new List<string>() };
-    private string _abstractKey = "abstract";
-    private List<string> _categories = new List<string> { "Soda", "Kamboocha", "Coffee", "Tee" };
-    private string _newCoAuthor = "";
-    private EditContext? _editcontext;
-    private string _imgFileTypes = "image/jpeg, image/png, image/jpg";
-    private int _maxImgSize = 10 * 1024 * 1024;
-    private AbstractModelValidator? _validator;
-
-    private void HandleFileData(string data)
+<RadzenCard class="m-4">
+    @if (!string.IsNullOrEmpty(message))
     {
-        _abstractModel.Picture = data;
-        StateHasChanged();
+        <div class="alert @messageClass mb-4" role="alert">
+            @message
+        </div>
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        _validator = new AbstractModelValidator();
-        _abstractModel = new Abstract { CoAuthors = new List<string>() };
-        _editcontext = new EditContext(_abstractModel);
+    <RadzenTemplateForm TItem="Abstract" Data="@_abstract" OnSubmit="@HandleSubmit">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <RadzenLabel Text="Afsenders navn" />
+                <RadzenTextBox @bind-Value="@_abstract.SenderName" Class="w-100" 
+                    Name="SenderName" Required="true" />
+                <RadzenRequiredValidator Component="SenderName" Text="Navn er påkrævet" />
+            </div>
 
-        var storedAbstract = await localStorage.GetItemAsync<Abstract>(_abstractKey);
-        if (storedAbstract != null)
+            <div class="col-md-6 mb-3">
+                <RadzenLabel Text="Præsenterende E-mail" />
+                <RadzenTextBox @bind-Value="@_abstract.PresenterEmail" Class="w-100" 
+                    Name="PresenterEmail" Required="true" />
+                <RadzenRequiredValidator Component="PresenterEmail" Text="E-mail er påkrævet" />
+                <RadzenEmailValidator Component="PresenterEmail" Text="Indtast venligst en gyldig e-mail" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <RadzenLabel Text="Organisation" />
+                <RadzenTextBox @bind-Value="@_abstract.Organization" Class="w-100" 
+                    Name="Organization" Required="true" />
+                <RadzenRequiredValidator Component="Organization" Text="Organisation er påkrævet" />
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <RadzenLabel Text="Kategori" />
+                <RadzenDropDown @bind-Value="@_abstract.Category" Class="w-100"
+                    Data="@categories" Name="Category" Required="true" />
+                <RadzenRequiredValidator Component="Category" Text="Kategori er påkrævet" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <RadzenLabel Text="Titel" />
+            <RadzenTextBox @bind-Value="@_abstract.Title" Class="w-100" 
+                Name="Title" Required="true" />
+            <RadzenRequiredValidator Component="Title" Text="Titel er påkrævet" />
+        </div>
+
+        <div class="mb-3">
+            <RadzenLabel Text="Nøgleord (kommasepareret)" />
+            <RadzenTextBox @bind-Value="@_abstract.KeyValues" Class="w-100" 
+                Name="KeyValues" Required="true" />
+            <RadzenRequiredValidator Component="KeyValues" Text="Nøgleord er påkrævet" />
+        </div>
+
+        <div class="mb-3">
+            <RadzenLabel Text="Abstract tekst" />
+            <RadzenTextArea @bind-Value="@_abstract.AbstractText" Class="w-100" 
+                Rows="5" Name="AbstractText" Required="true" />
+            <RadzenRequiredValidator Component="AbstractText" Text="Abstract tekst er påkrævet" />
+        </div>
+
+        <div class="mb-3">
+            <RadzenLabel Text="Medforfattere (én pr. linje)" />
+            <RadzenTextArea @bind-Value="@coAuthorsText" Class="w-100" 
+                Rows="3" Change=@(async(string value) => await OnCoAuthorsChange(value)) />
+        </div>
+
+        <div class="mb-3">
+            <RadzenLabel Text="Billede" />
+            <InputFile OnChange="@OnFileSelected" class="w-100" accept="image/*" />
+            @if (!string.IsNullOrEmpty(_abstract.Picture))
+            {
+                <div class="mt-2">
+                    <img src="@_abstract.Picture" style="max-width: 200px;" alt="Valgt billede" />
+                </div>
+            }
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Indsend Abstract" 
+                ButtonStyle="ButtonStyle.Primary" Class="mt-3" Disabled="@isSubmitting" />
+        </div>
+    </RadzenTemplateForm>
+</RadzenCard>
+
+@code {
+    private Abstract _abstract = new();
+    private string coAuthorsText = string.Empty;
+    private bool isSubmitting = false;
+    private string? message;
+    private string messageClass = "";
+    private List<string> categories = new() 
+    { 
+        "Forskningsartikel", 
+        "Poster", 
+        "Workshop", 
+        "Paneldiskussion" 
+    };
+
+    protected override void OnInitialized()
+    {
+        _abstract.ConferenceId = 1;
+    }
+
+    private async Task OnCoAuthorsChange(string value)
+    {
+        coAuthorsText = value;
+        _abstract.CoAuthors = value.Split(new[] { Environment.NewLine }, 
+            StringSplitOptions.RemoveEmptyEntries).ToList();
+        await Task.CompletedTask;
+    }
+
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        try
         {
-            _abstractModel = storedAbstract;
-            _abstractModel.CoAuthors ??= new List<string>();
-            _editcontext = new EditContext(_abstractModel);
+            var file = e.File;
+            var result = await ImageService.UploadImageAsync(file);
+            _abstract.Picture = result.FileName;
+            ShowMessage("Billede blev uploadet", true);
+        }
+        catch (ImageServiceException ex)
+        {
+            ShowMessage($"Kunne ikke uploade billede: {ex.Message}", false);
         }
     }
 
     private async Task HandleSubmit()
     {
-        if(_editcontext!.Validate())
-        await abstractService.AddAbstract(_abstractModel);
-        _abstractModel = new Abstract{CoAuthors = new List<string>()};
-        await UpdateLocalStorage();
-    }
-
-    private async Task AddCoAuthor()
-    {
-        if (!string.IsNullOrWhiteSpace(_newCoAuthor))
+        try
         {
-            _abstractModel.CoAuthors.Add(_newCoAuthor);
-            _newCoAuthor = "";
-            await UpdateLocalStorage();
-            StateHasChanged();
+            isSubmitting = true;
+            var savedAbstract = await AbstractService.AddAbstract(_abstract);
+            ShowMessage("Abstract blev indsendt", true);
+            Console.WriteLine(_abstract);
+        }
+        catch (HttpRequestException ex)
+        {
+            ShowMessage($"Kunne ikke indsende abstract: {ex.Message}", false);
+        }
+        finally
+        {
+            isSubmitting = false; 
         }
     }
 
-    private async Task RemoveCoAuthor(string coAuthor)
+    private void ShowMessage(string text, bool isSuccess)
     {
-        _abstractModel.CoAuthors.Remove(coAuthor);
-        await UpdateLocalStorage();
-        StateHasChanged();
+        message = text;
+        messageClass = isSuccess ? "alert-success" : "alert-danger";
     }
-
-    private async Task UpdateLocalStorage() =>
-        await localStorage.SetItemAsync(_abstractKey, _abstractModel);
 }
