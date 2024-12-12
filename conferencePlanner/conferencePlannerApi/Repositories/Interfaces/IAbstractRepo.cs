@@ -14,7 +14,7 @@ namespace conferencePlannerApi.Repositories.Interfaces
                 // Input: Abstract object without ID
                 // Manipulation: Saves to database
                 // Output: Abstract object with generated ID
-                Task<Abstract?> CreateAsync(Abstract @abstract);
+                Task<Abstract> CreateAsync(Abstract @abstract);
 
                 // Input: Abstract ID and updated Abstract object
                 // Manipulation: Updates existing record

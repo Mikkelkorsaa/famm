@@ -13,7 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IUserRepo, MongoDBUserRepo>();
-builder.Services.AddSingleton<IConferenceRepo, LocalConferenceRepo>();
+builder.Services.AddSingleton<IConferenceRepo, MongoDBConferenceRepo>();
 builder.Services.AddSingleton<IAbstractRepo, MongoDBAbstractRepo>();
 
 builder.Services.Configure<EmailConfiguration>(
