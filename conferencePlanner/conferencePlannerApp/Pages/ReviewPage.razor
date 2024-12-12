@@ -5,53 +5,46 @@
 @inject IAbstractService AbstractService
 @inject IJSRuntime JSRuntime
 @attribute [Authorize(Roles = "Admin, Organizer, Reviewer")]
-@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject IConferenceService ConferenceService
 
-@if (_conferenceId == null)
-{
-    <SimpleConferenceComponent conferenceId="@_conferenceId"></SimpleConferenceComponent>
-}
-else
-{
-    <div class="container-fluid">
-        <div class="filler" />
-        <div class="row no-gutters">
-            <div class="@sidebarColumnClass">
-                <AbstractListComponent @ref="_abstractListComponent"
-                                       AbstractList="@_abstractList"
-                                       OnAbstractSelected="SetAbstract"
-                                       OnCollapseChanged="HandleCollapseChanged">
-                </AbstractListComponent>
-            </div>
-            <div class="@contentColumnClass">
-                <div class="row">
-                    <div class="view-abstract-column">
-                        @if (_currentAbstract != null)
-                        {
-                            <ViewAbstractComponent SelectedAbstract="@_currentAbstract"></ViewAbstractComponent>
-                        }
-                    </div>
-                    <div class="review-column">
-                        @if (_currentAbstract != null)
-                        {
-                            <AuthorizeView Roles="Organizer">
-                                <Authorized>
-                                    <FinalReviewComponent SelectedAbstract="@_currentAbstract" />
-                                </Authorized>
-                            </AuthorizeView>
-                            <AuthorizeView Roles="Reviewer">
-                                <Authorized>
-                                    <ReviewComponent SelectedAbstract="@_currentAbstract" />
-                                </Authorized>
-                            </AuthorizeView>
-                        }
-                    </div>
+<div class="container-fluid">
+    <div class="filler" />
+    <div class="row no-gutters">
+        <div class="@sidebarColumnClass">
+            <AbstractListComponent @ref="_abstractListComponent"
+                                   AbstractList="@_abstractList"
+                                   OnAbstractSelected="SetAbstract"
+                                   OnCollapseChanged="HandleCollapseChanged">
+            </AbstractListComponent>
+        </div>
+        <div class="@contentColumnClass">
+            <div class="row">
+                <div class="view-abstract-column">
+                    @if (_currentAbstract != null)
+                    {
+                        <ViewAbstractComponent SelectedAbstract="@_currentAbstract"></ViewAbstractComponent>
+                    }
+                </div>
+                <div class="review-column">
+                    @if (_currentAbstract != null)
+                    {
+                        <AuthorizeView Roles="Organizer">
+                            <Authorized>
+                                <FinalReviewComponent SelectedAbstract="@_currentAbstract" />
+                            </Authorized>
+                        </AuthorizeView>
+                        <AuthorizeView Roles="Reviewer">
+                            <Authorized>
+                                <ReviewComponent SelectedAbstract="@_currentAbstract" />
+                            </Authorized>
+                        </AuthorizeView>
+                    }
                 </div>
             </div>
         </div>
     </div>
-}
+</div>
 
 <script>
     window.registerHandlers = (sidebarRef, dotNetHelper) => {
@@ -134,13 +127,6 @@ else
     .sidebar-column-collapsed {
         transition: all 0.5s ease;
     }
-    .sidebar-open{
-
-    }
-    .sidebar-closed{
-
-    }
-
 </style>
 
 @code {
@@ -150,7 +136,6 @@ else
     private bool isSidebarCollapsed;
     private int windowWidth;
     private User? _user;
-
     private int? _conferenceId;
     private Conference? _conference;
 
@@ -162,32 +147,30 @@ else
         ? "col-11 sidebar-transition content-column sidebar-column-collapsed"
         : "col-10 sidebar-transition content-column sidebar-column-expanded";
 
-
     protected override async Task OnInitializedAsync()
     {
+        _conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
         _abstractList = await AbstractService.GetAbstracts();
         _user = await localStorage.GetItemAsync<User>("user");
-        _conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
-
     }
 
-    private async Task SetConference(int id)
+    protected override async Task OnParametersSetAsync()
     {
-        _conference = await ConferenceService.GetByIdAsync(id);
-        StateHasChanged();
+        if (_conferenceId.HasValue)
+        {
+            _conference = await ConferenceService.GetByIdAsync(_conferenceId.Value);
+        }
     }
 
-  protected override async Task OnAfterRenderAsync(bool firstRender)
-{
-    if (firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-       
-        var dotNetRef = DotNetObjectReference.Create(this);
-        await JSRuntime.InvokeVoidAsync("registerHandlers", _abstractListComponent?.PublicSidebarRef, dotNetRef);
-        windowWidth = await JSRuntime.InvokeAsync<int>("eval", "window.innerWidth");
+        if (firstRender)
+        {
+            var dotNetRef = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("registerHandlers", _abstractListComponent?.PublicSidebarRef, dotNetRef);
+            windowWidth = await JSRuntime.InvokeAsync<int>("eval", "window.innerWidth");
+        }
     }
-}
-
 
     [JSInvokable]
     public void OnResize(int width)
@@ -203,13 +186,9 @@ else
 
     private void HandleCollapseChanged(bool isCollapsed)
     {
-        if (isSidebarCollapsed)
-        {
-            isSidebarCollapsed = isCollapsed;
-            StateHasChanged();
-        }
+        isSidebarCollapsed = isCollapsed;
+        StateHasChanged();
     }
-
 
     [JSInvokable]
     public void CollapseSidebar()
@@ -220,6 +199,7 @@ else
             StateHasChanged();
         }
     }
+
     public async ValueTask DisposeAsync()
     {
         await JSRuntime.InvokeVoidAsync("unregisterHandlers");

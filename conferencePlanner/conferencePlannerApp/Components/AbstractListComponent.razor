@@ -192,12 +192,11 @@
         await OnAbstractSelected.InvokeAsync(abstractItem);
     }
 
-    private void ToggleCollapse()
+    private async Task ToggleCollapse()
     {
         IsCollapsed = !IsCollapsed;
-        
-        OnCollapseChanged.InvokeAsync(IsCollapsed);
-       
+        await OnCollapseChanged.InvokeAsync(IsCollapsed);
+        StateHasChanged();
     }
 
     public async ValueTask DisposeAsync()
