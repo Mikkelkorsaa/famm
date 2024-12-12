@@ -1,0 +1,111 @@
+﻿@using Radzen
+@inject DialogService DialogService
+
+<RadzenScheduler @ref=@scheduler SlotRender=@OnSlotRender style="height: 768px;" TItem="Session" Data=@Sessions StartProperty="Start" EndProperty="End"
+    TextProperty="Text" SelectedIndex="2"
+    SlotSelect=@OnSlotSelect SessionSelect=@OnSessionSelect SessionRender=@OnSessionRender
+    SessionMove=@OnSessionMove >
+    <RadzenDayView />
+    <RadzenWeekView />
+    <RadzenMonthView />
+</RadzenScheduler>
+
+<EventConsole @ref=@console />
+
+@code {
+    RadzenScheduler<Session> scheduler;
+    EventConsole console;
+    Dictionary<DateTime, string> events = new Dictionary<DateTime, string>();
+
+    IList<Session> Sessions = new List<Session>
+    {
+        new Session { Start = DateTime.Today.AddDays(-2), End = DateTime.Today.AddDays(-2), Text = "Birthday" },
+        new Session { Start = DateTime.Today.AddDays(-11), End = DateTime.Today.AddDays(-10), Text = "Day off" },
+        new Session { Start = DateTime.Today.AddDays(-10), End = DateTime.Today.AddDays(-8), Text = "Work from home" },
+        new Session { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(12), Text = "Online meeting" },
+        new Session { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(13), Text = "Skype call" },
+        new Session { Start = DateTime.Today.AddHours(14), End = DateTime.Today.AddHours(14).AddMinutes(30), Text = "Dentist Session" },
+        new Session { Start = DateTime.Today.AddDays(1), End = DateTime.Today.AddDays(12), Text = "Vacation" },
+    };
+
+    void OnSlotRender(SchedulerSlotRenderEventArgs args)
+    {
+        // Highlight today in month view
+        if (args.View.Text == "Month" && args.Start.Date == DateTime.Today)
+        {
+            args.Attributes["style"] = "background: var(--rz-scheduler-highlight-background-color, rgba(255,220,40,.2));";
+        }
+
+        // Highlight working hours (9-18)
+        if ((args.View.Text == "Week" || args.View.Text == "Day") && args.Start.Hour > 8 && args.Start.Hour < 19)
+        {
+            args.Attributes["style"] = "background: var(--rz-scheduler-highlight-background-color, rgba(255,220,40,.2));";
+        }
+    }
+
+    async Task OnSlotSelect(SchedulerSlotSelectEventArgs args)
+    {
+        console.Log($"SlotSelect: Start={args.Start} End={args.End}");
+
+        if (args.View.Text != "Year")
+        {
+            Session data = await DialogService.OpenAsync<AddSchedularComponent>("Add Session",
+                new Dictionary<string, object> { { "Start", args.Start }, { "End", args.End } });
+
+            if (data != null)
+            {
+                Sessions.Add(data);
+                // Either call the Reload method or reassign the Data property of the Scheduler
+                await scheduler.Reload();
+            }
+        }
+    }
+
+    async Task OnSessionSelect(SchedulerSessionSelectEventArgs<Session> args)
+    {
+        console.Log($"SessionSelect: Session={args.Data.Text}");
+
+        var copy = new Session
+        {
+            Start = args.Data.Start,
+            End = args.Data.End,
+            Text = args.Data.Text
+        };
+
+        var data = await DialogService.OpenAsync<EditSchedularComponent>("Edit Session", new Dictionary<string, object> { { "Session", copy } });
+
+        if (data != null)
+        {
+            // Update the Session
+            args.Data.Start = data.Start;
+            args.Data.End = data.End;
+            args.Data.Text = data.Text;
+        }
+
+        await scheduler.Reload();
+    }
+
+    void OnSessionRender(SchedulerSessionRenderEventArgs<Session> args)
+    {
+        // Never call StateHasChanged in SessionRender - would lead to infinite loop
+
+        if (args.Data.Text == "Birthday")
+        {
+            args.Attributes["style"] = "background: red";
+        }
+    }
+
+    async Task OnSessionMove(SchedulerSessionMoveEventArgs args)
+    {
+        var draggedSession = Sessions.FirstOrDefault(x => x == args.Session.Data);
+
+        if (draggedSession != null)
+        {
+            draggedSession.Start = draggedSession.Start + args.TimeSpan;
+
+            draggedSession.End = draggedSession.End + args.TimeSpan;
+
+            await scheduler.Reload();
+        }
+    }
+}

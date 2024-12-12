@@ -1,4 +1,4 @@
-﻿@inject IUploadFileService UploadFileService
+﻿@inject IImageService imageService;
 @inject IJSRuntime JSRuntime
 
 
@@ -24,9 +24,9 @@
 	private async Task HandleSelectedFile(InputFileChangeEventArgs e)
 	{
 		var file = e.File;
-		var imgString= await UploadFileService.ConvertToBase64String(file);
-		PreviewImage(file, imgString);
-		await OnFileUploaded.InvokeAsync(imgString);
+		//var imgString= await UploadFileService.ConvertToBase64String(file);
+		//PreviewImage(file, imgString);
+		//await OnFileUploaded.InvokeAsync(imgString);
 	}
 
 	private void PreviewImage(IBrowserFile file, string imgstring)

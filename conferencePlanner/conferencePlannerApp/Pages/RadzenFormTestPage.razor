@@ -1,0 +1,119 @@
+﻿@page "/user-form"
+@using FluentValidation;
+@using Blazored.FluentValidation;
+@using Microsoft.AspNetCore.Components.Forms
+@using Radzen
+@using Radzen.Blazor
+@using System.ComponentModel.DataAnnotations
+
+<RadzenContent>
+    <div class="row">
+        <div class="col-md-6">
+            <RadzenTemplateForm TItem="UserModel" Data=@user Submit=@OnSubmit>
+                <RadzenFieldset Text="User Information">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <RadzenLabel Text="First Name" />
+                        </div>
+                        <div class="col-md-8">
+                            <RadzenTextBox @bind-Value=@user.FirstName class="w-100" Name="FirstName" />
+                            <RadzenRequiredValidator Component="FirstName" Text="First name is required" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <RadzenLabel Text="Last Name" />
+                        </div>
+                        <div class="col-md-8">
+                            <RadzenTextBox @bind-Value=@user.LastName class="w-100" Name="LastName" />
+                            <RadzenRequiredValidator Component="LastName" Text="Last name is required" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <RadzenLabel Text="Age" />
+                        </div>
+                        <div class="col-md-8">
+                            <RadzenNumeric @bind-Value=@user.Age class="w-100" Min="1" Max="120" />
+                            <RadzenRequiredValidator Component="Age" Text="Age is required" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <RadzenLabel Text="Email" />
+                        </div>
+                        <div class="col-md-8">
+                            <RadzenTextBox @bind-Value=@user.Email class="w-100" Name="Email" />
+                            <RadzenRequiredValidator Component="Email" Text="Email is required" />
+                            <RadzenEmailValidator Component="Email" Text="Please enter a valid email" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <RadzenLabel Text="Password" />
+                        </div>
+                        <div class="col-md-8">
+                            <RadzenPassword @bind-Value=@user.Password class="w-100" Name="Password" />
+                            <RadzenRequiredValidator Component="Password" Text="Password is required" />
+                            <RadzenLengthValidator Component="Password" Min="6" Text="Password should be at least 6 characters" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <RadzenLabel Text="Address" />
+                        </div>
+                        <div class="col-md-8">
+                            <RadzenTextArea @bind-Value=@user.Address class="w-100" Name="Address" />
+                            <RadzenRequiredValidator Component="Address" Text="Address is required" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 text-right">
+                            <RadzenButton ButtonType="ButtonType.Submit" Text="Submit" ButtonStyle="ButtonStyle.Primary" />
+                        </div>
+                    </div>
+                </RadzenFieldset>
+            </RadzenTemplateForm>
+        </div>
+    </div>
+</RadzenContent>
+
+@code {
+    private UserModel user = new UserModel();
+
+    private void OnSubmit(UserModel model)
+    {
+        // Handle form submission here
+        Console.WriteLine($"Form submitted for {model.FirstName} {model.LastName}");
+    }
+
+    public class UserModel
+    {
+        [Required]
+        public string FirstName { get; set; }
+
+        [Required]
+        public string LastName { get; set; }
+
+        [Required]
+        [Range(1, 120)]
+        public int Age { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [MinLength(6)]
+        public string Password { get; set; }
+
+        [Required]
+        public string Address { get; set; }
+    }
+}

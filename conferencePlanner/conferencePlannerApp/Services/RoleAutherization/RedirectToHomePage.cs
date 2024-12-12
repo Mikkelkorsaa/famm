@@ -4,7 +4,7 @@ namespace conferencePlannerApp.Services.RoleAutherization
 {
     public class RedirectToHomePage : ComponentBase
     {
-        private NavigationManager NavigationManager { get; set; }
+        private readonly NavigationManager NavigationManager;
 
         public RedirectToHomePage(NavigationManager navigationManager)
         {
