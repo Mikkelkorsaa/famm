@@ -156,22 +156,6 @@
             ShowMessage($"Kunne ikke uploade billede: {ex.Message}", false);
         }
     }
-
-    private async Task PreviewImage(string FileName)
-    {
-        try
-        {
-            var response = await ImageService.GetImageAsync(FileName);
-            var img = response.Content;
-            chosenPicture = Convert.ToBase64String(img);
-            Console.WriteLine(chosenPicture);
-        }
-        catch (Exception ex)
-        {
-            ShowMessage($"Der opstod en uventet fejl: {ex.Message}", false);
-        }
-    }
-
     private async Task HandleSubmit()
     {
         try
