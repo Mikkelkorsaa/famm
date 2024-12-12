@@ -7,6 +7,7 @@
 @attribute [Authorize(Roles = "Admin, Organizer, Reviewer")]
 @inject Blazored.LocalStorage.ILocalStorageService localStorage;
 @inject IConferenceService ConferenceService
+
 @if (_conferenceId == null)
 {
     <SimpleConferenceComponent conferenceId="@_conferenceId"></SimpleConferenceComponent>
@@ -51,6 +52,7 @@ else
         </div>
     </div>
 }
+
 <script>
     window.registerHandlers = (sidebarRef, dotNetHelper) => {
         document.addEventListener("click", (event) => {
@@ -147,36 +149,39 @@ else
     private Conference? _conference;
 
     private string sidebarColumnClass => isSidebarCollapsed
-      ? "col-2 sidebar-transition sidebar-column-collapsed"
-      : "col-1 sidebar-transition sidebar-column-expanded";
+        ? "col-1 sidebar-transition sidebar-column-expanded"
+        : "col-2 sidebar-transition sidebar-column-collapsed";
 
     private string contentColumnClass => isSidebarCollapsed
-        ? "col-11 sidebar-transition content-column sidebar-column-collapsed"
-        : "col-10 sidebar-transition content-column sidebar-column-expanded";
+        ? "col-10 sidebar-transition content-column sidebar-column-expanded"
+        : "col-11 sidebar-transition content-column sidebar-column-collapsed";
+
 
     protected override async Task OnInitializedAsync()
     {
         _abstractList = await AbstractService.GetAbstracts();
         _user = await localStorage.GetItemAsync<User>("user");
         _conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
-        
+
     }
-   
+
     private async Task SetConference(int id)
     {
         _conference = await ConferenceService.GetByIdAsync(id);
         StateHasChanged();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+    if (firstRender)
     {
-        if (firstRender)
-        {
-            var dotNetRef = DotNetObjectReference.Create(this);
-            await JSRuntime.InvokeVoidAsync("registerHandlers", _abstractListComponent?.PublicSidebarRef, dotNetRef);
-            windowWidth = await JSRuntime.InvokeAsync<int>("eval", "window.innerWidth");
-        }
+        Console.WriteLine("OnAfterRenderAsync firstRender");
+        var dotNetRef = DotNetObjectReference.Create(this);
+        await JSRuntime.InvokeVoidAsync("registerHandlers", _abstractListComponent?.PublicSidebarRef, dotNetRef);
+        windowWidth = await JSRuntime.InvokeAsync<int>("eval", "window.innerWidth");
     }
+}
+
 
     [JSInvokable]
     public void OnResize(int width)
@@ -192,12 +197,18 @@ else
 
     private void HandleCollapseChanged(bool isCollapsed)
     {
+        Console.WriteLine($"HandleCollapseChanged called with isCollapsed: {isCollapsed}");
         if (isSidebarCollapsed != isCollapsed)
         {
             isSidebarCollapsed = isCollapsed;
-            StateHasChanged();
+            Console.WriteLine($"isSidebarCollapsed updated to: {isSidebarCollapsed}");
+            InvokeAsync(StateHasChanged);
         }
+        else 
+        isSidebarCollapsed = !isCollapsed;
+
     }
+
 
     [JSInvokable]
     public void CollapseSidebar()
