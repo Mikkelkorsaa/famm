@@ -17,19 +17,18 @@
         </div>
     }
 
-    <RadzenTemplateForm TItem="Abstract" Data="@_abstract" OnSubmit="@HandleSubmit">
+    <RadzenTemplateForm TItem="Abstract" Data="@_abstract" Submit="@HandleSubmit" Method="POST">
         <div class="row">
             <div class="col-md-6 mb-3">
                 <RadzenLabel Text="Afsenders navn" />
-                <RadzenTextBox @bind-Value="@_abstract.SenderName" Class="w-100" 
-                    Name="SenderName" Required="true" />
+                <RadzenTextBox @bind-Value="@_abstract.SenderName" Class="w-100" Name="SenderName" Required="true" />
                 <RadzenRequiredValidator Component="SenderName" Text="Navn er påkrævet" />
             </div>
 
             <div class="col-md-6 mb-3">
                 <RadzenLabel Text="Præsenterende E-mail" />
-                <RadzenTextBox @bind-Value="@_abstract.PresenterEmail" Class="w-100" 
-                    Name="PresenterEmail" Required="true" />
+                <RadzenTextBox @bind-Value="@_abstract.PresenterEmail" Class="w-100" Name="PresenterEmail"
+                    Required="true" />
                 <RadzenRequiredValidator Component="PresenterEmail" Text="E-mail er påkrævet" />
                 <RadzenEmailValidator Component="PresenterEmail" Text="Indtast venligst en gyldig e-mail" />
             </div>
@@ -38,44 +37,42 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <RadzenLabel Text="Organisation" />
-                <RadzenTextBox @bind-Value="@_abstract.Organization" Class="w-100" 
-                    Name="Organization" Required="true" />
+                <RadzenTextBox @bind-Value="@_abstract.Organization" Class="w-100" Name="Organization"
+                    Required="true" />
                 <RadzenRequiredValidator Component="Organization" Text="Organisation er påkrævet" />
             </div>
 
             <div class="col-md-6 mb-3">
                 <RadzenLabel Text="Kategori" />
-                <RadzenDropDown @bind-Value="@_abstract.Category" Class="w-100"
-                    Data="@categories" Name="Category" Required="true" />
+                <RadzenDropDown @bind-Value="@_abstract.Category" Class="w-100" Data="@categories" Name="Category"
+                    Required="true" />
                 <RadzenRequiredValidator Component="Category" Text="Kategori er påkrævet" />
             </div>
         </div>
 
         <div class="mb-3">
             <RadzenLabel Text="Titel" />
-            <RadzenTextBox @bind-Value="@_abstract.Title" Class="w-100" 
-                Name="Title" Required="true" />
+            <RadzenTextBox @bind-Value="@_abstract.Title" Class="w-100" Name="Title" Required="true" />
             <RadzenRequiredValidator Component="Title" Text="Titel er påkrævet" />
         </div>
 
         <div class="mb-3">
             <RadzenLabel Text="Nøgleord (kommasepareret)" />
-            <RadzenTextBox @bind-Value="@_abstract.KeyValues" Class="w-100" 
-                Name="KeyValues" Required="true" />
+            <RadzenTextBox @bind-Value="@_abstract.KeyValues" Class="w-100" Name="KeyValues" Required="true" />
             <RadzenRequiredValidator Component="KeyValues" Text="Nøgleord er påkrævet" />
         </div>
 
         <div class="mb-3">
             <RadzenLabel Text="Abstract tekst" />
-            <RadzenTextArea @bind-Value="@_abstract.AbstractText" Class="w-100" 
-                Rows="5" Name="AbstractText" Required="true" />
+            <RadzenTextArea @bind-Value="@_abstract.AbstractText" Class="w-100" Rows="5" Name="AbstractText"
+                Required="true" />
             <RadzenRequiredValidator Component="AbstractText" Text="Abstract tekst er påkrævet" />
         </div>
 
         <div class="mb-3">
             <RadzenLabel Text="Medforfattere (én pr. linje)" />
-            <RadzenTextArea @bind-Value="@coAuthorsText" Class="w-100" 
-                Rows="3" Change=@(async(string value) => await OnCoAuthorsChange(value)) />
+            <RadzenTextArea @bind-Value="@coAuthorsText" Class="w-100" Rows="3" Change=@(async(string value) => await
+                OnCoAuthorsChange(value)) />
         </div>
 
         <div class="mb-3">
@@ -90,25 +87,37 @@
         </div>
 
         <div class="d-flex justify-content-end">
-            <RadzenButton ButtonType="ButtonType.Submit" Text="Indsend Abstract" 
-                ButtonStyle="ButtonStyle.Primary" Class="mt-3" Disabled="@isSubmitting" />
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Indsend Abstract" ButtonStyle="ButtonStyle.Primary"
+                Class="mt-3" Disabled="@isSubmitting" />
         </div>
     </RadzenTemplateForm>
 </RadzenCard>
 
 @code {
-    private Abstract _abstract = new();
+    private Abstract _abstract = new()
+        {
+            ConferenceId = 1,
+            SenderName = string.Empty,
+            PresenterEmail = string.Empty,
+            Organization = string.Empty,
+            Title = string.Empty,
+            KeyValues = string.Empty,
+            AbstractText = string.Empty,
+            Category = string.Empty,
+            Picture = string.Empty,
+            CoAuthors = new List<string>()
+        };
     private string coAuthorsText = string.Empty;
     private bool isSubmitting = false;
     private string? message;
     private string messageClass = "";
-    private List<string> categories = new() 
-    { 
-        "Forskningsartikel", 
-        "Poster", 
-        "Workshop", 
-        "Paneldiskussion" 
-    };
+    private List<string> categories = new()
+{
+"Forskningsartikel",
+"Poster",
+"Workshop",
+"Paneldiskussion"
+};
 
     protected override void OnInitialized()
     {
@@ -118,8 +127,10 @@
     private async Task OnCoAuthorsChange(string value)
     {
         coAuthorsText = value;
-        _abstract.CoAuthors = value.Split(new[] { Environment.NewLine }, 
-            StringSplitOptions.RemoveEmptyEntries).ToList();
+        _abstract.CoAuthors = value.Split(new[] { Environment.NewLine },
+        StringSplitOptions.RemoveEmptyEntries)
+        .Where(s => !string.IsNullOrWhiteSpace(s))
+        .ToList();
         await Task.CompletedTask;
     }
 
@@ -143,17 +154,40 @@
         try
         {
             isSubmitting = true;
+            ShowMessage("Sender abstract...", true);
+
+            // Ensure the date is set
+            if (_abstract.ConferenceId <= 0)
+            {
+                _abstract.ConferenceId = 1; // Default conference ID
+            }
+
             var savedAbstract = await AbstractService.AddAbstract(_abstract);
-            ShowMessage("Abstract blev indsendt", true);
-            Console.WriteLine(_abstract);
+
+            if (savedAbstract != null && savedAbstract.Id > 0)
+            {
+                ShowMessage("Abstract blev indsendt successfully", true);
+                // Clear form or redirect
+                _abstract = new();
+                coAuthorsText = string.Empty;
+            }
+            else
+            {
+                ShowMessage("Der opstod en fejl ved indsendelse af abstract", false);
+            }
         }
         catch (HttpRequestException ex)
         {
             ShowMessage($"Kunne ikke indsende abstract: {ex.Message}", false);
         }
+        catch (Exception ex)
+        {
+            ShowMessage($"Der opstod en uventet fejl: {ex.Message}", false);
+        }
         finally
         {
-            isSubmitting = false; 
+            isSubmitting = false;
+            StateHasChanged();
         }
     }
 
