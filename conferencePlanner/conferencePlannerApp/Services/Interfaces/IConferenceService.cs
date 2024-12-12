@@ -19,13 +19,20 @@ namespace conferencePlannerApp.Services.Interfaces
         /// <summary>
         /// gets the conference from the cashe. if no cashe contact api
         /// </summary>
-        /// <returns>Conference object</returns>
-        Task<Conference> GetCurrentConferenceIdAsync();
+        /// <returns>Conference Id</returns>
+        Task<int?> GetCurrentConferenceIdAsync();
         /// <summary>
         /// sets the conference id in localstorage
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Conference Object</returns>
         Task<Conference> SetCurrentConferenceAsync(int id);
+        /// <summary>
+        /// Gets all abstracts in a conference
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>A list of abstracs</returns>
+        Task<List<Abstract>> GetAllAbstractsByIdAsync(int id);
+
     }
 }

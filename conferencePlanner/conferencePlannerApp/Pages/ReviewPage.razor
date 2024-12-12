@@ -6,44 +6,51 @@
 @inject IJSRuntime JSRuntime
 @attribute [Authorize(Roles = "Admin, Organizer, Reviewer")]
 @inject Blazored.LocalStorage.ILocalStorageService localStorage;
-<div class="container-fluid">
-    <div class="filler" />
-    <div class="row no-gutters">
-        <div class="@sidebarColumnClass">
-            <AbstractListComponent @ref="_abstractListComponent"
-                                   _abstractList="@_abstractList"
-                                   OnAbstractSelected="SetAbstract"
-                                   OnCollapseChanged="HandleCollapseChanged">
-            </AbstractListComponent>
-        </div>
-        <div class="@contentColumnClass">
-            <div class="row">
-                <div class="view-abstract-column">
-                    @if (_currentAbstract != null)
-                    {
-                        <ViewAbstractComponent SelectedAbstract="@_currentAbstract"></ViewAbstractComponent>
-                    }
-                </div>
-                <div class="review-column">
-                    @if (_currentAbstract != null)
-                    {
-                        <AuthorizeView Roles="Organizer">
-                            <Authorized>
-                                <FinalReviewComponent SelectedAbstract="@_currentAbstract" />
-                            </Authorized>
-                        </AuthorizeView>
-                        <AuthorizeView Roles="Reviewer">
-                            <Authorized>
-                                <ReviewComponent SelectedAbstract="@_currentAbstract" />
-                            </Authorized>
-                        </AuthorizeView>
-                    }
+@inject IConferenceService ConferenceService
+@if (_conferenceId == null)
+{
+    <SimpleConferenceComponent conferenceId="@_conferenceId"></SimpleConferenceComponent>
+}
+else
+{
+    <div class="container-fluid">
+        <div class="filler" />
+        <div class="row no-gutters">
+            <div class="@sidebarColumnClass">
+                <AbstractListComponent @ref="_abstractListComponent"
+                                       AbstractList="@_abstractList"
+                                       OnAbstractSelected="SetAbstract"
+                                       OnCollapseChanged="HandleCollapseChanged">
+                </AbstractListComponent>
+            </div>
+            <div class="@contentColumnClass">
+                <div class="row">
+                    <div class="view-abstract-column">
+                        @if (_currentAbstract != null)
+                        {
+                            <ViewAbstractComponent SelectedAbstract="@_currentAbstract"></ViewAbstractComponent>
+                        }
+                    </div>
+                    <div class="review-column">
+                        @if (_currentAbstract != null)
+                        {
+                            <AuthorizeView Roles="Organizer">
+                                <Authorized>
+                                    <FinalReviewComponent SelectedAbstract="@_currentAbstract" />
+                                </Authorized>
+                            </AuthorizeView>
+                            <AuthorizeView Roles="Reviewer">
+                                <Authorized>
+                                    <ReviewComponent SelectedAbstract="@_currentAbstract" />
+                                </Authorized>
+                            </AuthorizeView>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
+}
 <script>
     window.registerHandlers = (sidebarRef, dotNetHelper) => {
         document.addEventListener("click", (event) => {
@@ -136,6 +143,9 @@
     private int windowWidth;
     private User? _user;
 
+    private int? _conferenceId;
+    private Conference? _conference;
+
     private string sidebarColumnClass => isSidebarCollapsed
       ? "col-2 sidebar-transition sidebar-column-collapsed"
       : "col-1 sidebar-transition sidebar-column-expanded";
@@ -148,6 +158,14 @@
     {
         _abstractList = await AbstractService.GetAbstracts();
         _user = await localStorage.GetItemAsync<User>("user");
+        _conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
+        
+    }
+   
+    private async Task SetConference(int id)
+    {
+        _conference = await ConferenceService.GetByIdAsync(id);
+        StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -50,7 +50,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
                         PresenterEmail = "s.johnson@university.edu",
                         CoAuthors = new List<string> { "Dr. Michael Chen", "Prof. Emma Williams" },
                         Organization = "University of Technology",
-                        Title = "Machine Learning Applications in Climate Change Prediction",
+                        Title = "Test1",
                         KeyValues = "climate modeling, machine learning, neural networks, weather prediction",
                         AbstractText = "This study presents a novel approach to climate change prediction using advanced machine learning techniques. We demonstrate how neural networks can be applied to historical climate data to improve the accuracy of future climate projections. Our results show a 15% improvement in prediction accuracy compared to traditional methods.",
                         Category = "Machine Learning",
@@ -78,7 +78,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
             new Conference
             {
               Id = 2,
-              Name = "European Data Science Summit 2024",
+              Name = "European Data Science Summit 2024 test 2",
               AbstractDeadLine = new DateTime(2025, 7, 30),
               ReviewDeadline = new DateTime(2025, 8, 30),
               StartDate = new DateTime(2025, 10, 15),
@@ -112,7 +112,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
                       PresenterEmail = "dmartinez@research.org",
                       CoAuthors = new List<string> { "Dr. Lisa Cooper" },
                       Organization = "Research Institute of Biotechnology",
-                      Title = "Novel CRISPR Applications in Treating Genetic Disorders",
+                      Title = "Test 2",
                       KeyValues = "CRISPR, gene editing, genetic disorders, therapeutic applications",
                       AbstractText = "Our research explores innovative applications of CRISPR technology in treating rare genetic disorders. Through a series of controlled experiments, we have developed a modified CRISPR-Cas9 system that shows promising results in correcting specific genetic mutations with minimal off-target effects.",
                       Category = "Biotechnology",
@@ -140,7 +140,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
             new Conference
             {
               Id = 3,
-              Name = "Asia-Pacific Cybersecurity Conference 2024",
+              Name = "Asia-Pacific Cybersecurity Conference 2024 test 3",
               AbstractDeadLine = new DateTime(2025, 5, 1),
               ReviewDeadline = new DateTime(2025, 6, 1),
               StartDate = new DateTime(2025, 8, 10),
@@ -174,7 +174,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
                       PresenterEmail = "anderson.r@sustaintech.com",
                       CoAuthors = new List<string> { "Dr. James Wilson", "Dr. Maria Garcia", "Dr. Tom Baker" },
                       Organization = "SustainTech Solutions",
-                      Title = "Sustainable Urban Development: A Smart City Framework",
+                      Title = "Test 3",
                       KeyValues = "smart cities, sustainability, urban planning, IoT integration",
                       AbstractText = "This paper presents a comprehensive framework for implementing smart city solutions in urban development. By integrating IoT sensors, renewable energy systems, and adaptive traffic management, our approach has demonstrated significant improvements in urban efficiency and sustainability. Case studies from three major cities show reductions in energy consumption and traffic congestion.",
                       Category = "Urban Development",
@@ -224,11 +224,11 @@ namespace conferencePlannerApp.Services.LocalImplementations
                 throw new Exception("Id doesnt match any existing conferences");
         }
 
-        public async Task<Conference> GetCurrentConferenceIdAsync()
+        public async Task<int?> GetCurrentConferenceIdAsync()
         {
-            var conference = await _localStorage.GetItemAsync<Conference>(StorageKey);
+            var conference = await _localStorage.GetItemAsync<int?>(StorageKey);
             if (conference == null)
-                throw new NotImplementedException();
+                return null;
             else
                 return conference;
         }
@@ -242,5 +242,19 @@ namespace conferencePlannerApp.Services.LocalImplementations
             return conference;
 
         }
+
+        public Task<List<Abstract>> GetAllAbstractsByIdAsync(int id)
+        {
+            var conference = _conferences.FirstOrDefault(c => c.Id == id);
+            if (conference != null)
+            {
+                return Task.FromResult(conference.Abstracts);
+            }
+            else
+            {
+                throw new Exception("Conference not found");
+            }
+        }
+
     }
 }

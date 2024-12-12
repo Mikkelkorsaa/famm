@@ -1,68 +1,69 @@
 ﻿@inject IAbstractService AbstractService
+@inject IConferenceService ConferenceService
 
-<div class="abstract-review-wrapper">
-    <div class="abstract-review">
-        @if (SelectedAbstract!.Reviews != null && SelectedAbstract.Reviews.Any())
-        {
-            var review = SelectedAbstract.Reviews.First();
-            <div class="review-card">
-                <div class="review-criteria">
-                    @foreach (var criteria in review.Criterias)
-                    {
-                        <div class="form-group">
-                            <label class="criteria-label">@criteria.Name</label>
-                            <div class="grade-selector">
-                                @for (int i = 1; i <= 5; i++)
-                                {
-                                    int gradeValue = i;
-                                    <button type="button"
-                                    class="grade-button @(criteria.Grade == gradeValue ? "selected" : "")"
-                                    @onclick="() => criteria.Grade = gradeValue">
-                                        @gradeValue
-                                    </button>
-                                }
+    <div class="abstract-review-wrapper">
+        <div class="abstract-review">
+            @if (SelectedAbstract!.Reviews != null && SelectedAbstract.Reviews.Any())
+            {
+                var review = SelectedAbstract.Reviews.First();
+                <div class="review-card">
+                    <div class="review-criteria">
+                        @foreach (var criteria in review.Criterias)
+                        {
+                            <div class="form-group">
+                                <label class="criteria-label">@criteria.Name</label>
+                                <div class="grade-selector">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        int gradeValue = i;
+                                        <button type="button"
+                                        class="grade-button @(criteria.Grade == gradeValue ? "selected" : "")"
+                                        @onclick="() => criteria.Grade = gradeValue">
+                                            @gradeValue
+                                        </button>
+                                    }
+                                </div>
                             </div>
-                        </div>
-                    }
+                        }
 
-                    <div class="form-group">
-                        <label class="comment-label">Kommentar</label>
-                        <textarea class="comment-textarea"
-                        rows="4"
-                        @bind="review.Comment"
-                        placeholder="Enter your detailed observations..."></textarea>
+                        <div class="form-group">
+                            <label class="comment-label">Kommentar</label>
+                            <textarea class="comment-textarea"
+                            rows="4"
+                            @bind="review.Comment"
+                            placeholder="Enter your detailed observations..."></textarea>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-        else
-        {
-            <div class="no-reviews-placeholder">
-                <div class="no-reviews-icon">
-                    <i class="bi bi-clipboard-x"></i>
-                </div>
-                <p>No reviews available for this abstract.</p>
-            </div>
-        }
-    </div>
-
-    <div class="button-container">
-        <button type="button"
-        class="save-button"
-        @onclick="UpdateReview"
-        disabled="@(isSaving)">
-            @if (isSaving)
-            {
-                <span class="spinner"></span>
-                <span>Saving...</span>
             }
             else
             {
-                <span>Save Review</span>
+                <div class="no-reviews-placeholder">
+                    <div class="no-reviews-icon">
+                        <i class="bi bi-clipboard-x"></i>
+                    </div>
+                    <p>No reviews available for this abstract.</p>
+                </div>
             }
-        </button>
+        </div>
+
+        <div class="button-container">
+            <button type="button"
+            class="save-button"
+            @onclick="UpdateReview"
+            disabled="@(isSaving)">
+                @if (isSaving)
+                {
+                    <span class="spinner"></span>
+                    <span>Saving...</span>
+                }
+                else
+                {
+                    <span>Save Review</span>
+                }
+            </button>
+        </div>
     </div>
-</div>
 
 <style>
     .abstract-review-header {
@@ -182,8 +183,11 @@
     [Parameter]
     public Abstract? SelectedAbstract { get; set; }
 
+    
+
     private bool isSaving = false;
 
+   
     private async Task UpdateReview()
     {
         if (SelectedAbstract!.Reviews == null || !SelectedAbstract.Reviews.Any())

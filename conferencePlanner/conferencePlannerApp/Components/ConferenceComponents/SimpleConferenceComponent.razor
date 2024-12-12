@@ -22,18 +22,18 @@
 @code {
     [Parameter]
     public IEnumerable<Conference>? Conferences { get; set; }
-
+    [Parameter]
+    public int? conferenceId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         Conferences = await conferenceService.GetActiveConferencesAsync();
     }
 
-    private void SelectConference(Conference conference)
+    private async Task SelectConference(Conference conference)
     {
-        // Store the selected conference for use on other sites
-        // This could be done using a service, local storage, or any other method
-        Console.WriteLine($"Selected Conference: {conference.Id}");
+        await conferenceService.SetCurrentConferenceAsync(conference.Id);
+        conferenceId = conference.Id;
     }
 }
 
