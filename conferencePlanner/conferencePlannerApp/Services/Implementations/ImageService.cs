@@ -20,7 +20,7 @@ namespace conferencePlannerApp.Services.Implementations
       {
         using var content = new MultipartFormDataContent();
         using var stream = new MemoryStream();
-        await file.OpenReadStream(maxAllowedSize: 10485760).CopyToAsync(stream); // 10MB max
+        await file.OpenReadStream(maxAllowedSize: 10485760).CopyToAsync(stream);
         stream.Position = 0;
 
         using var streamContent = new StreamContent(stream);
@@ -34,7 +34,7 @@ namespace conferencePlannerApp.Services.Implementations
         return await response.Content.ReadFromJsonAsync<ImageUploadResult>()
             ?? throw new ImageServiceException("Failed to deserialize upload response", null);
       }
-      catch (Exception ex) when (ex is HttpRequestException or IOException)
+      catch (Exception ex)
       {
         throw new ImageServiceException("Failed to upload image", ex);
       }

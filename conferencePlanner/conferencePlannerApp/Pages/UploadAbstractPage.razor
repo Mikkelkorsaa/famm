@@ -78,10 +78,10 @@
         <div class="mb-3">
             <RadzenLabel Text="Billede" />
             <InputFile OnChange="@OnFileSelected" class="w-100" accept="image/*" />
-            @if (!string.IsNullOrEmpty(_abstract.Picture))
+            @if (!string.IsNullOrEmpty(chosenPicture))
             {
                 <div class="mt-2">
-                    <img src="@_abstract.Picture" style="max-width: 200px;" alt="Valgt billede" />
+                    <img src="@chosenPicture" style="max-width: 200px;" alt="Valgt billede" />
                 </div>
             }
         </div>
@@ -111,6 +111,7 @@
     private bool isSubmitting = false;
     private string? message;
     private string messageClass = "";
+    private string? chosenPicture;
     private List<string> categories = new()
 {
 "Forskningsartikel",
@@ -139,13 +140,35 @@
         try
         {
             var file = e.File;
+
+            var memoryStream = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(memoryStream);
+            var bytes = memoryStream.ToArray();
+            chosenPicture = $"data:image/png;base64, {Convert.ToBase64String(bytes)}";
+
             var result = await ImageService.UploadImageAsync(file);
             _abstract.Picture = result.FileName;
+            // await PreviewImage(result.FileName);
             ShowMessage("Billede blev uploadet", true);
         }
         catch (ImageServiceException ex)
         {
             ShowMessage($"Kunne ikke uploade billede: {ex.Message}", false);
+        }
+    }
+
+    private async Task PreviewImage(string FileName)
+    {
+        try
+        {
+            var response = await ImageService.GetImageAsync(FileName);
+            var img = response.Content;
+            chosenPicture = Convert.ToBase64String(img);
+            Console.WriteLine(chosenPicture);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Der opstod en uventet fejl: {ex.Message}", false);
         }
     }
 
