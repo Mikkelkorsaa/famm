@@ -10,7 +10,7 @@
         public string Organization { get; set; } = string.Empty;
         // public string? ProfilePictureUrl { get; set; }
         // public string? OrganizationLogoUrl { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public bool IsActive { get; set; } = true;
     }
     public enum UserRole

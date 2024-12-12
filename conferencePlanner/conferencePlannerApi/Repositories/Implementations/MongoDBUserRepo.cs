@@ -24,7 +24,7 @@ namespace conferencePlannerApi.Repositories.Implementations
         public async Task<User> CreateAsync(User user)
         {
             user.Id = await GetNextUserIdAsync();
-            User response = await _userCollection.Find(Builders<User>.Filter.Eq("Email", user.Email)).FirstOrDefaultAsync();
+            User response = await _userCollection.Find(Builders<User>.Filter.Eq("email", user.Email)).FirstOrDefaultAsync();
             if (response == null)
             {
                 _userCollection.InsertOne(user);
@@ -84,11 +84,8 @@ namespace conferencePlannerApi.Repositories.Implementations
             })
         };
 
-            var result = await _userCollection
-                .Aggregate<BsonDocument>(pipeline)
-                .FirstOrDefaultAsync();
-
-            return (result != null ? result["maxUserId"].AsInt32 + 1 : 0) + 1;
+            var result = await _userCollection.Aggregate<BsonDocument>(pipeline).FirstOrDefaultAsync();
+            return result["maxUserId"].AsInt32 + 1;
         }
     }
 }

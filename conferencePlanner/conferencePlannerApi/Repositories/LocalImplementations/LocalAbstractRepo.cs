@@ -111,7 +111,7 @@ new Abstract
             return await Task.FromResult(response != null ? response : throw new Exception("Abstract not found"));
         }
 
-        public async Task<IEnumerable<Abstract>> GetAllAsync()
+        public async Task<List<Abstract>> GetAllAsync()
         {
             var result = _abstracts;
             return await Task.FromResult(result.Any() ? result : throw new Exception("No abstracts found"));
@@ -141,14 +141,14 @@ new Abstract
             return await Task.FromResult(updatedAbstract);
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
             var index = _abstracts.FindIndex(a => a.Id == id);
             if (index == -1)
                 throw new Exception("Abstract not found");
 
-            _abstracts.RemoveAt(index);
-            return await Task.FromResult(true);
+                _abstracts.RemoveAt(index);
+            return;
         }
 
         public async Task<Abstract> UpdateReview(int abstractId, Review review)

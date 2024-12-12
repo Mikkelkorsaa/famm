@@ -27,9 +27,9 @@ namespace conferencePlannerApi.Controllers
                var users = await _repo.GetAllAsync();
                return Ok(users);
            }
-           catch
+           catch(Exception ex)
            {
-               return StatusCode(500, "An error occurred while retrieving users");
+               return StatusCode(500, ex.Message);
            }
        }
 
@@ -54,17 +54,12 @@ namespace conferencePlannerApi.Controllers
        {
            try
            {
-               if (!ModelState.IsValid)
-               {
-                   return BadRequest(ModelState);
-               }
-
                var newUser = await _repo.CreateAsync(user);
                return CreatedAtAction(nameof(GetUserById), new { id = newUser!.Id }, newUser);
            }
-           catch
+           catch(Exception e)
            {
-               return StatusCode(500, "An error occurred while creating the user");
+               return StatusCode(500, e.Message);
            }
        }
 
