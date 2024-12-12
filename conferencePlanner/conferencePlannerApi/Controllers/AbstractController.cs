@@ -96,8 +96,8 @@ namespace conferencePlannerApi.Controllers
         {
             try
             {
-                var result = await _repo.DeleteAsync(id);
-                return result ? NoContent() : NotFound($"Abstract with ID {id} not found");
+                await _repo.DeleteAsync(id);
+                return Ok();
             }
             catch
             {

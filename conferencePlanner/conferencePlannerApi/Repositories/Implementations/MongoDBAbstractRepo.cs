@@ -27,11 +27,9 @@ namespace conferencePlannerApi.Repositories.Implementations
             return abs;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
             await _abstractCollection.DeleteOneAsync(abs => abs.Id == id);
-            Abstract result = await GetByIdAsync(id);
-            return result == null;
         }
 
         public async Task<List<Abstract>> GetAllAsync()
@@ -59,7 +57,7 @@ namespace conferencePlannerApi.Repositories.Implementations
 
         public async Task<Abstract> UpdateReview(int abstractId, Review review)
         {
-            throw new NotImplementedException();
+           throw new NotImplementedException();
         }
 
         public async Task<int> GetNextAbstractIdAsync()
