@@ -134,6 +134,12 @@ else
     .sidebar-column-collapsed {
         transition: all 0.5s ease;
     }
+    .sidebar-open{
+
+    }
+    .sidebar-closed{
+
+    }
 
 </style>
 
@@ -149,12 +155,12 @@ else
     private Conference? _conference;
 
     private string sidebarColumnClass => isSidebarCollapsed
-        ? "col-1 sidebar-transition sidebar-column-expanded"
-        : "col-2 sidebar-transition sidebar-column-collapsed";
+        ? "col-2 sidebar-transition sidebar-column-collapsed"
+        : "col-1 sidebar-transition sidebar-column-expanded";
 
     private string contentColumnClass => isSidebarCollapsed
-        ? "col-10 sidebar-transition content-column sidebar-column-expanded"
-        : "col-11 sidebar-transition content-column sidebar-column-collapsed";
+        ? "col-11 sidebar-transition content-column sidebar-column-collapsed"
+        : "col-10 sidebar-transition content-column sidebar-column-expanded";
 
 
     protected override async Task OnInitializedAsync()
@@ -175,7 +181,7 @@ else
 {
     if (firstRender)
     {
-        Console.WriteLine("OnAfterRenderAsync firstRender");
+       
         var dotNetRef = DotNetObjectReference.Create(this);
         await JSRuntime.InvokeVoidAsync("registerHandlers", _abstractListComponent?.PublicSidebarRef, dotNetRef);
         windowWidth = await JSRuntime.InvokeAsync<int>("eval", "window.innerWidth");
@@ -197,16 +203,11 @@ else
 
     private void HandleCollapseChanged(bool isCollapsed)
     {
-        Console.WriteLine($"HandleCollapseChanged called with isCollapsed: {isCollapsed}");
-        if (isSidebarCollapsed != isCollapsed)
+        if (isSidebarCollapsed)
         {
             isSidebarCollapsed = isCollapsed;
-            Console.WriteLine($"isSidebarCollapsed updated to: {isSidebarCollapsed}");
-            InvokeAsync(StateHasChanged);
+            StateHasChanged();
         }
-        else 
-        isSidebarCollapsed = !isCollapsed;
-
     }
 
 
@@ -219,7 +220,6 @@ else
             StateHasChanged();
         }
     }
-
     public async ValueTask DisposeAsync()
     {
         await JSRuntime.InvokeVoidAsync("unregisterHandlers");
