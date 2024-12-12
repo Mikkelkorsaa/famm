@@ -61,7 +61,7 @@ public class ImagesController : ControllerBase
 
     [HttpGet]
     [Route("get/{fileName}")]
-    public async Task<ActionResult> GetImage(string fileName)
+    public ActionResult GetImage(string fileName)
     {
         try
         {
