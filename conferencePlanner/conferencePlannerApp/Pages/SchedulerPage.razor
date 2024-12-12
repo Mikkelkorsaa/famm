@@ -3,13 +3,12 @@
 
 @inject DialogService DialogService
 
+
 <RadzenScheduler @ref=@scheduler SlotRender=@OnSlotRender style="height: 768px;" TItem="Appointment" Data=@appointments StartProperty="Start" EndProperty="End"
-    TextProperty="Text" SelectedIndex="2"
+    TextProperty="Text"
     SlotSelect=@OnSlotSelect AppointmentSelect=@OnAppointmentSelect AppointmentRender=@OnAppointmentRender
     AppointmentMove=@OnAppointmentMove >
-    <RadzenDayView />
-    <RadzenWeekView />
-    <RadzenMonthView />
+    <RadzenThreeDayView />
 </RadzenScheduler>
 
 @code {
