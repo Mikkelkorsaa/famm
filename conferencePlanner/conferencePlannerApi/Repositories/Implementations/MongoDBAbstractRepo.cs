@@ -20,7 +20,7 @@ namespace conferencePlannerApi.Repositories.Implementations
             _database = _mongoClient.GetDatabase("ConferencePlaner");
             _abstractCollection = _database.GetCollection<Abstract>("Abstracts");
         }
-        public async Task<Abstract?> CreateAsync(Abstract abs)
+        public async Task<Abstract> CreateAsync(Abstract abs)
         {
             abs.Id = await GetNextAbstractIdAsync();
             await _abstractCollection.InsertOneAsync(abs);
