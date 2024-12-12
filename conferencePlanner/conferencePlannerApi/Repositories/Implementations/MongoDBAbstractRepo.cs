@@ -2,6 +2,7 @@
 using conferencePlannerCore.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace conferencePlannerApi.Repositories.Implementations
 {
@@ -17,14 +18,13 @@ namespace conferencePlannerApi.Repositories.Implementations
             _config = config;
             _mongoClient = new MongoClient(_config["ConnectionStrings:mongoDB"]);
             _database = _mongoClient.GetDatabase("ConferencePlaner");
-            _abstractCollection = _database.GetCollection<Abstract>("abstracts");
+            _abstractCollection = _database.GetCollection<Abstract>("Abstracts");
         }
         public async Task<Abstract?> CreateAsync(Abstract abs)
         {
-            Abstract absWithId = abs;
-            absWithId.Id = await GetNextAbstractIdAsync();
-            await _abstractCollection.InsertOneAsync(absWithId);
-            return absWithId;
+            abs.Id = await GetNextAbstractIdAsync();
+            await _abstractCollection.InsertOneAsync(abs);
+            return abs;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -64,12 +64,16 @@ namespace conferencePlannerApi.Repositories.Implementations
 
         public async Task<int> GetNextAbstractIdAsync()
         {
+            bool hasValue = await _abstractCollection.AsQueryable().AnyAsync();
+            if (!hasValue)
+                return 0;
+
             var pipeline = new[]
             {
                 new BsonDocument("$group", new BsonDocument
                 {
-                    { "_id", null },
-                    { "MaxValue", new BsonDocument("$max", "$_id") }
+                    { "_id" , 1 },
+                    { "MaxAbstractId", new BsonDocument("$max", "$_id") }
                 })
             };
 
@@ -77,7 +81,7 @@ namespace conferencePlannerApi.Repositories.Implementations
                 .Aggregate<BsonDocument>(pipeline)
                 .FirstOrDefaultAsync();
 
-            return (result != null ? result["MaxValue"].AsInt32 + 1 : 0) + 1;
+            return result["MaxAbstractId"].AsInt32 + 1;
         }
     }
 }

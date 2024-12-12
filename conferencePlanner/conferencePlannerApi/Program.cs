@@ -14,7 +14,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IUserRepo, MongoDBUserRepo>();
 builder.Services.AddSingleton<IConferenceRepo, LocalConferenceRepo>();
-builder.Services.AddSingleton<IAbstractRepo, LocalAbstractRepo>();
+builder.Services.AddSingleton<IAbstractRepo, MongoDBAbstractRepo>();
 
 builder.Services.Configure<EmailConfiguration>(
     builder.Configuration.GetSection("EmailConfiguration"));

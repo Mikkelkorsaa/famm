@@ -27,9 +27,9 @@ namespace conferencePlannerApi.Controllers
                var users = await _repo.GetAllAsync();
                return Ok(users);
            }
-           catch
+           catch(Exception ex)
            {
-               return StatusCode(500, "An error occurred while retrieving users");
+               return StatusCode(500, ex.Message);
            }
        }
 

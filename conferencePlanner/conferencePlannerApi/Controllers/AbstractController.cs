@@ -62,9 +62,9 @@ namespace conferencePlannerApi.Controllers
                     new { id = newAbstract.Id }, 
                     newAbstract);
             }
-            catch
+            catch(Exception ex)
             {
-                return StatusCode(500, "An error occurred while creating the abstract");
+                return StatusCode(500, ex.Message);
             }
         }
 
