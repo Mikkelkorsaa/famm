@@ -2,6 +2,7 @@
 using conferencePlannerCore.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Data;
 
 namespace conferencePlannerApi.Repositories.Implementations
 {
@@ -83,9 +84,12 @@ namespace conferencePlannerApi.Repositories.Implementations
             return (result != null ? result["maxUserId"].AsInt32 + 1 : 0) + 1;
         }
 
-        public Task<List<string>> ListAllCriteria(Conference conference)
+        public async Task<IEnumerable<string>> ListAllCriteria(int Id)
         {
-            throw new NotImplementedException();
+            var filter = Builders<Conference>.Filter.Eq("_id", Id);
+            var projection = Builders<Conference>.Projection.Include("Categories").Exclude("_id");
+            var result = await _conferenceCollection.Find<Conference>(filter).Project(projection).FirstOrDefaultAsync;
+            return result.Category ?? new List<string>();
         }
     }
 }
