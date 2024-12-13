@@ -8,7 +8,7 @@
 	@if (_showEventFormModal)
 	{
 		<ModalComponent OnClose="()=> _showEventFormModal = false" >
-			<EventFormComponent Rooms="@rooms"/>
+			<EventFormComponent Rooms="@rooms" OnSave="AddEvent"/>
 		</ModalComponent>
 	
 	}
@@ -30,9 +30,9 @@
 		new SchedulerEvent { Id = 3, Title = "Presentation", Start = DateTime.Today.AddHours(11), End = DateTime.Today.AddHours(12), RoomId = 3, Color = "#dc3545" }
 	};
 
-	private void ShowSessionForm()
+	private void AddEvent(SchedulerEvent se)
 	{
-		// Show the session form
+		events.Add(se);
 	}
 }
 

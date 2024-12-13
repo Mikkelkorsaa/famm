@@ -72,9 +72,7 @@
 				<div class="row">
 					<div class="col-md-12 text-right">
 						<RadzenButton ButtonType="ButtonType.Submit" Text="Save"
-									  ButtonStyle="ButtonStyle.Primary" Class="mr-2" />
-						<RadzenButton ButtonType="ButtonType.Button" Text="Cancel"
-									  ButtonStyle="ButtonStyle.Light" Click=@OnCancel />
+									  ButtonStyle="ButtonStyle.Primary" Class="mr-2"/>
 					</div>
 				</div>
 			</RadzenFieldset>
@@ -92,7 +90,7 @@
 
 	private void SaveEvent()
 	{
-		OnSave.InvokeAsync(Event);
+		
 	}
 
 	protected override void OnInitialized()
@@ -102,14 +100,9 @@
 
 	private void OnSubmit()
 	{
-		// Handle form submission here
-		// You can add your save logic
+		OnSave.InvokeAsync(Event);
 	}
 
-	private void OnCancel()
-	{
-		// Handle cancellation here
-		// You can add navigation or reset logic
-	}
+
 
 }
