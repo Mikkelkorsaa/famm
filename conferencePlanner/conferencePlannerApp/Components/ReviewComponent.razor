@@ -1,70 +1,80 @@
 ﻿@inject IAbstractService AbstractService
 @inject IConferenceService ConferenceService
+@inject IUserService UserService
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
-<div class="abstract-review-wrapper">
-    <div class="abstract-review">
-        @if (SelectedAbstract != null)
-        {
-            <div class="review-card">
-                <div class="review-criteria">
-                    @foreach (var criteriaName in reviewCriteria)
-                    {
-                        var criteria = SelectedAbstract.Reviews.FirstOrDefault()?.Criterias.FirstOrDefault(c => c.Name == criteriaName) ?? new Criteria { Name = criteriaName };
-                        <div class="form-group">
-                            <label class="criteria-label">@criteria.Name</label>
-                            <div class="grade-selector">
-                                @for (int i = 1; i <= 5; i++)
-                                {
-                                    int gradeValue = i;
-                                    <button type="button"
-                                            class="grade-button @(criteria.Grade == gradeValue ? "selected" : "")"
-                                            @onclick="() => criteria.Grade = gradeValue">
-                                        @gradeValue
-                                    </button>
-                                }
-                            </div>
-                        </div>
-                    }
+<EditForm Model="SelectedAbstract" OnValidSubmit="UpdateReview">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
-                    <div class="form-group">
-                        <label class="comment-label">Comment</label>
-                        <textarea class="comment-textarea"
-                                  rows="4"
-                                  @bind="SelectedAbstract.Reviews.First().Comment"
-                                  placeholder="Enter your detailed observations..."></textarea>
+    <div class="abstract-review-wrapper">
+        <div class="abstract-review">
+            @if (SelectedAbstract != null)
+            {
+                <div class="review-card">
+                    <div class="review-criteria">
+                        @foreach (var criteriaName in reviewCriteria)
+                        {
+                            var criteria = SelectedAbstract.Reviews.FirstOrDefault()?.Criterias.FirstOrDefault(c => c.Name == criteriaName) ?? new Criteria { Name = criteriaName };
+                            <div class="form-group">
+                                <label class="criteria-label">@criteria.Name</label>
+                                <div class="grade-selector">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        int gradeValue = i;
+                                        <button type="button"
+                                                class="grade-button @(criteria.Grade == gradeValue ? "selected" : "")"
+                                                @onclick="() => SetCriteriaGrade(criteriaName, gradeValue)">
+                                            @gradeValue
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <div class="form-group">
+                            <label class="comment-label">Comment</label>
+                            <textarea class="comment-textarea"
+                                      rows="4"
+                                      @bind="SelectedAbstract.Reviews.First().Comment"
+                                      placeholder="Enter your detailed observations..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="checkbox" id="recommendCheckbox" @bind="recommend" />
+                            <label for="recommendCheckbox" class="recommend-label">Anbefal Abstrakt</label>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-        else
-        {
-            <div class="no-reviews-placeholder">
-                <div class="no-reviews-icon">
-                    <i class="bi bi-clipboard-x"></i>
-                </div>
-                <p>No reviews available for this abstract.</p>
-            </div>
-        }
-    </div>
-
-    <div class="button-container">
-        <button type="button"
-                class="save-button"
-                @onclick="UpdateReview"
-                disabled="@(isSaving)">
-            @if (isSaving)
-            {
-                <span class="spinner"></span>
-                <span>Saving...</span>
             }
             else
             {
-                <span>Save Review</span>
+                <div class="no-reviews-placeholder">
+                    <div class="no-reviews-icon">
+                        <i class="bi bi-clipboard-x"></i>
+                    </div>
+                    <p>No reviews available for this abstract.</p>
+                </div>
             }
-        </button>
+        </div>
+
+        <div class="button-container">
+            <button type="submit"
+                    class="save-button"
+                    disabled="@(isSaving)">
+                @if (isSaving)
+                {
+                    <span class="spinner"></span>
+                    <span>Saving...</span>
+                }
+                else
+                {
+                    <span>Save Review</span>
+                }
+            </button>
+        </div>
     </div>
-</div>
+</EditForm>
 
 <style>
     .abstract-review-header {
@@ -178,29 +188,102 @@
         margin-bottom: 1rem;
         color: #9ca3af;
     }
+
+    .recommend-label {
+        margin-left: 0.5rem;
+        font-size: 1rem;
+        color: #374151;
+    }
+
+    input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #3b82f6;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        input[type="checkbox"]:checked {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
 </style>
 
 @code {
     [Parameter]
     public Abstract? SelectedAbstract { get; set; }
-
+    private int? UserId;
     private bool isSaving = false;
     private List<string> reviewCriteria = new();
+    private bool recommend = false;
+    private Review Review = new();
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("OnInitializedAsync started.");
         int? conferenceId = await LocalStorage.GetItemAsync<int?>("currentConferenceId");
+        Console.WriteLine($"Current conference ID: {conferenceId}");
+
+        try
+        {
+            UserId = await UserService.GetCurrentUserIdAsync();
+            Console.WriteLine($"Current user ID: {UserId}");
+        }
+        catch (InvalidOperationException ex)
+        {
+            Console.WriteLine($"Error fetching current user ID: {ex.Message}");
+            // Handle the error appropriately, e.g., redirect to login or show an error message
+            return;
+        }
+
         if (conferenceId.HasValue)
         {
-            var conference = await ConferenceService.GetByIdAsync(conferenceId.Value);
-            reviewCriteria = conference.ReviewCriteria;
+            try
+            {
+                var conference = await ConferenceService.GetByIdAsync(conferenceId.Value);
+                Console.WriteLine($"Conference loaded: {conference.Id}");
+                reviewCriteria = conference.ReviewCriteria;
+                Console.WriteLine($"Review criteria loaded: {string.Join(", ", reviewCriteria)}");
+
+                // Initialize criteria for the review
+                if (SelectedAbstract?.Reviews.FirstOrDefault() != null)
+                {
+                    foreach (var criteriaName in reviewCriteria)
+                    {
+                        if (!SelectedAbstract.Reviews.First().Criterias.Any(c => c.Name == criteriaName))
+                        {
+                            SelectedAbstract.Reviews.First().Criterias.Add(new Criteria { Name = criteriaName });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching conference: {ex.Message}");
+                // Handle the error appropriately, e.g., show an error message
+                return;
+            }
         }
+        else
+        {
+            Console.WriteLine("No conference ID found.");
+        }
+
+        Console.WriteLine("OnInitializedAsync completed.");
     }
 
     private async Task UpdateReview()
     {
-        if (SelectedAbstract == null || SelectedAbstract.Reviews == null || !SelectedAbstract.Reviews.Any())
+        if (SelectedAbstract == null)
         {
+            Console.WriteLine("SelectedAbstract is null.");
+            return;
+        }
+
+        if (SelectedAbstract.Reviews == null || !SelectedAbstract.Reviews.Any())
+        {
+            Console.WriteLine("No reviews available for the selected abstract.");
             return;
         }
 
@@ -208,8 +291,12 @@
         try
         {
             var review = SelectedAbstract.Reviews.First();
-            await AbstractService.UpdateReview(SelectedAbstract.Id, review);
+            review.UserId = UserId ?? 0; // Ensure UserId is set
+            review.Recommend = recommend; // Ensure Recommend is set
 
+            await AbstractService.UpdateReview(SelectedAbstract.Id, review);
+            Console.WriteLine("Review updated successfully.");
+            Console.WriteLine(review);
             // Optionally, display a success toast or notification
         }
         catch (Exception ex)
@@ -222,4 +309,29 @@
             isSaving = false;
         }
     }
+
+    private void SetCriteriaGrade(string criteriaName, int gradeValue)
+    {
+        var review = SelectedAbstract?.Reviews.FirstOrDefault();
+        if (review != null)
+        {
+            var criteria = review.Criterias.FirstOrDefault(c => c.Name == criteriaName);
+            if (criteria != null)
+            {
+                criteria.Grade = gradeValue;
+            }
+            else
+            {
+                review.Criterias.Add(new Criteria { Name = criteriaName, Grade = gradeValue });
+            }
+        }
+
+        // Log the criteria list
+        Console.WriteLine("Updated Criteria List:");
+        foreach (var criteria in review.Criterias)
+        {
+            Console.WriteLine($"Name: {criteria.Name}, Grade: {criteria.Grade}");
+        }
+    }
 }
+

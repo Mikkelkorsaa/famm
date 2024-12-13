@@ -1,14 +1,19 @@
 using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerCore.Models;
+using Blazored.LocalStorage;
 
 namespace conferencePlannerApp.Services.Implementations
 {
     public class LocalUserService : IUserService
     {
+        private readonly ILocalStorageService _localStorage;
         private readonly List<User> _users;
-
-        public LocalUserService()
+        private const string StorageKey = "currentUser";
+        private const string IdStorageKey = "currentUserId";
+     
+        public LocalUserService(ILocalStorageService localStorage)
         {
+            _localStorage = localStorage;
             _users = new List<User>
             {
                 new User
@@ -37,7 +42,7 @@ namespace conferencePlannerApp.Services.Implementations
                 }
             };
         }
-
+       
         public async Task<List<User>> GetAllUsersAsync()
         {
             try
@@ -49,6 +54,19 @@ namespace conferencePlannerApp.Services.Implementations
                 throw new InvalidOperationException("Failed to fetch users from the local service.", ex);
             }
         }
+
+        public async Task<int?> GetCurrentUserIdAsync()
+        {
+            Console.WriteLine("Test 1");
+            var userId = await _localStorage.GetItemAsync<int?>(IdStorageKey);
+            Console.WriteLine("Test 2");
+            if (userId == 0)
+                return 0;
+            else
+                return userId;
+        }
+
+
 
         public async Task UpdateUserAsync(User user)
         {

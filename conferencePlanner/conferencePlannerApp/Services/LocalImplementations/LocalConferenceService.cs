@@ -62,14 +62,17 @@ namespace conferencePlannerApp.Services.LocalImplementations
                                 Id = 1,
                                 UserId = 101,
                                 Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 5 }, new Criteria { Name = "Originality", Grade = 4 } },
-                                Comment = "Excellent application of machine learning in a critical area."
+                                Comment = "Excellent application of machine learning in a critical area.",
+                                Recommend = false
                             },
                             new Review
                             {
                                 Id = 2,
                                 UserId = 102,
                                 Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 4 }, new Criteria { Name = "Originality", Grade = 5 } },
-                                Comment = "Innovative approach with promising results."
+                                Comment = "Innovative approach with promising results.",
+                                Recommend = true
+
                             }
                         }
                     }
@@ -226,6 +229,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
 
         public async Task<int?> GetCurrentConferenceIdAsync()
         {
+
             var conference = await _localStorage.GetItemAsync<int?>(StorageKey);
             if (conference == null)
                 return null;

@@ -31,5 +31,10 @@ namespace conferencePlannerApp.Services.LocalImplementations
 		{
 			await _localStorage.RemoveItemAsync(StorageKey);
 		}
-	}
+
+        public Task SetCurrentUserId(User user)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
