@@ -16,10 +16,23 @@ namespace conferencePlannerApp.Services.Implementations
 
 		public async Task<Abstract> AddAbstract(Abstract @abstract)
 		{
-			var response = await _httpClient.PostAsJsonAsync("/api/abstract/createabstract", @abstract);
-			response.EnsureSuccessStatusCode();
-			var newAbstract = await response.Content.ReadFromJsonAsync<Abstract>();
-			return newAbstract!;
+        try 
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/abstract/createabstract", @abstract);
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Failed to create abstract: {errorContent}");
+            }
+            
+            var newAbstract = await response.Content.ReadFromJsonAsync<Abstract>();
+            return newAbstract!;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in AddAbstract: {ex.Message}");
+            throw;
+        }
 		}
 
 		public async Task<List<Abstract>> GetAbstracts()
