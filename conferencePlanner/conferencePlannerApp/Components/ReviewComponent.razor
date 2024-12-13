@@ -324,13 +324,13 @@
             {
                 review.Criterias.Add(new Criteria { Name = criteriaName, Grade = gradeValue });
             }
-        }
 
-        // Log the criteria list
-        Console.WriteLine("Updated Criteria List:");
-        foreach (var criteria in review.Criterias)
-        {
-            Console.WriteLine($"Name: {criteria.Name}, Grade: {criteria.Grade}");
+            // Log the criteria list
+            Console.WriteLine("Updated Criteria List:");
+            foreach (var crit in review.Criterias)
+            {
+                Console.WriteLine($"Name: {crit.Name}, Grade: {crit.Grade}");
+            }
         }
     }
 }
