@@ -85,54 +85,7 @@ a, .btn-link {
 
 .scheduler-body {
     display: flex;
-}
-
-.time-column, .room-column {
-    flex: 1;
-    border-right: 1px solid #ddd;
-}
-
-.time-column {
-    flex: 0 0 60px;
-}
-
-.room-header {
-    text-align: center;
-    padding: 5px;
-    background-color: #e0e0e0;
-    font-weight: bold;
-}
-
-.time-slot {
-    height: 60px;
-    border-top: 1px solid #eee;
-    padding: 2px;
-}
-
-.event {
-    margin: 2px;
-    padding: 2px 5px;
-    border-radius: 3px;
-    color: white;
-    font-size: 0.8em;
-}
-
-.day-room-scheduler {
-    width: 100%;
-    border: 1px solid #ddd;
-}
-
-.scheduler-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #f0f0f0;
-}
-
-.scheduler-body {
-    display: flex;
-    height: 1440px; /* 24 hours * 60px per hour */
+    height: 510px; /* Adjusted for 17 time slots (16 hours + "Rum") */
 }
 
 .time-column, .room-column {
@@ -156,14 +109,22 @@ a, .btn-link {
 }
 
 .time-slot {
-    height: 60px;
+    height: 30px;
     border-top: 1px solid #eee;
     padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 0.8em;
+    color: #666;
 }
 
 .room-events {
-    position: relative;
-    height: 100%;
+    position: absolute;
+    top: 30px; /* Start after the "Rum" slot */
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 .event {
@@ -173,11 +134,9 @@ a, .btn-link {
     padding: 2px 5px;
     border-radius: 3px;
     color: white;
-    font-size: 0.8em;
+    font-size: 0.7em;
     overflow: hidden;
 }
-
-
 
 code {
     color: #c02d76;

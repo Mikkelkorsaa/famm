@@ -3,28 +3,45 @@
 <div class="day-room-scheduler">
     <div class="scheduler-header">
         <button @onclick="PreviousDay">&lt;</button>
-        <h2>@CurrentDate.ToString("dddd, MMMM dd, yyyy")</h2>
+        <h2>@CurrentDate.ToString("dddd - dd/MM/yyyy")</h2>
         <button @onclick="NextDay">&gt;</button>
     </div>
     <div class="scheduler-body">
         <div class="time-column">
-            @for (int hour = 0; hour < 24; hour++)
+            <div class="time-slot">Rum</div>
+            @for (int hour = 8; hour <= 23; hour++)
             {
-                <div class="time-slot">@(hour.ToString("D2") + ":00")</div>
+                <div class="time-slot">@(hour.ToString("D2")):00</div>
             }
         </div>
         @foreach (var room in Rooms)
         {
             <div class="room-column">
                 <div class="room-header">@room.Name</div>
+                @for (int hour = 8; hour <= 23; hour++)
+                {
+                    <div class="time-slot"></div>
+                }
                 <div class="room-events">
                     @foreach (var evt in Events.Where(e => e.RoomId == room.Id))
                     {
-                        var topPosition = (evt.Start.Hour + evt.Start.Minute / 60.0) * 60;
-                        var height = (evt.End - evt.Start).TotalHours * 60;
-                        <div class="event" style="top: @(topPosition)px; height: @(height)px; background-color: @evt.Color">
-                            @evt.Title (@evt.Start.ToString("HH:mm") - @evt.End.ToString("HH:mm"))
-                        </div>
+                        var topPosition = (evt.Start - CurrentDate.Date.AddHours(8)).TotalMinutes * (30.0 / 60);
+                        var height = (evt.End - evt.Start).TotalMinutes * (30.0 / 60);
+                        if (topPosition < 510 && topPosition + height > 0)
+                        {
+                            if (topPosition < 0)
+                            {
+                                height += topPosition;
+                                topPosition = 0;
+                            }
+                            if (topPosition + height > 510)
+                            {
+                                height = 510 - topPosition;
+                            }
+                            <div class="event" style="top: @(topPosition)px; height: @(height)px; background-color: @evt.Color">
+                                @evt.Title (@evt.Start.ToString("HH:mm") - @evt.End.ToString("HH:mm"))
+                            </div>
+                        }
                     }
                 </div>
             </div>
