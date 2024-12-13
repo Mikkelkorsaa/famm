@@ -25,7 +25,8 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
                     "Technical Contribution",
                     "Originality",
                     "Presentation Quality",
-                    "Practical Impact"
+                    "Practical Impact",
+                    "TEEEEEST"
                 },
                 Location = new Venue
                 {

@@ -33,6 +33,14 @@ namespace conferencePlannerApp.Services.Interfaces
         /// <param name="id"></param>
         /// <returns>A list of abstracs</returns>
         Task<List<Abstract>> GetAllAbstractsByIdAsync(int id);
+        
+        /// <summary>
+        /// Updates the conference with a new review
+        /// </summary>
+        /// <param name="abstractId"></param>
+        /// <param name="review"></param>
+        /// <returns></returns>
+        Task UpdateReview(int abstractId, Review review);
 
     }
 }

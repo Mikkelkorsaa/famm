@@ -256,5 +256,36 @@ namespace conferencePlannerApp.Services.LocalImplementations
             }
         }
 
+        public Task UpdateReview(int abstractId, Review review)
+        {
+            var conference = _conferences.FirstOrDefault(c => c.Abstracts.Any(a => a.Id == abstractId));
+            if (conference != null)
+            {
+                var abstractItem = conference.Abstracts.FirstOrDefault(a => a.Id == abstractId);
+                if (abstractItem != null)
+                {
+                    var existingReview = abstractItem.Reviews.FirstOrDefault(r => r.Id == review.Id);
+                    if (existingReview != null)
+                    {
+                        existingReview.UserId = review.UserId;
+                        existingReview.Criterias = review.Criterias;
+                        existingReview.Comment = review.Comment;
+                    }
+                    else
+                    {
+                        abstractItem.Reviews.Add(review);
+                    }
+                    return Task.CompletedTask;
+                }
+                else
+                {
+                    throw new Exception("Abstract not found");
+                }
+            }
+            else
+            {
+                throw new Exception("Conference not found");
+            }
+        }
     }
 }

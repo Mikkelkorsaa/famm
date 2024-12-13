@@ -89,5 +89,10 @@ namespace conferencePlannerApp.Services.Implementations
         {
             throw new NotImplementedException();
         }
+
+        public Task UpdateReview(int abstractId, Review review)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
