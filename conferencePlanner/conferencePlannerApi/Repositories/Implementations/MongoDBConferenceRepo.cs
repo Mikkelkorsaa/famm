@@ -1,4 +1,5 @@
 ﻿using conferencePlannerApi.Repositories.Interfaces;
+using conferencePlannerApi.MongoResponseClasses;
 using conferencePlannerCore.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -84,11 +85,37 @@ namespace conferencePlannerApi.Repositories.Implementations
             return (result != null ? result["maxUserId"].AsInt32 + 1 : 0) + 1;
         }
 
-        public async Task<IEnumerable<string>> ListAllCriteria(int Id)
+        public async Task<List<string>> ListAllCriteria(int conferenceId)
         {
-            var filter = Builders<Conference>.Filter.Eq("_id", Id);
-            var projection = Builders<Conference>.Projection.Include("Categories").Exclude("_id");
-            var result = await _conferenceCollection.Find<Conference>(filter).Project(projection).FirstOrDefaultAsync;
+            var filter = Builders<Conference>
+                .Filter.Eq("_id", conferenceId);
+
+            var projection = Builders<Conference>
+                .Projection.Include("ReviewCriteria")
+                .Exclude("_id");
+
+            var result = await _conferenceCollection
+                .Find(filter)
+                .Project<ConferenceCriteria>(projection)
+                .FirstOrDefaultAsync();
+
+            return result.ReviewCriteria ?? new List<string>();
+        }
+
+        public async Task<List<string>> ListAllCategories(int conferenceId)
+        {
+            var filter = Builders<Conference>
+                .Filter.Eq("_id", conferenceId);
+
+            var projection = Builders<Conference>
+                .Projection.Include("Category")
+                .Exclude("_id");
+
+            var result = await _conferenceCollection
+                .Find(filter)
+                .Project<ConferenceCategories>(projection)
+                .FirstOrDefaultAsync();
+
             return result.Category ?? new List<string>();
         }
     }
