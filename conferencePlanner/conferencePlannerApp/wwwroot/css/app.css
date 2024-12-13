@@ -117,6 +117,65 @@ a, .btn-link {
     font-size: 0.8em;
 }
 
+.day-room-scheduler {
+    width: 100%;
+    border: 1px solid #ddd;
+}
+
+.scheduler-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f0f0f0;
+}
+
+.scheduler-body {
+    display: flex;
+    height: 1440px; /* 24 hours * 60px per hour */
+}
+
+.time-column, .room-column {
+    flex: 1;
+    border-right: 1px solid #ddd;
+    position: relative;
+}
+
+.time-column {
+    flex: 0 0 60px;
+}
+
+.room-header {
+    text-align: center;
+    padding: 5px;
+    background-color: #e0e0e0;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.time-slot {
+    height: 60px;
+    border-top: 1px solid #eee;
+    padding: 2px;
+}
+
+.room-events {
+    position: relative;
+    height: 100%;
+}
+
+.event {
+    position: absolute;
+    left: 0;
+    right: 0;
+    padding: 2px 5px;
+    border-radius: 3px;
+    color: white;
+    font-size: 0.8em;
+    overflow: hidden;
+}
 
 
 

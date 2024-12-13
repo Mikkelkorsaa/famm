@@ -17,21 +17,16 @@
         {
             <div class="room-column">
                 <div class="room-header">@room.Name</div>
-                @for (int hour = 0; hour < 24; hour++)
-                {
-                    var startTime = CurrentDate.Date.AddHours(hour);
-                    var endTime = startTime.AddHours(1);
-                    var events = Events.Where(e => e.RoomId == room.Id && e.Start < endTime && e.End > startTime).ToList();
-
-                    <div class="time-slot">
-                        @foreach (var evt in events)
-                        {
-                            <div class="event" style="background-color: @evt.Color">
-                                @evt.Title (@evt.Start.ToString("HH:mm") - @evt.End.ToString("HH:mm"))
-                            </div>
-                        }
-                    </div>
-                }
+                <div class="room-events">
+                    @foreach (var evt in Events.Where(e => e.RoomId == room.Id))
+                    {
+                        var topPosition = (evt.Start.Hour + evt.Start.Minute / 60.0) * 60;
+                        var height = (evt.End - evt.Start).TotalHours * 60;
+                        <div class="event" style="top: @(topPosition)px; height: @(height)px; background-color: @evt.Color">
+                            @evt.Title (@evt.Start.ToString("HH:mm") - @evt.End.ToString("HH:mm"))
+                        </div>
+                    }
+                </div>
             </div>
         }
     </div>

@@ -1,8 +1,9 @@
 ﻿@page "/scheduler-test"
 
 <h1>Room Scheduler</h1>
-
+<div class="container">
 <SchedulerComponent Rooms="@rooms" Events="@events" />
+</div>
 
 @code {
     private List<Room> rooms = new List<Room>
@@ -14,7 +15,7 @@
 
     private List<SchedulerEvent> events = new List<SchedulerEvent>
     {
-        new SchedulerEvent { Id = 1, Title = "Meeting 1", Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(11), RoomId = 1, Color = "#007bff" },
+        new SchedulerEvent { Id = 1, Title = "Meeting 1", Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(13), RoomId = 1, Color = "#007bff" },
         new SchedulerEvent { Id = 2, Title = "Workshop", Start = DateTime.Today.AddHours(14), End = DateTime.Today.AddHours(16), RoomId = 2, Color = "#28a745" },
         new SchedulerEvent { Id = 3, Title = "Presentation", Start = DateTime.Today.AddHours(11), End = DateTime.Today.AddHours(12), RoomId = 3, Color = "#dc3545" }
     };
