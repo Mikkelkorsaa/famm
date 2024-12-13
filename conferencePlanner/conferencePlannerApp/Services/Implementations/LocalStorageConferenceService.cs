@@ -99,5 +99,10 @@ namespace conferencePlannerApp.Services.Implementations
         {
             throw new NotImplementedException();
         }
+
+        public Task<int> GetNextReviewIdAsync(int abstractId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

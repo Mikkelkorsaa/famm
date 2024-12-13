@@ -13,6 +13,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
         private const string StorageKey = "currentConferenceId";
         private readonly List<string> _reviewCriteria = new();
         private readonly List<Conference> _conferences = new()
+     
         {
             new Conference
             {
@@ -305,6 +306,21 @@ namespace conferencePlannerApp.Services.LocalImplementations
             {
                 throw new Exception("Conference not found");
             }
+        }
+
+        public Task<int> GetNextReviewIdAsync(int abstractId)
+        {
+            var @abstract = _conferences.SelectMany(c => c.Abstracts)
+                                        .FirstOrDefault(a => a.Id == abstractId);
+            if (@abstract == null)
+            {
+                throw new Exception("Abstract not found");
+            }
+
+            int maxReviewId = @abstract.Reviews.DefaultIfEmpty()
+                                        .Max(r => r?.Id ?? 0);
+            Console.WriteLine(maxReviewId);
+            return Task.FromResult(maxReviewId + 1);
         }
 
     }

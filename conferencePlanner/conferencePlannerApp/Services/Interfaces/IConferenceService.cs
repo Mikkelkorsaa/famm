@@ -47,6 +47,11 @@ namespace conferencePlannerApp.Services.Interfaces
         /// <param name="conferenceId"></param>
         /// <returns>returns a list of the review criteria</returns>
         Task<List<string>> GetCriteriaByIdAsync(int conferenceId);
+        /// <summary>
+        /// Finds the max value of the reviewIds of a given Abstract
+        /// </summary>
+        /// <returns>The max reviewId +1</returns>
+        Task<int> GetNextReviewIdAsync(int abstractId);
 
     }
 }
