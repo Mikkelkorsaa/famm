@@ -24,6 +24,7 @@ builder.Services.AddScoped<IAbstractService, AbstractService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<DialogService>();
+builder.Services.AddRadzenComponents();
 
 
 builder.Services.AddScoped(sp =>
