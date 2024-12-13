@@ -42,7 +42,7 @@
 
                         <div class="form-group">
                             <input type="checkbox" id="recommendCheckbox" @bind="recommend" />
-                            <label for="recommendCheckbox" class="recommend-label">Anbefal Abstrakt</label>
+                            <label for="recommendCheckbox" class="recommend-label">Recommend Abstract</label>
                         </div>
                     </div>
                 </div>
@@ -241,9 +241,7 @@
         {
             try
             {
-                var conference = await ConferenceService.GetByIdAsync(conferenceId.Value);
-                Console.WriteLine($"Conference loaded: {conference.Id}");
-                reviewCriteria = conference.ReviewCriteria;
+                reviewCriteria = await ConferenceService.GetCriteriaByIdAsync(conferenceId.Value);
                 Console.WriteLine($"Review criteria loaded: {string.Join(", ", reviewCriteria)}");
 
                 // Initialize criteria for the review
@@ -334,4 +332,3 @@
         }
     }
 }
-

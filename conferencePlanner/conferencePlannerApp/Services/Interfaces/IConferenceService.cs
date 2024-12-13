@@ -41,6 +41,12 @@ namespace conferencePlannerApp.Services.Interfaces
         /// <param name="review"></param>
         /// <returns></returns>
         Task UpdateReview(int abstractId, Review review);
+        /// <summary>
+        /// Get the review criterias for a specific conference using the id
+        /// </summary>
+        /// <param name="conferenceId"></param>
+        /// <returns>returns a list of the review criteria</returns>
+        Task<List<string>> GetCriteriaByIdAsync(int conferenceId);
 
     }
 }

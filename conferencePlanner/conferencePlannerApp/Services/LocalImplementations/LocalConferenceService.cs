@@ -11,6 +11,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
     {
         private readonly ILocalStorageService _localStorage;
         private const string StorageKey = "currentConferenceId";
+        private readonly List<string> _reviewCriteria = new();
         private readonly List<Conference> _conferences = new()
         {
             new Conference
@@ -260,6 +261,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
             }
         }
 
+        
         public Task UpdateReview(int abstractId, Review review)
         {
             var conference = _conferences.FirstOrDefault(c => c.Abstracts.Any(a => a.Id == abstractId));
@@ -291,5 +293,19 @@ namespace conferencePlannerApp.Services.LocalImplementations
                 throw new Exception("Conference not found");
             }
         }
+
+        public Task<List<string>> GetCriteriaByIdAsync(int conferenceId)
+        {
+            var conference = _conferences.FirstOrDefault(c => c.Id == conferenceId);
+            if (conference != null)
+            {
+                return Task.FromResult(conference.ReviewCriteria);
+            }
+            else
+            {
+                throw new Exception("Conference not found");
+            }
+        }
+
     }
 }

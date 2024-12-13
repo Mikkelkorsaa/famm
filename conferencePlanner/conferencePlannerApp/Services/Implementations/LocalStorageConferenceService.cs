@@ -94,5 +94,10 @@ namespace conferencePlannerApp.Services.Implementations
         {
             throw new NotImplementedException();
         }
+
+        public Task<List<string>> GetCriteriaByIdAsync(int conferenceId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
