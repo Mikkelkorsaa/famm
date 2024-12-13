@@ -1,6 +1,23 @@
-﻿@page "/test"
+﻿@page "/view-conference"
+@inject IConferenceService conferenceService
+@attribute [Authorize(Roles = "Admin, Organizer")]
+
 <h3>TestPage</h3>
+@if(Conferences != null)
+{
+	@* <ConfrenceTableComponent conferences="Conferences" /> *@
+	<SimpleConferenceComponent Conferences="Conferences"/>
+}
 
 @code {
+	private IEnumerable<Conference> Conferences;
 
+	protected override async Task OnInitializedAsync(){
+		Conferences = await conferenceService.GetActiveConferencesAsync();
+		Console.WriteLine(Conferences);
+		foreach(var c in Conferences)
+		{
+			Console.WriteLine(c.Name);
+		}
+	}
 }

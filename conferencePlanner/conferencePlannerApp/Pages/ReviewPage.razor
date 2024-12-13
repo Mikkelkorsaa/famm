@@ -5,13 +5,18 @@
 @inject IAbstractService AbstractService
 @inject IJSRuntime JSRuntime
 @attribute [Authorize(Roles = "Admin, Organizer, Reviewer")]
-@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IConferenceService ConferenceService
+@if(_conferenceId == null){
+    <SimpleConferenceComponent></SimpleConferenceComponent>
+}
+else{}
 <div class="container-fluid">
     <div class="filler" />
     <div class="row no-gutters">
         <div class="@sidebarColumnClass">
             <AbstractListComponent @ref="_abstractListComponent"
-                                   _abstractList="@_abstractList"
+                                   AbstractList="@_abstractList"
                                    OnAbstractSelected="SetAbstract"
                                    OnCollapseChanged="HandleCollapseChanged">
             </AbstractListComponent>
@@ -125,7 +130,6 @@
     .sidebar-column-collapsed {
         transition: all 0.5s ease;
     }
-
 </style>
 
 @code {
@@ -135,10 +139,12 @@
     private bool isSidebarCollapsed;
     private int windowWidth;
     private User? _user;
+    private int? _conferenceId;
+    private Conference? _conference;
 
     private string sidebarColumnClass => isSidebarCollapsed
-      ? "col-2 sidebar-transition sidebar-column-collapsed"
-      : "col-1 sidebar-transition sidebar-column-expanded";
+        ? "col-2 sidebar-transition sidebar-column-collapsed"
+        : "col-1 sidebar-transition sidebar-column-expanded";
 
     private string contentColumnClass => isSidebarCollapsed
         ? "col-11 sidebar-transition content-column sidebar-column-collapsed"
@@ -146,8 +152,17 @@
 
     protected override async Task OnInitializedAsync()
     {
+        _conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
         _abstractList = await AbstractService.GetAbstracts();
         _user = await localStorage.GetItemAsync<User>("user");
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_conferenceId.HasValue)
+        {
+            _conference = await ConferenceService.GetByIdAsync(_conferenceId.Value);
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -174,11 +189,8 @@
 
     private void HandleCollapseChanged(bool isCollapsed)
     {
-        if (isSidebarCollapsed != isCollapsed)
-        {
-            isSidebarCollapsed = isCollapsed;
-            StateHasChanged();
-        }
+        isSidebarCollapsed = isCollapsed;
+        StateHasChanged();
     }
 
     [JSInvokable]

@@ -8,7 +8,8 @@ public record Review
 
     public List<Criteria> Criterias { get; set; } = new List<Criteria>();
 
-    [StringLength(200)]
     public string? Comment { get; set; }
+    
+    public bool Recommend { get; set; }
 }
 

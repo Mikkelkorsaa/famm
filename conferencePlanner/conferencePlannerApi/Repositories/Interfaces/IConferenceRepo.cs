@@ -29,5 +29,6 @@ namespace conferencePlannerApi.Repositories.Interfaces
     //Input: Conference object
     //Output: List of all criteria for the conference
     Task<List<string>> ListAllCriteria(Conference conference);
+    
   }
 }
