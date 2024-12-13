@@ -5,6 +5,7 @@ using System;
 
 public class RadzenThreeDayView : RadzenWeekView, ISchedulerView
 {
+
     public override DateTime StartDate
     {
         get

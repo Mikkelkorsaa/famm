@@ -2,7 +2,7 @@
 @using Radzen.Blazor
 @inject DialogService DialogService
 
-<RadzenTemplateForm TItem="Appointment" Data="@model" Submit=@OnSubmit>
+<RadzenTemplateForm TItem="Session" Data="@model" Submit=@OnSubmit>
     <RadzenStack Gap="1rem">
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
             <RadzenLabel Text="Title" Style="width: 6rem;" />
@@ -26,16 +26,16 @@
 </RadzenTemplateForm>
 @code {
     [Parameter]
-    public Appointment Appointment { get; set; }
+    public Session Appointment { get; set; }
 
-    Appointment model = new Appointment();
+    Session model = new Session();
 
     protected override void OnParametersSet()
     {
         model = Appointment;
     }
 
-    void OnSubmit(Appointment model)
+    void OnSubmit(Session model)
     {
         DialogService.Close(model);
     }

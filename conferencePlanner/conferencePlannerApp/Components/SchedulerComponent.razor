@@ -1,0 +1,51 @@
+﻿@using System.Globalization
+
+<div class="day-room-scheduler">
+    <div class="scheduler-header">
+        <button @onclick="PreviousDay">&lt;</button>
+        <h2>@CurrentDate.ToString("dddd, MMMM dd, yyyy")</h2>
+        <button @onclick="NextDay">&gt;</button>
+    </div>
+    <div class="scheduler-body">
+        <div class="time-column">
+            @for (int hour = 0; hour < 24; hour++)
+            {
+                <div class="time-slot">@(hour.ToString("D2") + ":00")</div>
+            }
+        </div>
+        @foreach (var room in Rooms)
+        {
+            <div class="room-column">
+                <div class="room-header">@room.Name</div>
+                @for (int hour = 0; hour < 24; hour++)
+                {
+                    var startTime = CurrentDate.Date.AddHours(hour);
+                    var endTime = startTime.AddHours(1);
+                    var events = Events.Where(e => e.RoomId == room.Id && e.Start < endTime && e.End > startTime).ToList();
+
+                    <div class="time-slot">
+                        @foreach (var evt in events)
+                        {
+                            <div class="event" style="background-color: @evt.Color">
+                                @evt.Title (@evt.Start.ToString("HH:mm") - @evt.End.ToString("HH:mm"))
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<Room> Rooms { get; set; } = new List<Room>();
+
+    [Parameter]
+    public List<SchedulerEvent> Events { get; set; } = new List<SchedulerEvent>();
+
+    private DateTime CurrentDate { get; set; } = DateTime.Today;
+
+    private void PreviousDay() => CurrentDate = CurrentDate.AddDays(-1);
+    private void NextDay() => CurrentDate = CurrentDate.AddDays(1);
+}

@@ -1,0 +1,22 @@
+﻿@page "/scheduler-test"
+
+<h1>Room Scheduler</h1>
+
+<SchedulerComponent Rooms="@rooms" Events="@events" />
+
+@code {
+    private List<Room> rooms = new List<Room>
+    {
+        new Room { Id = 1, Name = "Room 1" },
+        new Room { Id = 2, Name = "Room 2" },
+        new Room { Id = 3, Name = "Room 3" }
+    };
+
+    private List<SchedulerEvent> events = new List<SchedulerEvent>
+    {
+        new SchedulerEvent { Id = 1, Title = "Meeting 1", Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(11), RoomId = 1, Color = "#007bff" },
+        new SchedulerEvent { Id = 2, Title = "Workshop", Start = DateTime.Today.AddHours(14), End = DateTime.Today.AddHours(16), RoomId = 2, Color = "#28a745" },
+        new SchedulerEvent { Id = 3, Title = "Presentation", Start = DateTime.Today.AddHours(11), End = DateTime.Today.AddHours(12), RoomId = 3, Color = "#dc3545" }
+    };
+}
+

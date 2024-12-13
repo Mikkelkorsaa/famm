@@ -1,6 +1,5 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    
 }
 
 body {
@@ -23,7 +22,7 @@ a, .btn-link {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 .content {
@@ -70,6 +69,53 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.day-room-scheduler {
+    width: 100%;
+    border: 1px solid #ddd;
+}
+
+.scheduler-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f0f0f0;
+}
+
+.scheduler-body {
+    display: flex;
+}
+
+.time-column, .room-column {
+    flex: 1;
+    border-right: 1px solid #ddd;
+}
+
+.time-column {
+    flex: 0 0 60px;
+}
+
+.room-header {
+    text-align: center;
+    padding: 5px;
+    background-color: #e0e0e0;
+    font-weight: bold;
+}
+
+.time-slot {
+    height: 60px;
+    border-top: 1px solid #eee;
+    padding: 2px;
+}
+
+.event {
+    margin: 2px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    color: white;
+    font-size: 0.8em;
+}
 
 
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace conferencePlannerCore.Models
 {
-    public class Appointment
+    public class Session
     {
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
