@@ -1,5 +1,7 @@
-﻿@inject IConferenceService conferenceService
-@attribute [Authorize(Roles = "Admin, Organizer")]
+﻿@page "/pick-conference/{target:alpha}"
+@inject IConferenceService conferenceService
+@inject NavigationManager Navigation
+@attribute [Authorize(Roles = "Admin, Organizer, Reviewer")]
 
 <h3>SimpleConferenceComponent</h3>
 
@@ -20,6 +22,8 @@
 </div>
 
 @code {
+    [Parameter] 
+    public string? Target { get; set; }
     [Parameter]
     public IEnumerable<Conference>? Conferences { get; set; }
     [Parameter]
@@ -34,6 +38,7 @@
     {
         await conferenceService.SetCurrentConferenceAsync(conference.Id);
         conferenceId = conference.Id;
+        Navigation.NavigateTo($"/{Target ?? ""}");
     }
 }
 
