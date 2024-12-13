@@ -71,7 +71,7 @@ namespace conferencePlannerApi.Repositories.Implementations
             {
                 new BsonDocument("$group", new BsonDocument
                 {
-                    { "_id", null },
+                    { "_id", 1 },
                     { "maxUserId", new BsonDocument("$max", "$_id") }
                 })
             };
