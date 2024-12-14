@@ -57,22 +57,59 @@
         </div>
 
         <div class="mb-3">
-            <RadzenLabel Text="Nøgleord (kommasepareret)" />
-            <RadzenTextBox @bind-Value="@_abstract.KeyValues" Class="w-100" Name="KeyValues" Required="true" />
-            <RadzenRequiredValidator Component="KeyValues" Text="Nøgleord er påkrævet" />
+            <RadzenLabel Text="Nøgleord" />
+            <RadzenTextArea @bind-Value="@_abstract.KeyValues" Class="w-100" Rows="3" Name="KeyValues"
+                Change=@OnKeyValuesChange @oninput="OnKeyValuesInput" MaxLength="400"
+                Required="true" />
+            <div class="d-flex justify-content-between mt-1">
+                <RadzenRequiredValidator Component="KeyValues" Text="Nøgleord er påkrævet" />
+                <small class="text-muted">@keyValuesLength/400 tegn</small>
+            </div>
+            @if (keyValuesLength < 10 && keyValuesLength > 0)
+            {
+                <small class="text-danger">Teksten skal være mindst 10 tegn (mangler @(10 - keyValuesLength) tegn)</small>
+            }
         </div>
 
         <div class="mb-3">
             <RadzenLabel Text="Abstract tekst" />
-            <RadzenTextArea @bind-Value="@_abstract.AbstractText" Class="w-100" Rows="5" Name="AbstractText"
+            <RadzenTextArea @bind-Value="@_abstract.AbstractText" Class="w-100" Rows="8" Name="AbstractText"
+                Change=@OnAbstractTextChange @oninput=OnAbstractTextInput MaxLength="2000"
                 Required="true" />
-            <RadzenRequiredValidator Component="AbstractText" Text="Abstract tekst er påkrævet" />
+            <div class="d-flex justify-content-between mt-1">
+                <RadzenRequiredValidator Component="AbstractText" Text="Abstract tekst er påkrævet" />
+                <small class="text-muted">@abstractTextLength/2000 tegn</small>
+            </div>
+            @if (abstractTextLength < 100 && abstractTextLength > 0)
+            {
+                <small class="text-danger">Teksten skal være mindst 100 tegn (mangler @(100 - abstractTextLength)
+                    tegn)</small>
+            }
         </div>
 
         <div class="mb-3">
-            <RadzenLabel Text="Medforfattere (én pr. linje)" />
-            <RadzenTextArea @bind-Value="@coAuthorsText" Class="w-100" Rows="3" Change=@(async(string value) => await
-                OnCoAuthorsChange(value)) />
+            <RadzenLabel Text="Medforfattere" />
+            <div class="d-flex gap-2 mb-2">
+                <RadzenTextBox @bind-Value="@currentCoAuthor" Class="w-100" Placeholder="Indtast medforfatter"
+                    @onkeypress="@EnterKeyPress" />
+                <RadzenButton Click=@AddCoAuthor Text="Tilføj" ButtonStyle="ButtonStyle.Secondary"
+                    Disabled="@(string.IsNullOrWhiteSpace(currentCoAuthor))" />
+            </div>
+
+            @if (_abstract.CoAuthors.Any())
+            {
+                <div class="mt-2">
+                    @foreach (var author in _abstract.CoAuthors)
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-1 p-2 border rounded">
+                            <span>@author</span>
+                            <RadzenButton Click="() => RemoveCoAuthor(author)" ButtonStyle="ButtonStyle.Danger"
+                                Size="ButtonSize.Small" Class="p-0" Icon="close" />
+                        </div>
+                    }
+                </div>
+                <small class="text-muted">Antal medforfattere: @_abstract.CoAuthors.Count (max 10)</small>
+            }
         </div>
 
         <div class="mb-3">
@@ -119,6 +156,9 @@
 "Workshop",
 "Paneldiskussion"
 };
+    private int keyValuesLength = 0;
+    private int abstractTextLength = 0;
+    private string currentCoAuthor = string.Empty;
 
     protected override void OnInitialized()
     {
@@ -202,5 +242,53 @@
     {
         message = text;
         messageClass = isSuccess ? "alert-success" : "alert-danger";
+    }
+    private void OnKeyValuesInput(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        keyValuesLength = args.Value?.ToString()?.Length ?? 0;
+        StateHasChanged();
+    }
+
+    private void OnKeyValuesChange(string value)
+    {
+        _abstract.KeyValues = value;
+        keyValuesLength = value?.Length ?? 0;
+    }
+
+    private void OnAbstractTextInput(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        abstractTextLength = args.Value?.ToString()?.Length ?? 0;
+        StateHasChanged();
+    }
+
+    private void OnAbstractTextChange(string value)
+    {
+        _abstract.AbstractText = value;
+        abstractTextLength = value?.Length ?? 0;
+    }
+
+    private void AddCoAuthor()
+    {
+        if (!string.IsNullOrWhiteSpace(currentCoAuthor) && _abstract.CoAuthors.Count < 10)
+        {
+            if (!_abstract.CoAuthors.Contains(currentCoAuthor))
+            {
+                _abstract.CoAuthors.Add(currentCoAuthor);
+                currentCoAuthor = string.Empty; // Clear the input after adding
+            }
+        }
+    }
+
+    private void RemoveCoAuthor(string author)
+    {
+        _abstract.CoAuthors.Remove(author);
+    }
+
+    private void EnterKeyPress(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            AddCoAuthor();
+        }
     }
 }
