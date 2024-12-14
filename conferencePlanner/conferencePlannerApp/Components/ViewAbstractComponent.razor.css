@@ -1,0 +1,75 @@
+.view-abstract-card {
+  background-color: #ffffff;
+  border: 1px solid #d6d8db;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 0px;
+  transition: box-shadow 0.3s ease;
+}
+
+.view-abstract-card:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.view-abstract-card .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #d6d8db;
+  padding: 15px;
+  border-radius: 8px 8px 0 0;
+}
+
+.view-abstract-card .card-title {
+  color: #004085;
+  margin-bottom: 5px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.view-abstract-card .card-subtitle {
+  font-size: 0.875rem;
+  margin-bottom: 0;
+}
+
+.view-abstract-card .card-body {
+  padding: 15px;
+}
+
+.abstract-detail-row {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: flex-start;
+}
+
+.detail-label {
+  font-weight: bold;
+  color: #495057;
+  min-width: 150px;
+  margin-right: 10px;
+}
+
+.detail-value {
+  color: #212529;
+  flex-grow: 1;
+}
+
+.abstract-text .detail-label {
+  align-self: flex-start;
+}
+
+.abstract-text .detail-value {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.no-abstract-selected {
+  margin-top: 20px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.detail-label {
+  margin-bottom: 5px;
+  min-width: auto;
+}
