@@ -1,5 +1,4 @@
 ﻿@using System.Globalization
-
 <div class="day-room-scheduler">
     <div class="scheduler-header">
         <button @onclick="PreviousDay">&lt;</button>
@@ -23,22 +22,15 @@
                     <div class="time-slot"></div>
                 }
                 <div class="room-events">
-                    @foreach (var evt in Events.Where(e => e.RoomId == room.Id))
+                    @foreach (var evt in Events.Where(e => e.RoomId == room.Id && e.Start.Date == CurrentDate.Date))
                     {
-                        var topPosition = (evt.Start - CurrentDate.Date.AddHours(8)).TotalMinutes * (30.0 / 60);
-                        var height = (evt.End - evt.Start).TotalMinutes * (30.0 / 60);
-                        if (topPosition < 510 && topPosition + height > 0)
+                        @if (IsEventVisible(evt))
                         {
-                            if (topPosition < 0)
-                            {
-                                height += topPosition;
-                                topPosition = 0;
-                            }
-                            if (topPosition + height > 510)
-                            {
-                                height = 510 - topPosition;
-                            }
-                            <div class="event" style="top: @(topPosition)px; height: @(height)px; background-color: @evt.Color">
+                            var position = CalculateEventPosition(evt);
+                            <div class="event"
+                                 style="top: @(position.Top)px;
+                                        height: @(position.Height)px;
+                                        background-color: @evt.Color">
                                 @evt.Title (@evt.Start.ToString("HH:mm") - @evt.End.ToString("HH:mm"))
                             </div>
                         }
@@ -58,6 +50,46 @@
 
     private DateTime CurrentDate { get; set; } = DateTime.Today;
 
+    private const int START_HOUR = 8;
+    private const int SLOT_HEIGHT = 30; // Height of each time slot in pixels
+    private const int TOTAL_HOURS = 16; // From 8:00 to 23:00
+    private const int TOTAL_HEIGHT = TOTAL_HOURS * 2 * SLOT_HEIGHT; // Total height in pixels
+
     private void PreviousDay() => CurrentDate = CurrentDate.AddDays(-1);
     private void NextDay() => CurrentDate = CurrentDate.AddDays(1);
+
+    private (double Top, double Height) CalculateEventPosition(SchedulerEvent evt)
+    {
+        // Calculate start time relative to scheduler start time (8:00)
+        var startTime = evt.Start.TimeOfDay;
+        var schedulerStart = TimeSpan.FromHours(START_HOUR);
+
+        // Calculate position based on 30px per hour slots
+        var hoursFromStart = (startTime - schedulerStart).TotalHours;
+        var top = hoursFromStart * 30;  // Each hour slot is 30px
+
+        // Calculate height
+        var durationHours = (evt.End - evt.Start).TotalHours;
+        var height = durationHours * 30;  // Each hour slot is 30px
+
+        Console.WriteLine($"Event Position Calculation for {evt.Title}:");
+        Console.WriteLine($"Start Time: {startTime}");
+        Console.WriteLine($"Hours from Start: {hoursFromStart}");
+        Console.WriteLine($"Top Position: {top}");
+        Console.WriteLine($"Duration Hours: {durationHours}");
+        Console.WriteLine($"Height: {height}");
+        Console.WriteLine("-------------------");
+
+        return (top, height);
+    }
+
+    private bool IsEventVisible(SchedulerEvent evt)
+    {
+        var startTime = evt.Start.TimeOfDay;
+        var endTime = evt.End.TimeOfDay;
+        var schedulerStart = TimeSpan.FromHours(START_HOUR);
+        var schedulerEnd = TimeSpan.FromHours(23);
+
+        return startTime < schedulerEnd && endTime > schedulerStart;
+    }
 }
