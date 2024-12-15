@@ -85,7 +85,7 @@ a, .btn-link {
 
 .scheduler-body {
     display: flex;
-    height: 510px; /* Adjusted for 17 time slots (16 hours + "Rum") */
+    height: 480px; /* 16 hours * 2 slots per hour * 30px per slot */
 }
 
 .time-column, .room-column {
@@ -121,10 +121,11 @@ a, .btn-link {
 
 .room-events {
     position: absolute;
-    top: 30px; /* Start after the "Rum" slot */
+    top: 30px;
     left: 0;
     right: 0;
     bottom: 0;
+    height: calc(100% - 30px);
 }
 
 .event {
