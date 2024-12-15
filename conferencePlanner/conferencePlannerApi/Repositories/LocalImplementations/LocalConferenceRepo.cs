@@ -1,9 +1,13 @@
 using conferencePlannerApi.Repositories.Interfaces;
 using conferencePlannerCore.Models;
+
+
 namespace conferencePlannerApi.Repositories.LocalImplementations
 {
     public class LocalConferenceRepo : IConferenceRepo
     {
+     
+
         private readonly List<Conference> _conferences = new()
         {
             new Conference

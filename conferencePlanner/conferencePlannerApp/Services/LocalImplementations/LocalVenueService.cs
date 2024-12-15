@@ -1,10 +1,12 @@
-﻿using conferencePlannerApp.Services.Interfaces;
+﻿using Blazored.LocalStorage;
+using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerCore.Models;
 
 namespace conferencePlannerApp.Services.LocalImplementations
 {
     public class LocalVenueService : IVenueService
     {
+       
         private readonly List<Venue> _venues = new()
     {
         new Venue
@@ -43,10 +45,16 @@ namespace conferencePlannerApp.Services.LocalImplementations
                 }
             }
     };
-        public async Task<Venue> GetByIdAsync(int id)
+
+
+        public Task<Venue> GetByIdAsync(int id)
         {
-            var response = _venues.FirstOrDefault(v => v.Id == id);
-            return await Task.FromResult(response != null ? response : throw new Exception("Venue not found"));
+            var result = _venues.FirstOrDefault(item => item.Id == id);
+            if (result != null)
+                return Task.FromResult(result);
+            else
+                throw new Exception("Id doesnt match any existing conferences");
         }
+
     }
 }

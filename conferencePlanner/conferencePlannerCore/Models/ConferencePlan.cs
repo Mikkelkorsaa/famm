@@ -8,7 +8,6 @@ namespace conferencePlannerCore.Models;
     public class ConferencePlan
     {
     public int Id { get; set; }
-    public int ConferenceId { get; set; }
-
+    public List<SchedulerEvent> Events { get; set; } = new();
 }
 

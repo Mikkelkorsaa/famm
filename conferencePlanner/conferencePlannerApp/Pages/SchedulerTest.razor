@@ -1,36 +1,42 @@
 ﻿@page "/scheduler-test"
 @inject IConferenceService conferenceService;
 @inject IVenueService venueService;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
-<h1>Room Scheduler</h1>
-<div class="container">
-    <button class="btn btn-primary" @onclick="()=> _showEventFormModal = true">Tilføj session</button>
-    <SchedulerComponent Rooms="@rooms" Events="@SortedEvents" />
-    @if (_showEventFormModal)
-    {
-        <ModalComponent OnClose="()=> _showEventFormModal = false">
-            <EventFormComponent Rooms="@rooms" OnSave="AddEvent" />
-        </ModalComponent>
-    }
-</div>
-
+@if (_conferenceId == null)
+{
+    <div class="container">
+        <button class="btn btn-primary" @onclick="()=> _showEventFormModal = true">Tilføj session</button>
+        <SchedulerComponent Rooms="@_rooms" Events="@SortedEvents" />
+        @if (_showEventFormModal)
+        {
+            <ModalComponent OnClose="()=> _showEventFormModal = false">
+                <EventFormComponent Rooms="@_rooms" OnSave="AddEvent" />
+            </ModalComponent>
+        }
+    </div>
+}
+else
+{
+<SimpleConferenceComponent/>    
+}
 @code {
     private bool _showEventFormModal = false;
-    private List<Room> rooms = new List<Room>
-    {
-        new Room { Id = 1, Name = "Room 1" },
-        new Room { Id = 2, Name = "Room 2" },
-        new Room { Id = 3, Name = "Room 3" }
-    };
-
-    private List<SchedulerEvent> events = new List<SchedulerEvent>
-    {
-        new SchedulerEvent { Id = 1, Title = "Meeting 1", Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(13), RoomId = 1, Color = "#007bff" },
-        new SchedulerEvent { Id = 2, Title = "Workshop", Start = DateTime.Today.AddHours(14), End = DateTime.Today.AddHours(16), RoomId = 1, Color = "#28a745" },
-        new SchedulerEvent { Id = 3, Title = "Presentation", Start = DateTime.Today.AddHours(11), End = DateTime.Today.AddHours(12), RoomId = 3, Color = "#dc3545" }
-    };
+    private List<Room>? _rooms;
+    private Conference? _conference;
+    private List<SchedulerEvent>? events;
+    private Venue? _venue;
 
     private List<SchedulerEvent> SortedEvents => events.OrderBy(e => e.Start).ToList();
+    private int? _conferenceId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _conferenceId = await conferenceService.GetCurrentConferenceIdAsync();
+        _conference = await conferenceService.GetByIdAsync(_conferenceId);
+        _venue = await venueService.GetByIdAsync(_conference.Location.Id);
+        _rooms = _venue.Rooms;
+    }
 
     private void AddEvent(SchedulerEvent se)
     {
