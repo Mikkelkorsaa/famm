@@ -65,7 +65,7 @@ namespace conferencePlannerApp.Services.Implementations
             }
         }
 
-        public Task<Conference> GetByIdAsync(int id)
+        public Task<Conference> GetByIdAsync(int? id)
         {
             throw new NotImplementedException();
         }

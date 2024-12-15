@@ -3,11 +3,11 @@
 @inject IVenueService venueService;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
-@if (_conferenceId == null)
+@if (_conferenceId != null && _sortedEvents != null)
 {
     <div class="container">
         <button class="btn btn-primary" @onclick="()=> _showEventFormModal = true">Tilføj session</button>
-        <SchedulerComponent Rooms="@_rooms" Events="@SortedEvents" />
+        <SchedulerComponent Rooms="@_rooms" Events="@_sortedEvents" />
         @if (_showEventFormModal)
         {
             <ModalComponent OnClose="()=> _showEventFormModal = false">
@@ -26,25 +26,38 @@ else
     private Conference? _conference;
     private List<SchedulerEvent>? events;
     private Venue? _venue;
+    private ConferencePlan? _conferencePlan;
 
-    private List<SchedulerEvent> SortedEvents => events.OrderBy(e => e.Start).ToList();
+    private List<SchedulerEvent>? _sortedEvents;
+
     private int? _conferenceId;
 
     protected override async Task OnInitializedAsync()
     {
         _conferenceId = await conferenceService.GetCurrentConferenceIdAsync();
         _conference = await conferenceService.GetByIdAsync(_conferenceId);
+        _conferencePlan = _conference.Plan;
+        events = _conference.Plan.Events;
         _venue = await venueService.GetByIdAsync(_conference.Location.Id);
         _rooms = _venue.Rooms;
+        _sortedEvents = sortEvents(events);
     }
+
+    public List<SchedulerEvent> sortEvents(List<SchedulerEvent> events)
+    {
+        return events.OrderBy(e => e.Start).ToList();
+    }
+
 
     private void AddEvent(SchedulerEvent se)
     {
-        // Generate a new ID for the event
-        se.Id = events.Count > 0 ? events.Max(e => e.Id) + 1 : 1;
-
-        events.Add(se);
-        _showEventFormModal = false;
-        StateHasChanged();
+        if (events is not null)
+        {
+            se.Id = events.Count > 0 ? events.Max(e => e.Id) + 1 : 1;
+            events.Add(se);
+            _sortedEvents = sortEvents(events);
+            _showEventFormModal = false;
+            StateHasChanged();
+        }
     }
 }
