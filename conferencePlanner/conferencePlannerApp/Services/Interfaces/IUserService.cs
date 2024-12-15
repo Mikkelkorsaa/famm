@@ -11,5 +11,11 @@ namespace conferencePlannerApp.Services.Interfaces
     // Manipulation: Saves to database
     // Output: User object with generated ID
     Task UpdateUserAsync(User user);
+    /// <summary>
+    /// Get the current userId in local storage
+    /// </summary>
+    
+    /// <returns>UserId</returns>
+    Task<int?> GetCurrentUserIdAsync();
   }
 }

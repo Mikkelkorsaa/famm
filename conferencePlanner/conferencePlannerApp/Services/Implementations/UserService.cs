@@ -31,6 +31,11 @@ namespace conferencePlannerApp.Services.LocalImplementations
             }
         }
 
+        public Task<int?> GetCurrentUserIdAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task UpdateUserAsync(User user)
         {
             ArgumentNullException.ThrowIfNull(user);

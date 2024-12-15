@@ -1,9 +1,16 @@
-using conferencePlannerApi.Repositories.Interfaces;
+﻿using Blazored.LocalStorage;
+using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerCore.Models;
-namespace conferencePlannerApi.Repositories.LocalImplementations
+using Microsoft.AspNetCore.Components;
+
+
+namespace conferencePlannerApp.Services.LocalImplementations
 {
-    public class LocalConferenceRepo : IConferenceRepo
+
+    public class LocalConferenceService : IConferenceService
     {
+        private readonly ILocalStorageService _localStorage;
+        private const string StorageKey = "currentConferenceId";
         private readonly List<Conference> _conferences = new()
         {
             new Conference
@@ -25,8 +32,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
                     "Technical Contribution",
                     "Originality",
                     "Presentation Quality",
-                    "Practical Impact",
-                    "TEEEEEST"
+                    "Practical Impact"
                 },
                 Location = new Venue
                 {
@@ -44,7 +50,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
                         PresenterEmail = "s.johnson@university.edu",
                         CoAuthors = new List<string> { "Dr. Michael Chen", "Prof. Emma Williams" },
                         Organization = "University of Technology",
-                        Title = "Machine Learning Applications in Climate Change Prediction",
+                        Title = "Test1",
                         KeyValues = "climate modeling, machine learning, neural networks, weather prediction",
                         AbstractText = "This study presents a novel approach to climate change prediction using advanced machine learning techniques. We demonstrate how neural networks can be applied to historical climate data to improve the accuracy of future climate projections. Our results show a 15% improvement in prediction accuracy compared to traditional methods.",
                         Category = "Machine Learning",
@@ -56,14 +62,17 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
                                 Id = 1,
                                 UserId = 101,
                                 Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 5 }, new Criteria { Name = "Originality", Grade = 4 } },
-                                Comment = "Excellent application of machine learning in a critical area."
+                                Comment = "Excellent application of machine learning in a critical area.",
+                                Recommend = false
                             },
                             new Review
                             {
                                 Id = 2,
                                 UserId = 102,
                                 Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 4 }, new Criteria { Name = "Originality", Grade = 5 } },
-                                Comment = "Innovative approach with promising results."
+                                Comment = "Innovative approach with promising results.",
+                                Recommend = true
+
                             }
                         }
                     }
@@ -72,7 +81,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
             new Conference
             {
               Id = 2,
-              Name = "European Data Science Summit 2024",
+              Name = "European Data Science Summit 2024 test 2",
               AbstractDeadLine = new DateTime(2025, 7, 30),
               ReviewDeadline = new DateTime(2025, 8, 30),
               StartDate = new DateTime(2025, 10, 15),
@@ -106,7 +115,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
                       PresenterEmail = "dmartinez@research.org",
                       CoAuthors = new List<string> { "Dr. Lisa Cooper" },
                       Organization = "Research Institute of Biotechnology",
-                      Title = "Novel CRISPR Applications in Treating Genetic Disorders",
+                      Title = "Test 2",
                       KeyValues = "CRISPR, gene editing, genetic disorders, therapeutic applications",
                       AbstractText = "Our research explores innovative applications of CRISPR technology in treating rare genetic disorders. Through a series of controlled experiments, we have developed a modified CRISPR-Cas9 system that shows promising results in correcting specific genetic mutations with minimal off-target effects.",
                       Category = "Biotechnology",
@@ -134,7 +143,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
             new Conference
             {
               Id = 3,
-              Name = "Asia-Pacific Cybersecurity Conference 2024",
+              Name = "Asia-Pacific Cybersecurity Conference 2024 test 3",
               AbstractDeadLine = new DateTime(2025, 5, 1),
               ReviewDeadline = new DateTime(2025, 6, 1),
               StartDate = new DateTime(2025, 8, 10),
@@ -168,7 +177,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
                       PresenterEmail = "anderson.r@sustaintech.com",
                       CoAuthors = new List<string> { "Dr. James Wilson", "Dr. Maria Garcia", "Dr. Tom Baker" },
                       Organization = "SustainTech Solutions",
-                      Title = "Sustainable Urban Development: A Smart City Framework",
+                      Title = "Test 3",
                       KeyValues = "smart cities, sustainability, urban planning, IoT integration",
                       AbstractText = "This paper presents a comprehensive framework for implementing smart city solutions in urban development. By integrating IoT sensors, renewable energy systems, and adaptive traffic management, our approach has demonstrated significant improvements in urban efficiency and sustainability. Case studies from three major cities show reductions in energy consumption and traffic congestion.",
                       Category = "Urban Development",
@@ -194,65 +203,93 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
               }
             }
         };
-        private int _lastId = 3;
-
-
-        public async Task<Conference> GetByIdAsync(int id)
+        public LocalConferenceService(ILocalStorageService localStorage)
         {
-            var response = _conferences.FirstOrDefault(c => c.Id == id);
-            return await Task.FromResult(response != null ? response : throw new Exception("Conference not found"));
+            _localStorage = localStorage;
+        }
+        public Task CreateConferenceAsync(Conference conference)
+        {
+            throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Conference>> GetAllAsync()
+        public Task<IEnumerable<Conference>> GetActiveConferencesAsync()
         {
-            var result = _conferences;
-            return await Task.FromResult(result.Any() ? result : throw new Exception("No conferences found"));
+            IEnumerable<Conference> Result = _conferences;
+            return Task.FromResult(Result);
         }
 
-        public async Task<Conference> CreateAsync(Conference conference)
+        public Task<Conference> GetByIdAsync(int id)
         {
-            var response = _conferences.FirstOrDefault(c => c.Id == conference.Id);
-            if (response == null)
+            var result = _conferences.FirstOrDefault(item => item.Id == id);
+            if (result != null)
+                return Task.FromResult(result);
+            else
+                throw new Exception("Id doesnt match any existing conferences");
+        }
+
+        public async Task<int?> GetCurrentConferenceIdAsync()
+        {
+
+            var conference = await _localStorage.GetItemAsync<int?>(StorageKey);
+            if (conference == null)
+                return null;
+            else
+                return conference;
+        }
+
+        public async Task<Conference> SetCurrentConferenceAsync(int id)
+        {
+            
+            await _localStorage.SetItemAsync(StorageKey, id);
+            
+            var conference = await GetByIdAsync(id);
+            return conference;
+
+        }
+
+        public Task<List<Abstract>> GetAllAbstractsByIdAsync(int id)
+        {
+            var conference = _conferences.FirstOrDefault(c => c.Id == id);
+            if (conference != null)
             {
-                var newConference = conference with { Id = ++_lastId };
-                _conferences.Add(newConference);
-                return await Task.FromResult(newConference);
+                return Task.FromResult(conference.Abstracts);
             }
             else
-                throw new Exception("Conference ID already exists");
-        }
-
-        public async Task<Conference> UpdateAsync(Conference conference)
-        {
-            var existing = _conferences.FirstOrDefault(c => c.Id == conference.Id);
-            if (existing == null)
+            {
                 throw new Exception("Conference not found");
-
-            existing.Name = conference.Name;
-            existing.StartDate = conference.StartDate;
-            existing.EndDate = conference.EndDate;
-
-            return await Task.FromResult(existing);
+            }
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public Task UpdateReview(int abstractId, Review review)
         {
-            var existing = _conferences.FirstOrDefault(c => c.Id == id);
-            if (existing == null)
+            var conference = _conferences.FirstOrDefault(c => c.Abstracts.Any(a => a.Id == abstractId));
+            if (conference != null)
+            {
+                var abstractItem = conference.Abstracts.FirstOrDefault(a => a.Id == abstractId);
+                if (abstractItem != null)
+                {
+                    var existingReview = abstractItem.Reviews.FirstOrDefault(r => r.Id == review.Id);
+                    if (existingReview != null)
+                    {
+                        existingReview.UserId = review.UserId;
+                        existingReview.Criterias = review.Criterias;
+                        existingReview.Comment = review.Comment;
+                    }
+                    else
+                    {
+                        abstractItem.Reviews.Add(review);
+                    }
+                    return Task.CompletedTask;
+                }
+                else
+                {
+                    throw new Exception("Abstract not found");
+                }
+            }
+            else
+            {
                 throw new Exception("Conference not found");
-
-            _conferences.Remove(existing);
-            return await Task.FromResult(true);
-        }
-
-        public Task<List<string>> ListAllCriteria(int conferenceId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<string>> ListAllCategories(int conferenceId)
-        {
-            throw new NotImplementedException();
+            }
         }
     }
 }
