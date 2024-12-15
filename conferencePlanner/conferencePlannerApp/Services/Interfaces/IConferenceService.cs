@@ -52,6 +52,12 @@ namespace conferencePlannerApp.Services.Interfaces
         /// </summary>
         /// <returns>The max reviewId +1</returns>
         Task<int> GetNextReviewIdAsync(int abstractId);
+        /// <summary>
+        /// Check if the user currently has reviewed the selected abstract
+        /// </summary>
+        /// <param name="abstractId"></param>
+        /// <returns></returns>
+        Task<bool> HasReviewAsync(int? abstractId, int? userId);
 
     }
 }

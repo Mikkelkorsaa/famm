@@ -323,5 +323,20 @@ namespace conferencePlannerApp.Services.LocalImplementations
             return Task.FromResult(maxReviewId + 1);
         }
 
+        public Task<bool> HasReviewAsync(int? abstractId, int? userId)
+        {
+            var conference = _conferences.FirstOrDefault(c => c.Abstracts.Any(a => a.Id == abstractId));
+            if (conference != null)
+            {
+                var abstractItem = conference.Abstracts.FirstOrDefault(a => a.Id == abstractId);
+                if (abstractItem != null)
+                {
+                    var review = abstractItem.Reviews.FirstOrDefault(r => r.UserId == userId);
+                    return Task.FromResult(review != null);
+                }
+            }
+            return Task.FromResult(false);
+        }
+
     }
 }

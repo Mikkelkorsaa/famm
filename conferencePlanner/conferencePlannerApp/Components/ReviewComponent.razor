@@ -207,6 +207,7 @@
     private bool recommend = false;
     private string _comment = "";
     private Review Review = new();
+    private bool _hasReviewed = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -222,15 +223,25 @@
             return;
         }
 
+        if (SelectedAbstract != null && UserId.HasValue) //if the person hasnt reviewed
+        {
+            _hasReviewed = await ConferenceService.HasReviewAsync(SelectedAbstract.Id, UserId.Value);
+            if (!_hasReviewed)
+            {
+                newReviewId = await ConferenceService.GetNextReviewIdAsync(SelectedAbstract.Id);
+            }
+        }
+        
+
         if (conferenceId.HasValue)
         {
             try
             {
                 reviewCriteria = await ConferenceService.GetCriteriaByIdAsync(conferenceId.Value);
-                
 
                 Review = new Review
                     {
+                        Id = newReviewId,
                         UserId = UserId ?? 0,
                         Criterias = reviewCriteria.Select(c => new Criteria { Name = c }).ToList()
                     };
@@ -285,3 +296,4 @@
         }
     }
 }
+
