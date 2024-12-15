@@ -1,4 +1,7 @@
 ﻿@page "/scheduler-test"
+@inject IConferenceService conferenceService;
+@inject IVenueService venueService;
+
 <h1>Room Scheduler</h1>
 <div class="container">
     <button class="btn btn-primary" @onclick="()=> _showEventFormModal = true">Tilføj session</button>
