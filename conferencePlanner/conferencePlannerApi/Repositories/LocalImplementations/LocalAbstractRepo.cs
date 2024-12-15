@@ -141,13 +141,13 @@ new Abstract
             return await Task.FromResult(updatedAbstract);
         }
 
-        public async Task DeleteAsync(int id)
+        public Task DeleteAsync(int id)
         {
             var index = _abstracts.FindIndex(a => a.Id == id);
             if (index == -1)
                 throw new Exception("Abstract not found");
+            _abstracts.RemoveAt(index);
 
-                _abstracts.RemoveAt(index);
             return Task.CompletedTask;
         }
 
