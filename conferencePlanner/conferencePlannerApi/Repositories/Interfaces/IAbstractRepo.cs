@@ -9,7 +9,7 @@ namespace conferencePlannerApi.Repositories.Interfaces
                 Task<Abstract> GetByIdAsync(int id);
 
                 // Output: Collection of all Abstract objects
-                Task<IEnumerable<Abstract>> GetAllAsync();
+                Task<List<Abstract>> GetAllAsync();
 
                 // Input: Abstract object without ID
                 // Manipulation: Saves to database
@@ -24,7 +24,7 @@ namespace conferencePlannerApi.Repositories.Interfaces
                 // Input: Abstract ID
                 // Manipulation: Removes from database
                 // Output: True if deleted, false if not found
-                Task<bool> DeleteAsync(int id);
+                Task DeleteAsync(int id);
 
 
                 //Input: Abstract Id & Review

@@ -31,6 +31,10 @@
                     </div>
                 }
             </div>
+            <div class="recommendations-section">
+                <h3>Anbefalinger</h3>
+                <p>Antal anbefalinger: @GetRecommendationCount() / @SelectedAbstract.Reviews.Count</p>
+            </div>
         }
         else
         {
@@ -108,6 +112,10 @@
         margin-bottom: 1rem;
     }
 
+    .recommendations-section {
+        margin-top: 2rem;
+    }
+
     .no-reviews-placeholder {
         text-align: center;
         color: #6b7280;
@@ -149,9 +157,16 @@
         return averageCriteriaGrades;
     }
 
+    private int GetRecommendationCount()
+    {
+        return SelectedAbstract!.Reviews.Count(r => r.Recommend);
+    }
+
     private class AverageCriteria
     {
         public string? Name { get; set; }
         public double? AverageGrade { get; set; }
     }
 }
+
+

@@ -8,6 +8,8 @@ namespace conferencePlannerApp.Services.Implementations
     {
         private readonly ILocalStorageService _localStorage;
         private const string StorageKey = "currentUser";
+        private const string IdStorageKey = "currentUserId";
+        private int userId;
 
         public LocalStorageUserService(ILocalStorageService localStorage)
         {
@@ -36,6 +38,12 @@ namespace conferencePlannerApp.Services.Implementations
             {
                 throw new InvalidOperationException("Failed to save current user.");
             }
+        }
+        public async Task SetCurrentUserId(User user)
+        {
+            userId = user.Id;
+            await _localStorage.SetItemAsync(IdStorageKey, userId);
+
         }
 
         public async Task ClearCurrentUser()

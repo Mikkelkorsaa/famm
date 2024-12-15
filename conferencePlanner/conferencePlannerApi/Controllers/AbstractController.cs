@@ -62,9 +62,9 @@ namespace conferencePlannerApi.Controllers
                     new { id = newAbstract.Id }, 
                     newAbstract);
             }
-            catch
+            catch(Exception ex)
             {
-                return StatusCode(500, "An error occurred while creating the abstract");
+                return StatusCode(500, ex.Message);
             }
         }
 
@@ -96,8 +96,8 @@ namespace conferencePlannerApi.Controllers
         {
             try
             {
-                var result = await _repo.DeleteAsync(id);
-                return result ? NoContent() : NotFound($"Abstract with ID {id} not found");
+                await _repo.DeleteAsync(id);
+                return Ok();
             }
             catch
             {
