@@ -22,6 +22,13 @@ namespace conferencePlannerApi.Repositories.Interfaces
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<bool> DeleteVenueAsync(int id);
+        Task<bool> DeleteAsync(int id);
+
+        /// <summary>
+        /// Updates the venue with the given id
+        /// </summary>
+        /// <param name="venue"></param>
+        /// <returns>The updated venue object</returns>
+        Task<Venue> UpdateAsync(Venue venue);
     }
 }

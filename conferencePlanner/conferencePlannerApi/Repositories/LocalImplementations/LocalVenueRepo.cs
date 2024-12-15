@@ -1,5 +1,6 @@
 ﻿using conferencePlannerApi.Repositories.Interfaces;
 using conferencePlannerCore.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace conferencePlannerApi.Repositories.LocalImplementations;
 
@@ -59,7 +60,7 @@ public class LocalVenueRepo : IVenueRepo
             throw new Exception("Venue ID already exists");
     }
 
-    public async Task<bool> DeleteVenueAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         var existing = _venues.FirstOrDefault(v => v.Id == id);
         if (existing == null)
@@ -74,5 +75,17 @@ public class LocalVenueRepo : IVenueRepo
         var response = _venues.FirstOrDefault(v => v.Id == id);
         return await Task.FromResult(response != null ? response : throw new Exception("Venue not found"));
     }
+
+    public async Task<Venue> UpdateAsync(Venue venue)
+    {
+        var existing = _venues.FirstOrDefault(v => v.Id == venue.Id) ?? throw new Exception("Conference not found");
+        existing.Name = venue.Name;
+        existing.Address = venue.Address;
+        existing.Rooms = venue.Rooms;
+
+        return await Task.FromResult(existing);
+    }
+
+ 
 }
 

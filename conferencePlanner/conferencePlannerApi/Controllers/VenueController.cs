@@ -16,8 +16,8 @@ namespace conferencePlannerApi.Controllers
         }
 
         [HttpGet]
-        [Route("GetConferenceById/{id}")]
-        public async Task<ActionResult<Conference>> GetVenueById(int id)
+        [Route("GetVenueById/{id}")]
+        public async Task<ActionResult<Venue>> GetVenueById(int id)
         {
             try
             {
@@ -30,6 +30,64 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("CreateVenue")]
+        public async Task<ActionResult<Venue>> CreateVenue(Venue venue)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var newVenue = await _repo.CreateAsync(venue);
+                return CreatedAtAction(nameof(GetVenueById),
+                    new { id = venue!.Id },
+                    newVenue);
+            }
+            catch
+            {
+                return StatusCode(500, "An error occurred while creating the venue");
+            }
+        }
+
+        [HttpPut]
+        [Route("UpdateVenue")]
+        public async Task<ActionResult<Venue>> UpdateVenue(Venue venue)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var updatedVenue = await _repo.UpdateAsync(venue);
+                return updatedVenue == null
+                    ? NotFound($"Venue with ID {venue.Id} not found")
+                    : Ok(updatedVenue);
+            }
+            catch
+            {
+                return StatusCode(500, "An error occurred while updating the venue");
+            }
+        }
+
+        [HttpDelete]
+        [Route("DeleteVenue/{id}")]
+        public async Task<ActionResult> DeleteVenue(int id)
+        {
+            try
+            {
+                var result = await _repo.DeleteAsync(id);
+                return result ? NoContent() : NotFound($"Venue with ID {id} not found");
+            }
+            catch
+            {
+                return StatusCode(500, "An error occurred while deleting the venue");
+            }
+        }
 
     }
 }
