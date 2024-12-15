@@ -17,18 +17,17 @@
         </div>
     }
 
-    <RadzenTemplateForm TItem="Abstract" Data="@_abstract" Submit="@HandleSubmit" Method="POST">
+    <RadzenTemplateForm TItem="Abstract" Data="@_abstract" Submit="@HandleSubmit" InvalidSubmit="@HandleInvalidSubmit">
         <div class="row">
             <div class="col-md-6 mb-3">
-                <RadzenLabel Text="Afsenders navn" />
-                <RadzenTextBox @bind-Value="@_abstract.SenderName" Class="w-100" Name="SenderName" Required="true" />
+                <RadzenLabel Text="Afsenders navn" Component="SenderName" />
+                <RadzenTextBox @bind-Value="@_abstract.SenderName" Class="w-100" Name="SenderName" />
                 <RadzenRequiredValidator Component="SenderName" Text="Navn er påkrævet" />
             </div>
 
             <div class="col-md-6 mb-3">
-                <RadzenLabel Text="Præsenterende E-mail" />
-                <RadzenTextBox @bind-Value="@_abstract.PresenterEmail" Class="w-100" Name="PresenterEmail"
-                    Required="true" />
+                <RadzenLabel Text="Præsenterende E-mail" Component="PresenterEmail" />
+                <RadzenTextBox @bind-Value="@_abstract.PresenterEmail" Class="w-100" Name="PresenterEmail" />
                 <RadzenRequiredValidator Component="PresenterEmail" Text="E-mail er påkrævet" />
                 <RadzenEmailValidator Component="PresenterEmail" Text="Indtast venligst en gyldig e-mail" />
             </div>
@@ -36,64 +35,81 @@
 
         <div class="row">
             <div class="col-md-6 mb-3">
-                <RadzenLabel Text="Organisation" />
-                <RadzenTextBox @bind-Value="@_abstract.Organization" Class="w-100" Name="Organization"
-                    Required="true" />
+                <RadzenLabel Text="Organisation" Component="Organization" />
+                <RadzenTextBox @bind-Value="@_abstract.Organization" Class="w-100" Name="Organization" />
                 <RadzenRequiredValidator Component="Organization" Text="Organisation er påkrævet" />
             </div>
 
             <div class="col-md-6 mb-3">
-                <RadzenLabel Text="Kategori" />
-                <RadzenDropDown @bind-Value="@_abstract.Category" Class="w-100" Data="@categories" Name="Category"
-                    Required="true" />
+                <RadzenLabel Text="Kategori" Component="Category" />
+                <RadzenDropDown @bind-Value="@_abstract.Category" Class="w-100" 
+                    Data="@Categories" Name="Category" />
                 <RadzenRequiredValidator Component="Category" Text="Kategori er påkrævet" />
             </div>
         </div>
 
         <div class="mb-3">
-            <RadzenLabel Text="Titel" />
-            <RadzenTextBox @bind-Value="@_abstract.Title" Class="w-100" Name="Title" Required="true" />
+            <RadzenLabel Text="Titel" Component="Title" />
+            <RadzenTextBox @bind-Value="@_abstract.Title" Class="w-100" Name="Title" />
             <RadzenRequiredValidator Component="Title" Text="Titel er påkrævet" />
         </div>
 
         <div class="mb-3">
-            <RadzenLabel Text="Nøgleord" />
-            <RadzenTextArea @bind-Value="@_abstract.KeyValues" Class="w-100" Rows="3" Name="KeyValues"
-                Change=@OnKeyValuesChange @oninput="OnKeyValuesInput" MaxLength="400"
-                Required="true" />
-            <div class="d-flex justify-content-between mt-1">
-                <RadzenRequiredValidator Component="KeyValues" Text="Nøgleord er påkrævet" />
-                <small class="text-muted">@keyValuesLength/400 tegn</small>
+            <RadzenLabel Text="Nøgleord" Component="KeyValues" />
+            <div class="position-relative">
+                <RadzenTextArea @bind-Value="@_abstract.KeyValues" Class="w-100" 
+                    Rows="3" Name="KeyValues" 
+                    Change="@OnKeyValuesChange"
+                    @oninput="@OnKeyValuesInput"
+                    MaxLength="400" />
+                <ValidationMessage For="@(() => _abstract.KeyValues)" />
+                <div class="d-flex justify-content-end mt-1">
+                    <div class="d-flex align-items-center gap-3">
+                        @if (keyValuesLength < MinKeyValuesLength && keyValuesLength > 0)
+                        {
+                            <small class="text-danger">
+                                Teksten skal være mindst @MinKeyValuesLength tegn 
+                                (mangler @(MinKeyValuesLength - keyValuesLength) tegn)
+                            </small>
+                        }
+                        <small class="text-muted">@keyValuesLength/@MaxKeyValuesLength tegn</small>
+                    </div>
+                </div>
             </div>
-            @if (keyValuesLength < 10 && keyValuesLength > 0)
-            {
-                <small class="text-danger">Teksten skal være mindst 10 tegn (mangler @(10 - keyValuesLength) tegn)</small>
-            }
         </div>
 
         <div class="mb-3">
-            <RadzenLabel Text="Abstract tekst" />
-            <RadzenTextArea @bind-Value="@_abstract.AbstractText" Class="w-100" Rows="8" Name="AbstractText"
-                Change=@OnAbstractTextChange @oninput=OnAbstractTextInput MaxLength="2000"
-                Required="true" />
-            <div class="d-flex justify-content-between mt-1">
-                <RadzenRequiredValidator Component="AbstractText" Text="Abstract tekst er påkrævet" />
-                <small class="text-muted">@abstractTextLength/2000 tegn</small>
+            <RadzenLabel Text="Abstract tekst" Component="AbstractText" />
+            <div class="position-relative">
+                <RadzenTextArea @bind-Value="@_abstract.AbstractText" Class="w-100" 
+                    Rows="8" Name="AbstractText" 
+                    Change="@OnAbstractTextChange"
+                    @oninput="@OnAbstractTextInput"
+                    MaxLength="@MaxAbstractLength" />
+                <ValidationMessage For="@(() => _abstract.AbstractText)" />
+                <div class="d-flex justify-content-end mt-1">
+                    <div class="d-flex align-items-center gap-3">
+                        @if (abstractTextLength < MinAbstractLength && abstractTextLength > 0)
+                        {
+                            <small class="text-danger">
+                                Teksten skal være mindst @MinAbstractLength tegn 
+                                (mangler @(MinAbstractLength - abstractTextLength) tegn)
+                            </small>
+                        }
+                        <small class="text-muted">@abstractTextLength/@MaxAbstractLength tegn</small>
+                    </div>
+                </div>
             </div>
-            @if (abstractTextLength < 100 && abstractTextLength > 0)
-            {
-                <small class="text-danger">Teksten skal være mindst 100 tegn (mangler @(100 - abstractTextLength)
-                    tegn)</small>
-            }
         </div>
 
         <div class="mb-3">
             <RadzenLabel Text="Medforfattere" />
             <div class="d-flex gap-2 mb-2">
-                <RadzenTextBox @bind-Value="@currentCoAuthor" Class="w-100" Placeholder="Indtast medforfatter"
-                    @onkeypress="@EnterKeyPress" />
-                <RadzenButton Click=@AddCoAuthor Text="Tilføj" ButtonStyle="ButtonStyle.Secondary"
-                    Disabled="@(string.IsNullOrWhiteSpace(currentCoAuthor))" />
+                <RadzenTextBox @bind-Value="@currentCoAuthor" Class="w-100" 
+                    Placeholder="Indtast medforfatter" @onkeydown="@HandleKeyDown" />
+                <RadzenButton Click="@AddCoAuthor" Text="Tilføj" 
+                    ButtonStyle="ButtonStyle.Secondary" 
+                    Disabled="@(!CanAddCoAuthor)" />
             </div>
 
             @if (_abstract.CoAuthors.Any())
@@ -103,37 +119,214 @@
                     {
                         <div class="d-flex justify-content-between align-items-center mb-1 p-2 border rounded">
                             <span>@author</span>
-                            <RadzenButton Click="() => RemoveCoAuthor(author)" ButtonStyle="ButtonStyle.Danger"
-                                Size="ButtonSize.Small" Class="p-0" Icon="close" />
+                            <RadzenButton Click="@(() => RemoveCoAuthor(author))" 
+                                ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" 
+                                Class="p-0" Icon="close" />
                         </div>
                     }
                 </div>
-                <small class="text-muted">Antal medforfattere: @_abstract.CoAuthors.Count (max 10)</small>
+                <small class="text-muted">
+                    Antal medforfattere: @_abstract.CoAuthors.Count (max @MaxCoAuthors)
+                </small>
             }
         </div>
 
         <div class="mb-3">
             <RadzenLabel Text="Billede" />
             <InputFile OnChange="@OnFileSelected" class="w-100" accept="image/*" />
-            @if (!string.IsNullOrEmpty(chosenPicture))
+            @if (!string.IsNullOrEmpty(imagePreview))
             {
                 <div class="mt-2">
-                    <img src="@chosenPicture" style="max-width: 200px;" alt="Valgt billede" />
+                    <img src="@imagePreview" style="max-width: 200px;" alt="Valgt billede" />
                 </div>
             }
         </div>
 
         <div class="d-flex justify-content-end">
-            <RadzenButton ButtonType="ButtonType.Submit" Text="Indsend Abstract" ButtonStyle="ButtonStyle.Primary"
-                Class="mt-3" Disabled="@isSubmitting" />
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Indsend Abstract" 
+                ButtonStyle="ButtonStyle.Primary" Class="mt-3" 
+                Disabled="@(isSubmitting || !IsFormValid)" />
         </div>
     </RadzenTemplateForm>
 </RadzenCard>
 
 @code {
+    private const int MinKeyValuesLength = 10;
+    private const int MaxKeyValuesLength = 400;
+    private const int MinAbstractLength = 100;
+    private const int MaxAbstractLength = 2000;
+    private const int MaxCoAuthors = 10;
+    private const int DefaultConferenceId = 1;
+
     private Abstract _abstract = new()
+    {
+        ConferenceId = DefaultConferenceId,
+        SenderName = string.Empty,
+        PresenterEmail = string.Empty,
+        Organization = string.Empty,
+        Title = string.Empty,
+        KeyValues = string.Empty,
+        AbstractText = string.Empty,
+        Category = string.Empty,
+        Picture = string.Empty,
+        CoAuthors = new List<string>()
+    };
+
+    private bool isSubmitting;
+    private string? message;
+    private string messageClass = string.Empty;
+    private string? imagePreview;
+    private string currentCoAuthor = string.Empty;
+    private int keyValuesLength;
+    private int abstractTextLength;
+
+    private IReadOnlyList<string> Categories { get; } = new List<string>
+    {
+        "Forskningsartikel",
+        "Poster",
+        "Workshop",
+        "Paneldiskussion"
+    };
+
+    private bool CanAddCoAuthor => 
+        !string.IsNullOrWhiteSpace(currentCoAuthor) && 
+        _abstract.CoAuthors.Count < MaxCoAuthors && 
+        !_abstract.CoAuthors.Contains(currentCoAuthor);
+
+    private bool IsFormValid =>
+        !string.IsNullOrWhiteSpace(_abstract.SenderName) &&
+        !string.IsNullOrWhiteSpace(_abstract.PresenterEmail) &&
+        !string.IsNullOrWhiteSpace(_abstract.Organization) &&
+        !string.IsNullOrWhiteSpace(_abstract.Category) &&
+        !string.IsNullOrWhiteSpace(_abstract.Title) &&
+        keyValuesLength >= MinKeyValuesLength &&
+        abstractTextLength >= MinAbstractLength;
+
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        try
         {
-            ConferenceId = 1,
+            var file = e.File;
+            if (file == null) return;
+
+            using var memoryStream = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(memoryStream);
+            var bytes = memoryStream.ToArray();
+            imagePreview = $"data:image/png;base64,{Convert.ToBase64String(bytes)}";
+
+            var result = await ImageService.UploadImageAsync(file);
+            _abstract.Picture = result.FileName;
+            ShowMessage("Billede blev uploadet", true);
+        }
+        catch (ImageServiceException ex)
+        {
+            ShowMessage($"Kunne ikke uploade billede: {ex.Message}", false);
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (!IsFormValid)
+        {
+            ShowMessage("Venligst udfyld alle påkrævede felter korrekt", false);
+            return;
+        }
+
+        try
+        {
+            isSubmitting = true;
+            ShowMessage("Sender abstract...", true);
+
+            var savedAbstract = await AbstractService.AddAbstract(_abstract);
+
+            if (savedAbstract?.Id > 0)
+            {
+                ShowMessage("Abstract blev indsendt successfully", true);
+                ResetForm();
+            }
+            else
+            {
+                ShowMessage("Der opstod en fejl ved indsendelse af abstract", false);
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Der opstod en fejl: {ex.Message}", false);
+        }
+        finally
+        {
+            isSubmitting = false;
+            StateHasChanged();
+        }
+    }
+
+    private void HandleInvalidSubmit()
+    {
+        ShowMessage("Venligst udfyld alle påkrævede felter", false);
+    }
+
+    private void ShowMessage(string text, bool isSuccess)
+    {
+        message = text;
+        messageClass = isSuccess ? "alert-success" : "alert-danger";
+        StateHasChanged();
+    }
+
+    private void OnKeyValuesInput(ChangeEventArgs args)
+    {
+        var value = args.Value?.ToString() ?? string.Empty;
+        _abstract.KeyValues = value;
+        keyValuesLength = value.Length;
+        StateHasChanged();
+    }
+
+    private void OnKeyValuesChange(string value)
+    {
+        _abstract.KeyValues = value;
+    }
+
+    private void OnAbstractTextInput(ChangeEventArgs args)
+    {
+        var value = args.Value?.ToString() ?? string.Empty;
+        _abstract.AbstractText = value;
+        abstractTextLength = value.Length;
+        StateHasChanged();
+    }
+
+    private void OnAbstractTextChange(string value)
+    {
+        _abstract.AbstractText = value;
+    }
+
+    private void AddCoAuthor()
+    {
+        if (CanAddCoAuthor)
+        {
+            _abstract.CoAuthors.Add(currentCoAuthor);
+            currentCoAuthor = string.Empty;
+            StateHasChanged();
+        }
+    }
+
+    private void RemoveCoAuthor(string author)
+    {
+        _abstract.CoAuthors.Remove(author);
+        StateHasChanged();
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            AddCoAuthor();
+        }
+    }
+
+    private void ResetForm()
+    {
+        _abstract = new()
+        {
+            ConferenceId = DefaultConferenceId,
             SenderName = string.Empty,
             PresenterEmail = string.Empty,
             Organization = string.Empty,
@@ -144,151 +337,10 @@
             Picture = string.Empty,
             CoAuthors = new List<string>()
         };
-    private string coAuthorsText = string.Empty;
-    private bool isSubmitting = false;
-    private string? message;
-    private string messageClass = "";
-    private string? chosenPicture;
-    private List<string> categories = new()
-{
-"Forskningsartikel",
-"Poster",
-"Workshop",
-"Paneldiskussion"
-};
-    private int keyValuesLength = 0;
-    private int abstractTextLength = 0;
-    private string currentCoAuthor = string.Empty;
-
-    protected override void OnInitialized()
-    {
-        _abstract.ConferenceId = 1;
-    }
-
-    private async Task OnCoAuthorsChange(string value)
-    {
-        coAuthorsText = value;
-        _abstract.CoAuthors = value.Split(new[] { Environment.NewLine },
-        StringSplitOptions.RemoveEmptyEntries)
-        .Where(s => !string.IsNullOrWhiteSpace(s))
-        .ToList();
-        await Task.CompletedTask;
-    }
-
-    private async Task OnFileSelected(InputFileChangeEventArgs e)
-    {
-        try
-        {
-            var file = e.File;
-
-            var memoryStream = new MemoryStream();
-            await file.OpenReadStream().CopyToAsync(memoryStream);
-            var bytes = memoryStream.ToArray();
-            chosenPicture = $"data:image/png;base64, {Convert.ToBase64String(bytes)}";
-
-            var result = await ImageService.UploadImageAsync(file);
-            _abstract.Picture = result.FileName;
-            // await PreviewImage(result.FileName);
-            ShowMessage("Billede blev uploadet", true);
-        }
-        catch (ImageServiceException ex)
-        {
-            ShowMessage($"Kunne ikke uploade billede: {ex.Message}", false);
-        }
-    }
-    private async Task HandleSubmit()
-    {
-        try
-        {
-            isSubmitting = true;
-            ShowMessage("Sender abstract...", true);
-
-            // Ensure the date is set
-            if (_abstract.ConferenceId <= 0)
-            {
-                _abstract.ConferenceId = 1; // Default conference ID
-            }
-
-            var savedAbstract = await AbstractService.AddAbstract(_abstract);
-
-            if (savedAbstract != null && savedAbstract.Id > 0)
-            {
-                ShowMessage("Abstract blev indsendt successfully", true);
-                // Clear form or redirect
-                _abstract = new();
-                coAuthorsText = string.Empty;
-            }
-            else
-            {
-                ShowMessage("Der opstod en fejl ved indsendelse af abstract", false);
-            }
-        }
-        catch (HttpRequestException ex)
-        {
-            ShowMessage($"Kunne ikke indsende abstract: {ex.Message}", false);
-        }
-        catch (Exception ex)
-        {
-            ShowMessage($"Der opstod en uventet fejl: {ex.Message}", false);
-        }
-        finally
-        {
-            isSubmitting = false;
-            StateHasChanged();
-        }
-    }
-
-    private void ShowMessage(string text, bool isSuccess)
-    {
-        message = text;
-        messageClass = isSuccess ? "alert-success" : "alert-danger";
-    }
-    private void OnKeyValuesInput(Microsoft.AspNetCore.Components.ChangeEventArgs args)
-    {
-        keyValuesLength = args.Value?.ToString()?.Length ?? 0;
+        currentCoAuthor = string.Empty;
+        imagePreview = null;
+        keyValuesLength = 0;
+        abstractTextLength = 0;
         StateHasChanged();
-    }
-
-    private void OnKeyValuesChange(string value)
-    {
-        _abstract.KeyValues = value;
-        keyValuesLength = value?.Length ?? 0;
-    }
-
-    private void OnAbstractTextInput(Microsoft.AspNetCore.Components.ChangeEventArgs args)
-    {
-        abstractTextLength = args.Value?.ToString()?.Length ?? 0;
-        StateHasChanged();
-    }
-
-    private void OnAbstractTextChange(string value)
-    {
-        _abstract.AbstractText = value;
-        abstractTextLength = value?.Length ?? 0;
-    }
-
-    private void AddCoAuthor()
-    {
-        if (!string.IsNullOrWhiteSpace(currentCoAuthor) && _abstract.CoAuthors.Count < 10)
-        {
-            if (!_abstract.CoAuthors.Contains(currentCoAuthor))
-            {
-                _abstract.CoAuthors.Add(currentCoAuthor);
-                currentCoAuthor = string.Empty; // Clear the input after adding
-            }
-        }
-    }
-
-    private void RemoveCoAuthor(string author)
-    {
-        _abstract.CoAuthors.Remove(author);
-    }
-
-    private void EnterKeyPress(KeyboardEventArgs args)
-    {
-        if (args.Key == "Enter")
-        {
-            AddCoAuthor();
-        }
     }
 }
