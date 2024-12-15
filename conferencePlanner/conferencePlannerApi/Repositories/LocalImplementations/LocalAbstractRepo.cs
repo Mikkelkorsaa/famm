@@ -148,7 +148,7 @@ new Abstract
                 throw new Exception("Abstract not found");
 
                 _abstracts.RemoveAt(index);
-            return;
+            return Task.CompletedTask;
         }
 
         public async Task<Abstract> UpdateReview(int abstractId, Review review)
