@@ -95,6 +95,16 @@
     </ModalComponent>
 }
 
+if (showReviewerModal){
+    <ModalComponent OnClose="() => showReviewerModal = false">
+        <CreateVenueComponent
+            Reviewers ="conference.Reviewers"
+            OnSave = "HandleReviewerSave"
+            OnCancel="() => showReviewerModal = false"
+        />
+    </ModalComponent>
+}
+
 @code {
     [Parameter]
     public Conference conference { get; set; } = new Conference
@@ -113,6 +123,7 @@
     [Parameter] public EventCallback<Conference> OnSave { get; set; }
 
     private bool showVenueModal = false;
+    private bool showReviewerModal = false;
     private string newCategory = "";
     private string newCriteria = "";
 
@@ -167,6 +178,8 @@
         conference.Location = location;
         showVenueModal = false;
     }
+
+    public void HandleReviewerSave(List<Review>)
 
     private async Task HandleValidSubmit()
     {
