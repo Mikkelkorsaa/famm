@@ -5,10 +5,11 @@
 @using Microsoft.AspNetCore.Components.Forms
 @inject IImageService ImageService
 @inject IAbstractService AbstractService
+@inject IConferenceService ConferenceService
 @inject NavigationManager NavigationManager
 
 <PageTitle>Upload Abstract</PageTitle>
-
+<div class="container">
 <RadzenCard class="m-4">
     @if (!string.IsNullOrEmpty(message))
     {
@@ -149,7 +150,7 @@
         </div>
     </RadzenTemplateForm>
 </RadzenCard>
-
+</div>
 @code {
     private const int MinKeyValuesLength = 10;
     private const int MaxKeyValuesLength = 400;

@@ -1,9 +1,13 @@
 using conferencePlannerApi.Repositories.Interfaces;
 using conferencePlannerCore.Models;
+
+
 namespace conferencePlannerApi.Repositories.LocalImplementations
 {
     public class LocalConferenceRepo : IConferenceRepo
     {
+     
+
         private readonly List<Conference> _conferences = new()
         {
             new Conference
@@ -30,9 +34,15 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
                 },
                 Location = new Venue
                 {
-                  Id = 1,
-                  Name = "Grand Tech Conference Center",
-                  Address = "123 Innovation Boulevard, San Francisco, CA 94105, USA"
+                Id = 1,
+                Name = "Grand Convention Center",
+                Address = "123 Main Street, Cityville",
+                Rooms = new List<Room>
+                {
+                    new Room { Id = 1, Name = "Main Hall" },
+                    new Room { Id = 2, Name = "Conference Room A" },
+                    new Room { Id = 3, Name = "Conference Room B" }
+                }
                 },
                 Abstracts = new List<Abstract>
                 {

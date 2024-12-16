@@ -2,6 +2,11 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+body {
+    background: none !important;
+}
+
+
 h1:focus {
     outline: none;
 }
@@ -17,7 +22,7 @@ a, .btn-link {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 .content {
@@ -65,7 +70,74 @@ a, .btn-link {
         content: "An error has occurred."
     }
 
+.day-room-scheduler {
+    width: 100%;
+    border: 1px solid #ddd;
+}
 
+.scheduler-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f0f0f0;
+}
+
+.scheduler-body {
+    display: flex;
+    height: 480px; /* 16 hours * 2 slots per hour * 30px per slot */
+}
+
+.time-column, .room-column {
+    flex: 1;
+    border-right: 1px solid #ddd;
+    position: relative;
+}
+
+.time-column {
+    flex: 0 0 60px;
+}
+
+.room-header {
+    text-align: center;
+    padding: 5px;
+    background-color: #e0e0e0;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.time-slot {
+    height: 30px;
+    border-top: 1px solid #eee;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 0.8em;
+    color: #666;
+}
+
+.room-events {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(100% - 30px);
+}
+
+.event {
+    position: absolute;
+    left: 0;
+    right: 0;
+    padding: 2px 5px;
+    border-radius: 3px;
+    color: white;
+    font-size: 0.7em;
+    overflow: hidden;
+}
 
 code {
     color: #c02d76;
