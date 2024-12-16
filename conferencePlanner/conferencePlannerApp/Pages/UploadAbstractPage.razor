@@ -159,20 +159,7 @@
     private const int MaxCoAuthors = 10;
     private const int DefaultConferenceId = 1;
 
-    private Abstract _abstract = new()
-    {
-        ConferenceId = DefaultConferenceId,
-        SenderName = string.Empty,
-        PresenterEmail = string.Empty,
-        Organization = string.Empty,
-        Title = string.Empty,
-        KeyValues = string.Empty,
-        AbstractText = string.Empty,
-        Category = string.Empty,
-        Picture = string.Empty,
-        CoAuthors = new List<string>(),
-        Reviews = new List<Review>()
-    };
+    private Abstract _abstract = new();
 
     private bool isSubmitting;
     private string? message;
