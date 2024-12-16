@@ -8,6 +8,6 @@ namespace conferencePlannerCore.Models;
 public class Room
 {
 	public int Id { get; set; } = 0;
-	public string Name { get; set; } = "";
+	public string Name { get; set; } = string.Empty;
 }
 
