@@ -10,8 +10,10 @@
 			<div class="card-body">
 				<div class="d-flex justify-content-center mb-3">
 					<div class="btn-group">
-						<button class="btn @(isLogin ? "btn-primary" : "btn-outline-primary")" @onclick="() => isLogin = true">Login</button>
-						<button class="btn @(!isLogin ? "btn-primary" : "btn-outline-primary")" @onclick="() => isLogin = false">Opret Bruger</button>
+						<button class="btn @(isLogin ? "btn-primary" : "btn-outline-primary")"
+							@onclick="() => isLogin = true">Login</button>
+						<button class="btn @(!isLogin ? "btn-primary" : "btn-outline-primary")"
+							@onclick="() => isLogin = false">Opret Bruger</button>
 					</div>
 				</div>
 
@@ -96,15 +98,15 @@
 	{
 		try
 		{
-				var user = await LoginService.LoginAsync(loginModel);
-				await AuthService.SetCurrentUser(user);
-				await AuthService.SetCurrentUserId(user);
-				NavigationManager.NavigateTo("/dashboard", forceLoad: true);
-				NavigationManager.NavigateTo("/");
+			var user = await LoginService.LoginAsync(loginModel);
+			await AuthService.SetCurrentUser(user);
+			await AuthService.SetCurrentUserId(user);
+			NavigationManager.NavigateTo("/dashboard", forceLoad: true);
+			NavigationManager.NavigateTo("/");
 		}
-		catch
+		catch (Exception ex)
 		{
-			errorMessage = "Error connecting to server";
+			errorMessage = "exception: " + ex.Message;
 		}
 	}
 
@@ -113,10 +115,14 @@
 		try
 		{
 			await LoginService.RegisterAsync(registerModel);
+			// Success - navigate to login or show success message
+			isLogin = true; // Switch to login view
+			StateHasChanged();
 		}
-		catch
+		catch (Exception ex)
 		{
-			errorMessage = "Error connecting to server";
+			errorMessage = ex.Message;
+			StateHasChanged();
 		}
 	}
 }

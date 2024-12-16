@@ -12,40 +12,45 @@ namespace conferencePlannerApp.Services.Implementations
     {
       _httpClient = httpClient;
     }
-    public Task<User> LoginAsync(LoginModel loginModel)
+
+    public async Task<User> LoginAsync(LoginModel loginModel)
     {
-      var response = _httpClient.PostAsJsonAsync("/api/User/Login", loginModel);
-      if (response.Result.IsSuccessStatusCode)
+      try
       {
-        var user = response.Result.Content.ReadFromJsonAsync<User>().Result;
-        if (user == null)
+        var response = await _httpClient.PostAsJsonAsync("/api/User/Login", loginModel);
+        if (response.IsSuccessStatusCode)
         {
-          throw new Exception("Invalid login");
+          var user = await response.Content.ReadFromJsonAsync<User>();
+          if (user == null)
+          {
+            throw new Exception("Invalid login");
+          }
+          return user;
         }
-        return Task.FromResult(user);
-      }
-      else
-      {
         throw new Exception("Invalid login");
       }
-    }
-
-    public Task RegisterAsync(RegisterModel registerModel)
-    {
-      var response = _httpClient.PostAsJsonAsync("/api/User/Register", registerModel);
-      if (response.Result.IsSuccessStatusCode)
+      catch (Exception ex)
       {
-        return Task.CompletedTask;
-      }
-      else
-      {
-        throw new Exception("Invalid registration");
+        throw new Exception($"Login failed: {ex.Message}");
       }
     }
 
-    public Task LogoutAsync()
+    public async Task RegisterAsync(RegisterModel registerModel)
     {
-      throw new NotImplementedException();
+      try
+      {
+        var response = await _httpClient.PostAsJsonAsync("/api/User/Register", registerModel);
+        if (!response.IsSuccessStatusCode)
+        {
+          var errorContent = await response.Content.ReadAsStringAsync();
+          throw new Exception($"Registration failed: {errorContent}");
+        }
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"Registration error details: {ex.Message}");
+        throw;
+      }
     }
   }
 }

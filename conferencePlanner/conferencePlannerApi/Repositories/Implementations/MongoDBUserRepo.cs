@@ -27,12 +27,15 @@ namespace conferencePlannerApi.Repositories.Implementations
             User response = await _userCollection.Find(Builders<User>.Filter.Eq("Email", user.Email)).FirstOrDefaultAsync();
             if (response == null)
             {
-                _userCollection.InsertOne(user);
+                await _userCollection.InsertOneAsync(user);
                 return user;
             }
             else
+            {
                 throw new Exception("Email already in use");
+            }
         }
+
         public async Task<bool> DeleteAsync(int id)
         {
             var filter = Builders<User>.Filter.Eq("_id", id);
