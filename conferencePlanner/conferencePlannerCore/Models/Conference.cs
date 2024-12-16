@@ -15,7 +15,8 @@ namespace conferencePlannerCore.Models
         public Venue Location { get; set; } = new();
         public List<Abstract> Abstracts { get; set; } = new();
         public List<Reviewer> Reviewers { get; set; } = new();
-
+        public ConferencePlan Plan { get; set; } = new();
+        
         public void removeCategory(string category) {
             if (category != null) {
                 foreach (Reviewer r in Reviewers) {
@@ -27,5 +28,6 @@ namespace conferencePlannerCore.Models
             }
             return;            
         }
+        
     }
 }

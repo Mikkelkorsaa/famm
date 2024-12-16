@@ -1,34 +1,34 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @inject IConferenceService conferenceService
+<div>
+    <EditForm Model="@conference" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-<EditForm Model="@conference" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+        <div class="mb-3">
+            <label class="form-label">Konferancens navn</label>
+            <InputText @bind-Value="conference.Name" class="form-control" />
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Konferancens navn</label>
-        <InputText @bind-Value="conference.Name" class="form-control" />
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Abstrakt tidsfrist</label>
+            <InputDate @bind-Value="conference.AbstractDeadLine" class="form-control" />
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Abstrakt tidsfrist</label>
-        <InputDate @bind-Value="conference.AbstractDeadLine" class="form-control" />
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Bedømmelses tidsfrist</label>
+            <InputDate @bind-Value="conference.ReviewDeadline" class="form-control" />
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Bedømmelses tidsfrist</label>
-        <InputDate @bind-Value="conference.ReviewDeadline" class="form-control" />
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Start dato</label>
+            <InputDate @bind-Value="conference.StartDate" class="form-control" />
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Start dato</label>
-        <InputDate @bind-Value="conference.StartDate" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Slut dato</label>
-        <InputDate @bind-Value="conference.EndDate" class="form-control" />
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Slut dato</label>
+            <InputDate @bind-Value="conference.EndDate" class="form-control" />
+        </div>
 
     <div class="mb-3">
         <label class="form-label">Kategori</label>

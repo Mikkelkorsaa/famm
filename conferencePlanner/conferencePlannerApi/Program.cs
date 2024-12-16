@@ -2,9 +2,9 @@ using conferencePlannerApi.Repositories.Interfaces;
 using conferencePlannerApi.Repositories.LocalImplementations;
 using conferencePlannerApi.Services.Interfaces;
 using conferencePlannerApi.Services.Implementations;
-using conferencePlannerCore.Models;
-using conferencePlannerApi.Repositories.Implementations;
 using conferencePlannerCore.Configurations;
+using Microsoft.Extensions.FileProviders;
+using conferencePlannerApi.Repositories.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +13,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IUserRepo, MongoDBUserRepo>();
-builder.Services.AddSingleton<IConferenceRepo, MongoDBConferenceRepo>();
+builder.Services.AddSingleton<IConferenceRepo, LocalConferenceRepo>();
 builder.Services.AddSingleton<IAbstractRepo, MongoDBAbstractRepo>();
+builder.Services.AddSingleton<IVenueRepo, LocalVenueRepo>();
 
 builder.Services.Configure<EmailConfiguration>(
     builder.Configuration.GetSection("EmailConfiguration"));
@@ -30,7 +31,21 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader());
 });
 
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
+
+var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+if (!Directory.Exists(uploadsDir))
+{
+    Directory.CreateDirectory(uploadsDir);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsDir),
+    RequestPath = "/uploads"
+});
 
 app.UseCors("AllowAll");
 

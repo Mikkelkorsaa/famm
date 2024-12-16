@@ -2,6 +2,7 @@
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject IAuthService AuthService
+@inject ILoginService LoginService
 
 <div class="row justify-content-center">
 	<div class="col-md-4">
@@ -9,8 +10,10 @@
 			<div class="card-body">
 				<div class="d-flex justify-content-center mb-3">
 					<div class="btn-group">
-						<button class="btn @(isLogin ? "btn-primary" : "btn-outline-primary")" @onclick="() => isLogin = true">Login</button>
-						<button class="btn @(!isLogin ? "btn-primary" : "btn-outline-primary")" @onclick="() => isLogin = false">Opret Bruger</button>
+						<button class="btn @(isLogin ? "btn-primary" : "btn-outline-primary")"
+							@onclick="() => isLogin = true">Login</button>
+						<button class="btn @(!isLogin ? "btn-primary" : "btn-outline-primary")"
+							@onclick="() => isLogin = false">Opret Bruger</button>
 					</div>
 				</div>
 
@@ -95,30 +98,15 @@
 	{
 		try
 		{
-			var response = await Http.PostAsJsonAsync("https://localhost:7000/api/user/login", loginModel);
-			if (response.IsSuccessStatusCode)
-			{
-				var user = await response.Content.ReadFromJsonAsync<User>();
-				if (user != null)
-				{
-					await AuthService.SetCurrentUser(user);
-					NavigationManager.NavigateTo("/dashboard", forceLoad: true);
-				}
-				else
-				{
-					errorMessage = "Error retrieving user information";
-					return;
-				}
-				NavigationManager.NavigateTo("/");
-			}
-			else
-			{
-				errorMessage = "Invalid login attempt";
-			}
+			var user = await LoginService.LoginAsync(loginModel);
+			await AuthService.SetCurrentUser(user);
+			await AuthService.SetCurrentUserId(user);
+			NavigationManager.NavigateTo("/dashboard", forceLoad: true);
+			NavigationManager.NavigateTo("/");
 		}
-		catch
+		catch (Exception ex)
 		{
-			errorMessage = "Error connecting to server";
+			errorMessage = "exception: " + ex.Message;
 		}
 	}
 
@@ -126,26 +114,15 @@
 	{
 		try
 		{
-			if (registerModel.Password != registerModel.ConfirmPassword)
-			{
-				errorMessage = "Passwords do not match";
-				return;
-			}
-			var response = await Http.PostAsJsonAsync("https://localhost:7000/api/user/register", registerModel);
-			if (response.IsSuccessStatusCode)
-			{
-				registerModel = new();
-				isLogin = true;
-				errorMessage = string.Empty;
-			}
-			else
-			{
-				errorMessage = "Registration failed. Please try again.";
-			}
+			await LoginService.RegisterAsync(registerModel);
+			// Success - navigate to login or show success message
+			isLogin = true; // Switch to login view
+			StateHasChanged();
 		}
-		catch
+		catch (Exception ex)
 		{
-			errorMessage = "Error connecting to server";
+			errorMessage = ex.Message;
+			StateHasChanged();
 		}
 	}
 }

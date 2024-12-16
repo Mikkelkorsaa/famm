@@ -1,0 +1,131 @@
+.abstract-review-header {
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.review-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.reviews-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.review-card {
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.grade-selector {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.grade-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #3b82f6;
+    background-color: transparent;
+    color: #3b82f6;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .grade-button.selected {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+    .grade-button:hover {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+.comment-textarea {
+    width: 100%;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.75rem;
+    resize: vertical;
+    transition: border-color 0.3s ease;
+}
+
+    .comment-textarea:focus {
+        border-color: #3b82f6;
+        outline: none;
+    }
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.save-button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .save-button:hover:not(:disabled) {
+        background-color: #2563eb;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .save-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+.no-reviews-placeholder {
+    text-align: center;
+    color: #6b7280;
+    padding: 2rem;
+}
+
+.no-reviews-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: #9ca3af;
+}
+
+.recommend-label {
+    margin-left: 0.5rem;
+    font-size: 1rem;
+    color: #374151;
+}
+
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #3b82f6;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    input[type="checkbox"]:checked {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+    }

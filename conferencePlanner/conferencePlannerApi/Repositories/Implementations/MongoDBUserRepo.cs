@@ -17,7 +17,7 @@ namespace conferencePlannerApi.Repositories.Implementations
         {
             _config = config;
             _mongoClient = new MongoClient(_config["ConnectionStrings:mongoDB"]);
-            _database = _mongoClient.GetDatabase("ConferencePlaner");
+            _database = _mongoClient.GetDatabase("ConferencePlanner");
             _userCollection = _database.GetCollection<User>("Users");
         }
 
@@ -27,12 +27,15 @@ namespace conferencePlannerApi.Repositories.Implementations
             User response = await _userCollection.Find(Builders<User>.Filter.Eq("Email", user.Email)).FirstOrDefaultAsync();
             if (response == null)
             {
-                _userCollection.InsertOne(user);
+                await _userCollection.InsertOneAsync(user);
                 return user;
             }
             else
+            {
                 throw new Exception("Email already in use");
+            }
         }
+
         public async Task<bool> DeleteAsync(int id)
         {
             var filter = Builders<User>.Filter.Eq("_id", id);
@@ -85,7 +88,10 @@ namespace conferencePlannerApi.Repositories.Implementations
         };
 
             var result = await _userCollection.Aggregate<BsonDocument>(pipeline).FirstOrDefaultAsync();
-            return result == null ? result["maxUserId"].AsInt32 + 1 : 0;
+
+            if (result == null)
+                return 0;
+            return result["maxUserId"].AsInt32 + 1;
         }
     }
 }

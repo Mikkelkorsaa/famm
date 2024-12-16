@@ -1,8 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Radzen.Blazor
 @using conferencePlannerApp.Services.RoleAutherization
 
-
 <CascadingAuthenticationState>
+    <RadzenDialog />
+    <RadzenNotification />
+    <RadzenContextMenu />
+    <RadzenTooltip />
+    
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
@@ -12,7 +17,6 @@
             </AuthorizeRouteView>
         </Found>
         <NotFound>
-            <!-- This shows when the URL doesn't match any page -->
             <PageTitle>Not found</PageTitle>
             <LayoutView Layout="@typeof(MainLayout)">
                 <p>Sorry, there's nothing at this address.</p>

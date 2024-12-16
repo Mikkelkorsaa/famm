@@ -1,0 +1,78 @@
+﻿@page "/scheduler"
+@inject IConferenceService conferenceService;
+@inject IVenueService venueService;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+@if (_conferenceId != null && _sortedEvents != null && _rooms != null && _conference != null)
+{
+	<div class="container">
+		<button class="btn btn-primary" @onclick="()=> _showEventFormModal = true">Tilføj session</button>
+		<SchedulerComponent Rooms="@_rooms" Events="@_sortedEvents" />
+		@if (_showEventFormModal)
+		{
+			<ModalComponent OnClose="()=> _showEventFormModal = false">
+				<EventFormComponent Rooms="@_rooms" OnSave="AddEvent" />
+			</ModalComponent>
+		}
+		<button class="btn btn-primary">Gem Konferenceplan</button>
+	</div>
+}
+else
+{
+	<SimpleConferenceComponent />
+}
+@code {
+	private bool _showEventFormModal = false;
+	private List<Room>? _rooms;
+	private Conference? _conference;
+	private List<SchedulerEvent>? events;
+	private Venue? _venue;
+	private ConferencePlan? _conferencePlan;
+
+	private List<SchedulerEvent>? _sortedEvents;
+
+	private int? _conferenceId;
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		_conferenceId = await conferenceService.GetCurrentConferenceIdAsync();
+		if (_conferenceId is not null)
+		{
+			_conference = await conferenceService.GetByIdAsync(_conferenceId.Value);
+			_conferencePlan = _conference.Plan;
+			events = _conference.Plan.Events;
+
+			if (_conference.Location?.Id != null)
+			{
+				_venue = await venueService.GetByIdAsync(_conference.Location.Id);
+				_rooms = _venue?.Rooms;
+				_sortedEvents = sortEvents(events);
+			}
+		}
+
+
+	}
+
+
+	public List<SchedulerEvent> sortEvents(List<SchedulerEvent> events)
+	{
+		return events.OrderBy(e => e.Start).ToList();
+	}
+
+	private void OnSave()
+	{
+
+	}
+	private void AddEvent(SchedulerEvent se)
+	{
+		if (events is not null)
+		{
+			se.Id = events.Count > 0 ? events.Max(e => e.Id) + 1 : 1;
+			events.Add(se);
+			_sortedEvents = sortEvents(events);
+			_showEventFormModal = false;
+			StateHasChanged();
+		}
+	}
+}

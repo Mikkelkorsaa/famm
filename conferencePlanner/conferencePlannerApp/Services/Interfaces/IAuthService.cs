@@ -11,6 +11,8 @@ namespace conferencePlannerApp.Services.Interfaces
     // Manipulation: Saves to local storage
     Task SetCurrentUser(User user);
 
+    Task SetCurrentUserId(User user);
+
     // Manipulation: Removes user from local storage
     Task ClearCurrentUser();
   }

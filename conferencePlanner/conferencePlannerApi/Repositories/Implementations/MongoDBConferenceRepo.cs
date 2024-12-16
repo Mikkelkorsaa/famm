@@ -18,7 +18,7 @@ namespace conferencePlannerApi.Repositories.Implementations
         {
             _config = config;
             _mongoClient = new MongoClient(_config["ConnectionStrings:mongoDB"]);
-            _database = _mongoClient.GetDatabase("ConferencePlaner");
+            _database = _mongoClient.GetDatabase("ConferencePlanner");
             _conferenceCollection = _database.GetCollection<Conference>("Conferences");
         }
 

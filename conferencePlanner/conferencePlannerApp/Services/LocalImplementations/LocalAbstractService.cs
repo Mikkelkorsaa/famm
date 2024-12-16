@@ -119,5 +119,30 @@ namespace conferencePlannerApp.Services.Implementations
 
             return await Task.FromResult(@abstract);
         }
+
+        public Task<List<Abstract>> GetAllAbstractsByConferenceIdAsync(int conferenceId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> HasReviewAsync(int abstractId, int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> GetNextReviewIdAsync(int abstractId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Abstract> GetById(int abstractId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Review> GetExistingReviewAsync(int abstractId, int userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

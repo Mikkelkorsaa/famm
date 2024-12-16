@@ -1,13 +1,17 @@
 ﻿@inject IAbstractService AbstractService
+@inject IConferenceService ConferenceService
+@inject IUserService UserService
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
-<div class="abstract-review-wrapper">
-    <div class="abstract-review">
-        @if (SelectedAbstract!.Reviews != null && SelectedAbstract.Reviews.Any())
-        {
-            var review = SelectedAbstract.Reviews.First();
+<EditForm Model="Review" OnValidSubmit="UpdateReview">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="abstract-review-wrapper">
+        <div class="abstract-review">
             <div class="review-card">
                 <div class="review-criteria">
-                    @foreach (var criteria in review.Criterias)
+                    @foreach (var criteria in Review.Criterias)
                     {
                         <div class="form-group">
                             <label class="criteria-label">@criteria.Name</label>
@@ -17,7 +21,7 @@
                                     int gradeValue = i;
                                     <button type="button"
                                     class="grade-button @(criteria.Grade == gradeValue ? "selected" : "")"
-                                    @onclick="() => criteria.Grade = gradeValue">
+                                    @onclick="() => SetCriteriaGrade(criteria.Name, gradeValue)">
                                         @gradeValue
                                     </button>
                                 }
@@ -29,164 +33,107 @@
                         <label class="comment-label">Kommentar</label>
                         <textarea class="comment-textarea"
                         rows="4"
-                        @bind="review.Comment"
-                        placeholder="Enter your detailed observations..."></textarea>
+                        @bind="_comment"
+                        placeholder="Enter your detailed observations...">@_comment</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="checkbox" id="recommendCheckbox" @bind="recommend" />
+                        <label for="recommendCheckbox" class="recommend-label">Anbefal Abstrakt</label>
                     </div>
                 </div>
             </div>
-        }
-        else
-        {
-            <div class="no-reviews-placeholder">
-                <div class="no-reviews-icon">
-                    <i class="bi bi-clipboard-x"></i>
-                </div>
-                <p>No reviews available for this abstract.</p>
-            </div>
-        }
+        </div>
+
+        <div class="button-container">
+            <button type="submit"
+            class="save-button"
+            disabled="@(isSaving)">
+                @if (isSaving)
+                {
+                    <span class="spinner"></span>
+                    <span>Saving...</span>
+                }
+                else
+                {
+                    <span>Save Review</span>
+                }
+            </button>
+        </div>
     </div>
-
-    <div class="button-container">
-        <button type="button"
-        class="save-button"
-        @onclick="UpdateReview"
-        disabled="@(isSaving)">
-            @if (isSaving)
-            {
-                <span class="spinner"></span>
-                <span>Saving...</span>
-            }
-            else
-            {
-                <span>Save Review</span>
-            }
-        </button>
-    </div>
-</div>
-
-<style>
-    .abstract-review-header {
-    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-    color: white;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-    text-align: center;
-    }
-
-    .review-title {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-    }
-
-    .reviews-grid {
-    display: grid;
-    gap: 1rem;
-    }
-
-    .review-card {
-    background-color: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 1.5rem;
-    transition: all 0.3s ease;
-    }
-
-    .grade-selector {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    }
-
-    .grade-button {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid #3b82f6;
-    background-color: transparent;
-    color: #3b82f6;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    }
-
-    .grade-button.selected {
-    background-color: #3b82f6;
-    color: white;
-    }
-
-    .grade-button:hover {
-    background-color: #3b82f6;
-    color: white;
-    }
-
-    .comment-textarea {
-    width: 100%;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 0.75rem;
-    resize: vertical;
-    transition: border-color 0.3s ease;
-    }
-
-    .comment-textarea:focus {
-    border-color: #3b82f6;
-    outline: none;
-    }
-
-    .button-container {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 1.5rem;
-    }
-
-    .save-button {
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    }
-
-    .save-button:hover:not(:disabled) {
-    background-color: #2563eb;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }
-
-    .save-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    }
-
-    .no-reviews-placeholder {
-    text-align: center;
-    color: #6b7280;
-    padding: 2rem;
-    }
-
-    .no-reviews-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-    color: #9ca3af;
-    }
-</style>
+</EditForm>
 
 @code {
     [Parameter]
     public Abstract? SelectedAbstract { get; set; }
-
+    private int? UserId;
     private bool isSaving = false;
+    private List<string> reviewCriteria = new();
+    private int newReviewId;
+    private bool recommend = false;
+    private string _comment = "";
+    private Review Review = new();
+    private bool _hasReviewed = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        int? conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
+
+        if (!conferenceId.HasValue)
+        {
+            Console.WriteLine("No conference ID found.");
+            return;
+        }
+
+        try
+        {
+            UserId = await UserService.GetCurrentUserIdAsync();
+        }
+        catch (InvalidOperationException ex)
+        {
+            Console.WriteLine($"Error fetching current user ID: {ex.Message}");
+            // Handle the error appropriately, e.g., redirect to login or show an error message
+            return;
+        }
+
+        if (SelectedAbstract != null && UserId.HasValue)
+        {
+            _hasReviewed = await AbstractService.HasReviewAsync(SelectedAbstract.Id, UserId.Value);
+            if (!_hasReviewed)
+            {
+                newReviewId = await AbstractService.GetNextReviewIdAsync(SelectedAbstract.Id);
+                try
+                {
+                    reviewCriteria = await ConferenceService.GetCriteriaByIdAsync(conferenceId.Value);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error fetching review criteria: {ex.Message}");
+                    return;
+                }
+
+                Review = new Review
+                    {
+                        Id = newReviewId,
+                        UserId = UserId ?? 0,
+                        Criterias = reviewCriteria.Select(c => new Criteria { Name = c }).ToList()
+                    };
+            }
+            else
+            {
+                var existingReview = await AbstractService.GetExistingReviewAsync(SelectedAbstract.Id, UserId.Value);
+                if (existingReview != null)
+                {
+                    Review = existingReview;
+                    _comment = Review.Comment ?? string.Empty;
+                }
+            }
+        }
+    }
 
     private async Task UpdateReview()
     {
-        if (SelectedAbstract!.Reviews == null || !SelectedAbstract.Reviews.Any())
+        if (SelectedAbstract == null)
         {
             return;
         }
@@ -194,9 +141,10 @@
         isSaving = true;
         try
         {
-            var review = SelectedAbstract.Reviews.First();
-            await AbstractService.UpdateReview(SelectedAbstract.Id, review);
-
+            Review.Recommend = recommend; // Ensure Recommend is set
+            Review.Comment = _comment;
+            SelectedAbstract.Reviews.Add(Review);
+            await AbstractService.UpdateAbstract(SelectedAbstract);
             // Optionally, display a success toast or notification
         }
         catch (Exception ex)
@@ -209,4 +157,19 @@
             isSaving = false;
         }
     }
+
+    private void SetCriteriaGrade(string criteriaName, int gradeValue)
+    {
+        var criteria = Review.Criterias.FirstOrDefault(c => c.Name == criteriaName);
+        if (criteria != null)
+        {
+            criteria.Grade = gradeValue;
+        }
+        else
+        {
+            Review.Criterias.Add(new Criteria { Name = criteriaName, Grade = gradeValue });
+        }
+    }
 }
+
+
