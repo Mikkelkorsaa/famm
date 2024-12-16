@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace conferencePlannerApi.Services.Interfaces
 {
     public interface IEmailService
