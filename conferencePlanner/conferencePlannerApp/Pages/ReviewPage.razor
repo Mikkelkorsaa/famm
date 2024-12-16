@@ -7,18 +7,16 @@
 @attribute [Authorize(Roles = "Admin, Organizer, Reviewer")]
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject IConferenceService ConferenceService
-@if(_conferenceId == null){
-    <SimpleConferenceComponent></SimpleConferenceComponent>
-}
-else{}
+@inject NavigationManager Navigation
+
 <div class="container-fluid">
     <div class="filler" />
     <div class="row no-gutters">
         <div class="@sidebarColumnClass">
             <AbstractListComponent @ref="_abstractListComponent"
-                                   AbstractList="@_abstractList"
-                                   OnAbstractSelected="SetAbstract"
-                                   OnCollapseChanged="HandleCollapseChanged">
+            AbstractList="@_abstractList"
+            OnAbstractSelected="SetAbstract"
+            OnCollapseChanged="HandleCollapseChanged">
             </AbstractListComponent>
         </div>
         <div class="@contentColumnClass">
@@ -51,29 +49,30 @@ else{}
 
 <script>
     window.registerHandlers = (sidebarRef, dotNetHelper) => {
-        document.addEventListener("click", (event) => {
-            const sidebarElement = sidebarRef && sidebarRef.getBoundingClientRect();
-            const isClickInside =
-                sidebarElement &&
-                event.clientX >= sidebarElement.left &&
-                event.clientX <= sidebarElement.right &&
-                event.clientY >= sidebarElement.top &&
-                event.clientY <= sidebarElement.bottom;
-            if (!isClickInside) {
-                dotNetHelper.invokeMethodAsync("CollapseSidebar");
-            }
-        });
+    document.addEventListener("click", (event) => {
+    const sidebarElement = sidebarRef && sidebarRef.getBoundingClientRect();
+    const isClickInside =
+    sidebarElement &&
+    event.clientX >= sidebarElement.left &&
+    event.clientX <= sidebarElement.right &&
+    event.clientY >= sidebarElement.top &&
+    event.clientY <= sidebarElement.bottom;
+    if (!isClickInside) {
+    dotNetHelper.invokeMethodAsync("CollapseSidebar");
+    }
+    });
 
-        window.addEventListener("resize", () => {
-            dotNetHelper.invokeMethodAsync("OnResize", window.innerWidth);
-        });
+    window.addEventListener("resize", () => {
+    dotNetHelper.invokeMethodAsync("OnResize", window.innerWidth);
+    });
     };
 
     window.unregisterHandlers = () => {
-        document.removeEventListener("click");
-        window.removeEventListener("resize");
+    document.removeEventListener("click");
+    window.removeEventListener("resize");
     };
 </script>
+
 
 @code {
     private AbstractListComponent? _abstractListComponent;
@@ -98,6 +97,11 @@ else{}
         _conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
         _abstractList = await AbstractService.GetAbstracts();
         _user = await localStorage.GetItemAsync<User>("user");
+        var currentPage = Navigation.ToBaseRelativePath(Navigation.Uri);
+        
+        if(_conferenceId == null){
+            Navigation.NavigateTo($"/pick-conference/{currentPage}");
+        }
     }
 
     protected override async Task OnParametersSetAsync()

@@ -41,6 +41,23 @@ namespace conferencePlannerApp.Services.Interfaces
         /// <param name="review"></param>
         /// <returns></returns>
         Task UpdateReview(int abstractId, Review review);
-
+        /// <summary>
+        /// Get the review criterias for a specific conference using the id
+        /// </summary>
+        /// <param name="conferenceId"></param>
+        /// <returns>returns a list of the review criteria</returns>
+        Task<List<string>> GetCriteriaByIdAsync(int conferenceId);
+        /// <summary>
+        /// Finds the max value of the reviewIds of a given Abstract
+        /// </summary>
+        /// <returns>The max reviewId +1</returns>
+        Task<int> GetNextReviewIdAsync(int abstractId);
+        /// <summary>
+        /// Check if the user currently has reviewed the selected abstract
+        /// </summary>
+        /// <param name="abstractId"></param>
+        /// <returns></returns>
+        Task<bool> HasReviewAsync(int? abstractId, int? userId);
+        Task<Review?> GetExistingReviewAsync(int abstractId, int userId);
     }
 }

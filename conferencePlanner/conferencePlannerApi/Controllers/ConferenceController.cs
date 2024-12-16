@@ -8,11 +8,11 @@ namespace conferencePlannerApi.Controllers
    [Route("api/[controller]")]
    public class ConferenceController : ControllerBase
    {
-       private readonly IConferenceRepo _repo;
+       private readonly IConferenceRepo _conferenceRepo;
 
        public ConferenceController(IConferenceRepo repo)
        {
-           _repo = repo;
+           _conferenceRepo = repo;
        }
 
        [HttpGet]
@@ -21,7 +21,7 @@ namespace conferencePlannerApi.Controllers
        {
            try
            {
-               var conferences = await _repo.GetAllAsync();
+               var conferences = await _conferenceRepo.GetAllAsync();
                return Ok(conferences);
            }
            catch
@@ -36,7 +36,7 @@ namespace conferencePlannerApi.Controllers
        {
            try
            {
-               var conference = await _repo.GetByIdAsync(id);
+               var conference = await _conferenceRepo.GetByIdAsync(id);
                return conference == null ? NotFound($"Conference with ID {id} not found") : Ok(conference);
            }
            catch
@@ -56,7 +56,7 @@ namespace conferencePlannerApi.Controllers
                    return BadRequest(ModelState);
                }
 
-               var newConference = await _repo.CreateAsync(conference);
+               var newConference = await _conferenceRepo.CreateAsync(conference);
                return CreatedAtAction(nameof(GetConferenceById), 
                    new { id = newConference!.Id }, 
                    newConference);
@@ -78,7 +78,7 @@ namespace conferencePlannerApi.Controllers
                    return BadRequest(ModelState);
                }
 
-               var updatedConference = await _repo.UpdateAsync(conference);
+               var updatedConference = await _conferenceRepo.UpdateAsync(conference);
                return updatedConference == null 
                    ? NotFound($"Conference with ID {conference.Id} not found") 
                    : Ok(updatedConference);
@@ -95,7 +95,7 @@ namespace conferencePlannerApi.Controllers
        {
            try
            {
-               var result = await _repo.DeleteAsync(id);
+               var result = await _conferenceRepo.DeleteAsync(id);
                return result ? NoContent() : NotFound($"Conference with ID {id} not found");
            }
            catch
@@ -103,5 +103,34 @@ namespace conferencePlannerApi.Controllers
                return StatusCode(500, "An error occurred while deleting the conference");
            }
        }
-   }
+
+        [HttpGet]
+        [Route("Conference/AllCriteria/{id}")]
+        public async Task<ActionResult<List<string>>> GetConferenceCriteria(int id) {
+            try
+            {
+                List<string> result = await _conferenceRepo.ListAllCriteria(id);
+                return result != null ? Ok(result) : NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("Conference/AllCategory/{id}")]
+        public async Task<ActionResult<List<string>>> GetConferenceCategories(int id)
+        {
+            try
+            {
+                List<string> result = await _conferenceRepo.ListAllCategories(id);
+                return result != null ? Ok(result) : NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+    }
 }
