@@ -17,7 +17,7 @@ namespace conferencePlannerApi.Repositories.Implementations
         {
             _config = config;
             _mongoClient = new MongoClient(_config["ConnectionStrings:mongoDB"]);
-            _database = _mongoClient.GetDatabase("ConferencePlaner");
+            _database = _mongoClient.GetDatabase("ConferencePlanner");
             _abstractCollection = _database.GetCollection<Abstract>("Abstracts");
         }
         public async Task<Abstract> CreateAsync(Abstract abs)
@@ -82,6 +82,8 @@ namespace conferencePlannerApi.Repositories.Implementations
                 .Aggregate<BsonDocument>(pipeline)
                 .FirstOrDefaultAsync();
 
+            if (result == null)
+                return 0;
             return result["MaxAbstractId"].AsInt32 + 1;
         }
     }
