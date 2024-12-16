@@ -47,12 +47,13 @@ namespace conferencePlannerApp.Services.Implementations
 			return abstracts;
 		}
 
-		public Task UpdateAbstract(Abstract _abstract)
+		public async Task UpdateAbstract(Abstract _abstract)
 		{
-			throw new NotImplementedException();
-		}
+			var response = await _httpClient.PutAsJsonAsync("/api/abstract/updateabstract/", _abstract);
+			response.EnsureSuccessStatusCode();	
+        }
 
-		public Task DeleteAbstract(Abstract _abstract)
+                public Task DeleteAbstract(Abstract _abstract)
 		{
 			throw new NotImplementedException();
 		}
@@ -71,11 +72,11 @@ namespace conferencePlannerApp.Services.Implementations
 			else throw new Exception("No abstract with the given Id");
         }
 
-        public async Task<bool> HasReviewAsync(int abstractId, int userId, int conferenceId)
+        public async Task<bool> HasReviewAsync(int abstractId, int userId)
         {
-			var response = await GetAllAbstractsByConferenceIdAsync(conferenceId);
+			var abstractItem = await GetById(abstractId);
 
-            var abstractItem = response.FirstOrDefault(a => a.Id == abstractId);
+            
 			if (abstractItem != null)
 			{
 				var review = abstractItem.Reviews.FirstOrDefault(r => r.UserId == userId);
@@ -85,7 +86,7 @@ namespace conferencePlannerApp.Services.Implementations
 			else throw new Exception("No abstract with that abstractId");
         }
 
-        public async Task<int> GetNextReviewIdAsync(int abstractId, int conferenceId)
+        public async Task<int> GetNextReviewIdAsync(int abstractId)
         {
 			var response = await GetById(abstractId);
 			if (response != null)
@@ -101,10 +102,22 @@ namespace conferencePlannerApp.Services.Implementations
 
         public async Task<Abstract> GetById(int abstractId)
         {
-			var response = await _httpClient.GetAsync($"/api/GetAbstractById/{abstractId}");
+			var response = await _httpClient.GetAsync($"/api/Abstract/GetAbstractById/{abstractId}");
 			var abs = await response.Content.ReadFromJsonAsync<Abstract>();
 			if (abs == null) throw new Exception("No abstract with the given id");
 			else return abs;
+        }
+
+        public async Task<Review> GetExistingReviewAsync(int abstractId, int userId)
+        {
+            var respose = await GetById(abstractId);
+            if (respose != null)
+            {
+                var review = respose.Reviews.FirstOrDefault(r => r.UserId == userId);
+                if (review != null) return review;
+                else throw new Exception("No review with the given userId");
+            }
+            else throw new Exception("No abstract with the given abstractId");
         }
     }
 }

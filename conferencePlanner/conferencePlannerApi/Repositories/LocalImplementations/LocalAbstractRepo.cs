@@ -10,7 +10,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
 new Abstract
 {
     Id = 1,
-    ConferenceId = 101,
+    ConferenceId = 1,
     SenderName = "Dr. Sarah Johnson",
     PresenterEmail = "s.johnson@university.edu",
     CoAuthors = new List<string> { "Dr. Michael Chen", "Prof. Emma Williams" },
@@ -42,7 +42,7 @@ new Abstract
 new Abstract
 {
     Id = 2,
-    ConferenceId = 101,
+    ConferenceId = 2,
     SenderName = "Prof. David Martinez",
     PresenterEmail = "dmartinez@research.org",
     CoAuthors = new List<string> { "Dr. Lisa Cooper" },
@@ -73,7 +73,7 @@ new Abstract
 new Abstract
 {
     Id = 3,
-    ConferenceId = 102,
+    ConferenceId = 3,
     SenderName = "Dr. Rachel Anderson",
     PresenterEmail = "anderson.r@sustaintech.com",
     CoAuthors = new List<string> { "Dr. James Wilson", "Dr. Maria Garcia", "Dr. Tom Baker" },
@@ -88,14 +88,14 @@ new Abstract
         new Review
         {
             Id = 5,
-            UserId = 105,
+            UserId = 2,
             Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 3 }, new Criteria { Name = "Originality", Grade = 4 } },
             Comment = "Test112"
         },
         new Review
         {
             Id = 6,
-            UserId = 106,
+            UserId = 3,
             Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 4 }, new Criteria { Name = "Originality", Grade = 5 } },
             Comment = "Test"
         }

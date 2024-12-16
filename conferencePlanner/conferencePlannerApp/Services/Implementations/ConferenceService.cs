@@ -4,15 +4,17 @@ using conferencePlannerCore.Models;
 using Radzen;
 using System.Net.Http.Json;
 
+
 namespace conferencePlannerApp.Services.Implementations
 {
-    public class LocalStorageConferenceService : IConferenceService
+    public class ConferenceService : IConferenceService
     {
         private readonly HttpClient _httpClient;
         public ILocalStorageService _localStorage;
         private const string StorageKey = "conferences";
 
-        public LocalStorageConferenceService(ILocalStorageService localStorage, HttpClient httpClient)
+
+        public ConferenceService(ILocalStorageService localStorage, HttpClient httpClient)
         {
             _localStorage = localStorage;
             _httpClient = httpClient;
@@ -75,24 +77,30 @@ namespace conferencePlannerApp.Services.Implementations
             }
         }
 
-        public Task<Conference> GetByIdAsync(int id)
+        public async Task<Conference> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.GetAsync($"/api/conference/GetConferenceById/{id}");
+            var result = await response.Content.ReadFromJsonAsync<Conference>();
+            if (result == null) throw new Exception("No conference found");
+            else return result;
         }
 
-        public Task<Conference> GetCurrentConferenceIdAsync()
+       
+        public async Task<Conference> SetCurrentConferenceAsync(int id)
         {
-            throw new NotImplementedException();
+            await _localStorage.SetItemAsync(StorageKey, id);
+
+            var conference = await GetByIdAsync(id);
+            return conference;
         }
 
-        public Task<Conference> SetCurrentConferenceAsync(int id)
+        public async Task<int?> GetCurrentConferenceIdAsync()
         {
-            throw new NotImplementedException();
-        }
-
-        Task<int?> IConferenceService.GetCurrentConferenceIdAsync()
-        {
-            throw new NotImplementedException();
+            var conference = await _localStorage.GetItemAsync<int?>(StorageKey);
+            if (conference == null)
+                return null;
+            else
+                return conference;
         }
 
         public Task<List<Abstract>> GetAllAbstractsByIdAsync(int id)
@@ -107,7 +115,7 @@ namespace conferencePlannerApp.Services.Implementations
 
         public async Task<List<string>> GetCriteriaByIdAsync(int conferenceId)
         {
-            var response = await _httpClient.GetAsync($"/api/Conference/AllCriteria/{conferenceId}");
+            var response = await _httpClient.GetAsync($"/api/Conference/Conference/AllCriteria/{conferenceId}");
 
 
             var result = await response.Content.ReadFromJsonAsync<List<string>>();

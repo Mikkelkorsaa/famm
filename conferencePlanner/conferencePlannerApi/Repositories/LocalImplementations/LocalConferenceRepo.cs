@@ -245,9 +245,13 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
             return await Task.FromResult(true);
         }
 
-        public Task<List<string>> ListAllCriteria(int conferenceId)
+        public  async Task<List<string>> ListAllCriteria(int conferenceId)
         {
-            throw new NotImplementedException();
+           var conference = _conferences.FirstOrDefault(c => c.Id == conferenceId);
+            if (conference == null) throw new Exception("No conference with that id");
+            else
+                return await Task.FromResult(conference.ReviewCriteria);
+            
         }
 
         public Task<List<string>> ListAllCategories(int conferenceId)

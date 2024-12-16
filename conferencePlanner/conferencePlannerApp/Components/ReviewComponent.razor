@@ -77,25 +77,40 @@
 
     protected override async Task OnInitializedAsync()
     {
-        int? conferenceId = await LocalStorage.GetItemAsync<int?>("currentConferenceId");
+        int? conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
+
+        if (!conferenceId.HasValue)
+        {
+            Console.WriteLine("No conference ID found.");
+            return;
+        }
 
         try
         {
             UserId = await UserService.GetCurrentUserIdAsync();
         }
-        catch (InvalidOperationException)
+        catch (InvalidOperationException ex)
         {
+            Console.WriteLine($"Error fetching current user ID: {ex.Message}");
             // Handle the error appropriately, e.g., redirect to login or show an error message
             return;
         }
 
-        if (SelectedAbstract != null && UserId.HasValue) //if the person hasnt reviewed
+        if (SelectedAbstract != null && UserId.HasValue)
         {
-            _hasReviewed = await ConferenceService.HasReviewAsync(SelectedAbstract.Id, UserId.Value);
+            _hasReviewed = await AbstractService.HasReviewAsync(SelectedAbstract.Id, UserId.Value);
             if (!_hasReviewed)
             {
-                newReviewId = await ConferenceService.GetNextReviewIdAsync(SelectedAbstract.Id);
-                reviewCriteria = await ConferenceService.GetCriteriaByIdAsync(conferenceId.Value);
+                newReviewId = await AbstractService.GetNextReviewIdAsync(SelectedAbstract.Id);
+                try
+                {
+                    reviewCriteria = await ConferenceService.GetCriteriaByIdAsync(conferenceId.Value);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error fetching review criteria: {ex.Message}");
+                    return;
+                }
 
                 Review = new Review
                     {
@@ -103,11 +118,10 @@
                         UserId = UserId ?? 0,
                         Criterias = reviewCriteria.Select(c => new Criteria { Name = c }).ToList()
                     };
-               
             }
-            else 
+            else
             {
-                var existingReview = await ConferenceService.GetExistingReviewAsync(SelectedAbstract.Id, UserId.Value);
+                var existingReview = await AbstractService.GetExistingReviewAsync(SelectedAbstract.Id, UserId.Value);
                 if (existingReview != null)
                 {
                     Review = existingReview;
@@ -115,9 +129,6 @@
                 }
             }
         }
-        
-
-       
     }
 
     private async Task UpdateReview()
@@ -130,17 +141,16 @@
         isSaving = true;
         try
         {
-            
-            
             Review.Recommend = recommend; // Ensure Recommend is set
             Review.Comment = _comment;
-           
-            await ConferenceService.UpdateReview(SelectedAbstract.Id, Review);
+            SelectedAbstract.Reviews.Add(Review);
+            await AbstractService.UpdateAbstract(SelectedAbstract);
             // Optionally, display a success toast or notification
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             // Optionally, display an error notification
+            Console.WriteLine($"Update failed: {ex.Message}");
         }
         finally
         {
@@ -161,4 +171,5 @@
         }
     }
 }
+
 
