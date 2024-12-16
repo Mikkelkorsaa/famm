@@ -14,6 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IUserRepo, LocalUserRepo>();
 builder.Services.AddSingleton<IConferenceRepo, LocalConferenceRepo>();
 builder.Services.AddSingleton<IAbstractRepo, LocalAbstractRepo>();
+builder.Services.AddSingleton<IVenueRepo, LocalVenueRepo>();
 
 builder.Services.Configure<EmailConfiguration>(
     builder.Configuration.GetSection("EmailConfiguration"));

@@ -12,6 +12,7 @@
         public List<string> ReviewCriteria { get; set; } = new();
         public Venue Location { get; set; } = new();
         public List<Abstract> Abstracts { get; set; } = new();
+        public ConferencePlan Plan { get; set; } = new();
         public List<Review> Reviewers { get; set; } = new();
     }
 }
