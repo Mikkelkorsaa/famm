@@ -6,39 +6,39 @@
     <RadzenFieldset Text="Booking Details">
         <div class="row mb-3">
             <div class="col-md-4">
-                <RadzenLabel Text="Title" />
+                <RadzenLabel Text="Titel" />
             </div>
             <div class="col-md-8">
                 <RadzenTextBox Name="Title" @bind-Value=@_eventModel.Title Class="w-100"
-                               Required="true" RequiredError="Title is required" />
-                <RadzenRequiredValidator Component="Title" Text="Title is required" />
+                               Required="true" RequiredError="Titel er påkrævet" />
+                <RadzenRequiredValidator Component="Title" Text="Titel er påkrævet" />
             </div>
         </div>
         <div class="row mb-3">
             <div class="col-md-4">
-                <RadzenLabel Text="Start Time" />
+                <RadzenLabel Text="Starttidspunkt" />
             </div>
             <div class="col-md-8">
                 <RadzenDatePicker Name="Start" @bind-Value=@_eventModel.Start
                                   ShowTime="true" DateFormat="MM/dd/yyyy HH:mm" Class="w-100"
-                                  Required="true" RequiredError="Start time is required" />
-                <RadzenRequiredValidator Component="Start" Text="Start time is required" />
+                                  Required="true" RequiredError="Starttidspunkt er påkrævet" />
+                <RadzenRequiredValidator Component="Start" Text="Starttidspunkt er påkrævet" />
             </div>
         </div>
         <div class="row mb-3">
             <div class="col-md-4">
-                <RadzenLabel Text="End Time" />
+                <RadzenLabel Text="Sluttidspunkt" />
             </div>
             <div class="col-md-8">
                 <RadzenDatePicker Name="End" @bind-Value=@_eventModel.End
                                   ShowTime="true" DateFormat="MM/dd/yyyy HH:mm" Class="w-100"
-                                  Required="true" RequiredError="End time is required" />
-                <RadzenRequiredValidator Component="End" Text="End time is required" />
+                                  Required="true" RequiredError="Sluttidspunkt er påkrævet" />
+                <RadzenRequiredValidator Component="End" Text="sluttidspunkt er påkrævet" />
             </div>
         </div>
         <div class="row mb-3">
             <div class="col-md-4">
-                <RadzenLabel Text="Room" />
+                <RadzenLabel Text="Rum" />
             </div>
             @if (Rooms is not null && Rooms.Count > 0)
             {
@@ -50,14 +50,14 @@
                                     TextProperty="Name"
                                     ValueProperty="Id"
                                     Required="true"
-                                    RequiredError="Room is required" />
-                    <RadzenRequiredValidator Component="RoomId" Text="Room is required" />
+                                    RequiredError="Rum er påkrævet" />
+                    <RadzenRequiredValidator Component="RoomId" Text="Rum er påkrævet"/>
                 </div>
             }
         </div>
         <div class="row mb-3">
             <div class="col-md-4">
-                <RadzenLabel Text="Color" />
+                <RadzenLabel Text="Vælg farve" />
             </div>
             <div class="col-md-8">
                 <RadzenColorPicker Name="Color" @bind-Value=@_eventModel.Color Class="w-100" />
@@ -88,13 +88,6 @@
 
     private async Task OnSubmit()
     {
-
-            Console.WriteLine($"Submitting event:");
-            Console.WriteLine($"Title: {_eventModel.Title}");
-            Console.WriteLine($"Start: {_eventModel.Start}");
-            Console.WriteLine($"End: {_eventModel.End}");
-            Console.WriteLine($"Room: {_eventModel.RoomId}");
-
             await OnSave.InvokeAsync(_eventModel);
             _eventModel = new SchedulerEvent();
     }
