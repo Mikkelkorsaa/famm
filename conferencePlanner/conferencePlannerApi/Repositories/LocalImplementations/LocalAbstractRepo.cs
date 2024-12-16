@@ -147,6 +147,7 @@ new Abstract
             if (index == -1)
                 throw new Exception("Abstract not found");
             _abstracts.RemoveAt(index);
+
             return Task.CompletedTask;
         }
 

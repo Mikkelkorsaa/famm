@@ -11,7 +11,9 @@ namespace conferencePlannerApp.Services.LocalImplementations
     {
         private readonly ILocalStorageService _localStorage;
         private const string StorageKey = "currentConferenceId";
+        private readonly List<string> _reviewCriteria = new();
         private readonly List<Conference> _conferences = new()
+
         {
             new Conference
             {
@@ -60,9 +62,9 @@ namespace conferencePlannerApp.Services.LocalImplementations
                             new Review
                             {
                                 Id = 1,
-                                UserId = 101,
+                                UserId = 3,
                                 Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 5 }, new Criteria { Name = "Originality", Grade = 4 } },
-                                Comment = "Excellent application of machine learning in a critical area.",
+                                Comment = "Excellent application of machine learning in a critical area. DET HER HAR BOB SKREVET",
                                 Recommend = false
                             },
                             new Review
@@ -239,9 +241,9 @@ namespace conferencePlannerApp.Services.LocalImplementations
 
         public async Task<Conference> SetCurrentConferenceAsync(int id)
         {
-            
+
             await _localStorage.SetItemAsync(StorageKey, id);
-            
+
             var conference = await GetByIdAsync(id);
             return conference;
 
@@ -259,6 +261,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
                 throw new Exception("Conference not found");
             }
         }
+
 
         public Task UpdateReview(int abstractId, Review review)
         {
@@ -280,6 +283,71 @@ namespace conferencePlannerApp.Services.LocalImplementations
                         abstractItem.Reviews.Add(review);
                     }
                     return Task.CompletedTask;
+                }
+                else
+                {
+                    throw new Exception("Abstract not found");
+                }
+            }
+            else
+            {
+                throw new Exception("Conference not found");
+            }
+        }
+
+        public Task<List<string>> GetCriteriaByIdAsync(int conferenceId)
+        {
+            var conference = _conferences.FirstOrDefault(c => c.Id == conferenceId);
+            if (conference != null)
+            {
+                return Task.FromResult(conference.ReviewCriteria);
+            }
+            else
+            {
+                throw new Exception("Conference not found");
+            }
+        }
+
+        public Task<int> GetNextReviewIdAsync(int abstractId)
+        {
+            var @abstract = _conferences.SelectMany(c => c.Abstracts)
+                                        .FirstOrDefault(a => a.Id == abstractId);
+            if (@abstract == null)
+            {
+                throw new Exception("Abstract not found");
+            }
+
+            int maxReviewId = @abstract.Reviews.DefaultIfEmpty()
+                                        .Max(r => r?.Id ?? 0);
+           
+            return Task.FromResult(maxReviewId + 1);
+        }
+
+        public Task<bool> HasReviewAsync(int? abstractId, int? userId)
+        {
+            var conference = _conferences.FirstOrDefault(c => c.Abstracts.Any(a => a.Id == abstractId));
+            if (conference != null)
+            {
+                var abstractItem = conference.Abstracts.FirstOrDefault(a => a.Id == abstractId);
+                if (abstractItem != null)
+                {
+                    var review = abstractItem.Reviews.FirstOrDefault(r => r.UserId == userId);
+                    return Task.FromResult(review != null);
+                }
+            }
+            return Task.FromResult(false);
+        }
+
+        public Task<Review?> GetExistingReviewAsync(int abstractId, int userId)
+        {
+            var conference = _conferences.FirstOrDefault(c => c.Abstracts.Any(a => a.Id == abstractId));
+            if (conference != null)
+            {
+                var abstractItem = conference.Abstracts.FirstOrDefault(a => a.Id == abstractId);
+                if (abstractItem != null)
+                {
+                    var existingReview = abstractItem.Reviews.FirstOrDefault(r => r.UserId == userId);
+                    return Task.FromResult(existingReview);
                 }
                 else
                 {

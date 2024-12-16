@@ -22,5 +22,8 @@ namespace conferencePlannerApp.Services.Interfaces
 		Task DeleteAbstract (Abstract _abstract);
 
 		Task<Abstract> UpdateReview(int abstractId, Review review);
+
+		
+		
     }
 }
