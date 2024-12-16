@@ -14,7 +14,7 @@
 				<EventFormComponent Rooms="@_rooms" OnSave="AddEvent" />
 			</ModalComponent>
 		}
-		<button class="btn btn-primary">Gem Konferenceplan</button>
+		<button class="btn btn-primary" @onclick="OnSave">Gem Konferenceplan</button>
 	</div>
 }
 else
@@ -60,9 +60,10 @@ else
 		return events.OrderBy(e => e.Start).ToList();
 	}
 
-	private void OnSave()
+	private async Task OnSave()
 	{
-
+		_conference!.Plan.Events = _sortedEvents!;
+		var result = await conferenceService.UpdateAsync(_conference);
 	}
 	private void AddEvent(SchedulerEvent se)
 	{

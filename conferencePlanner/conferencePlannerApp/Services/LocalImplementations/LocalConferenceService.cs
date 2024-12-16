@@ -359,5 +359,10 @@ namespace conferencePlannerApp.Services.LocalImplementations
                 throw new Exception("Conference not found");
             }
         }
-    }
+
+		public Task<Conference> UpdateAsync(Conference conference)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }
