@@ -1,10 +1,10 @@
-﻿using conferencePlannerApp.Services.Interfaces;
+﻿using System.Net.Http.Json;
+using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerCore.Models;
-using System.Net.Http.Json;
 
 namespace conferencePlannerApp.Services.Implementations
 {
-	public class AbstractService : IAbstractService
+    public class AbstractService : IAbstractService
 	{
 		private readonly HttpClient _httpClient;
 
@@ -61,5 +61,50 @@ namespace conferencePlannerApp.Services.Implementations
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+        public async Task<List<Abstract>> GetAllAbstractsByConferenceIdAsync(int conferenceId)
+        {
+			var response = await GetAbstracts();
+			var result = response.Where(item => item.ConferenceId == conferenceId).ToList();
+			if (result != null)
+				return result;
+			else throw new Exception("No abstract with the given Id");
+        }
+
+        public async Task<bool> HasReviewAsync(int abstractId, int userId, int conferenceId)
+        {
+			var response = await GetAllAbstractsByConferenceIdAsync(conferenceId);
+
+            var abstractItem = response.FirstOrDefault(a => a.Id == abstractId);
+			if (abstractItem != null)
+			{
+				var review = abstractItem.Reviews.FirstOrDefault(r => r.UserId == userId);
+				if (review != null) return true;
+				else return false;
+			}
+			else throw new Exception("No abstract with that abstractId");
+        }
+
+        public async Task<int> GetNextReviewIdAsync(int abstractId, int conferenceId)
+        {
+			var response = await GetById(abstractId);
+			if (response != null)
+			{
+				int latestId = response.Reviews.Max(abs => abs.Id);
+				int newId = latestId++;
+				return newId;
+			}
+			else throw new Exception("No abstract with the given Id");
+
+            
+        }
+
+        public async Task<Abstract> GetById(int abstractId)
+        {
+			var response = await _httpClient.GetAsync($"/api/GetAbstractById/{abstractId}");
+			var abs = await response.Content.ReadFromJsonAsync<Abstract>();
+			if (abs == null) throw new Exception("No abstract with the given id");
+			else return abs;
+        }
+    }
 }

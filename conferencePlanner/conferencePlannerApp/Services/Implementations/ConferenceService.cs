@@ -1,17 +1,21 @@
 ﻿using Blazored.LocalStorage;
 using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerCore.Models;
+using Radzen;
+using System.Net.Http.Json;
 
 namespace conferencePlannerApp.Services.Implementations
 {
     public class LocalStorageConferenceService : IConferenceService
     {
+        private readonly HttpClient _httpClient;
         public ILocalStorageService _localStorage;
         private const string StorageKey = "conferences";
 
-        public LocalStorageConferenceService(ILocalStorageService localStorage)
+        public LocalStorageConferenceService(ILocalStorageService localStorage, HttpClient httpClient)
         {
             _localStorage = localStorage;
+            _httpClient = httpClient;
         }
 
         public async Task CreateConferenceAsync(Conference conference)
@@ -56,8 +60,14 @@ namespace conferencePlannerApp.Services.Implementations
         {
             try
             {
-                var conferences = await _localStorage.GetItemAsync<List<Conference>>(StorageKey);
-                return conferences ?? new List<Conference>();
+                var conferences = await _httpClient.GetAsync("/api/conference/GetAllConferences");
+                conferences.EnsureSuccessStatusCode();
+                var result = await conferences.Content.ReadFromJsonAsync<List<Conference>>();
+                if(result == null)
+                {
+                    throw new InvalidOperationException("Failed to retrieve conferences.");
+                }
+                return result;
             }
             catch (Exception)
             {
@@ -95,9 +105,13 @@ namespace conferencePlannerApp.Services.Implementations
             throw new NotImplementedException();
         }
 
-        public Task<List<string>> GetCriteriaByIdAsync(int conferenceId)
+        public async Task<List<string>> GetCriteriaByIdAsync(int conferenceId)
         {
-            throw new NotImplementedException();
+            var response = _httpClient.GetAsync($"/api/Conference/AllCriteria/{conferenceId}");
+
+
+            var result = await response.Content.ReadFromJsonAsync<List<string>>();
+            
         }
 
         public Task<int> GetNextReviewIdAsync(int abstractId)
