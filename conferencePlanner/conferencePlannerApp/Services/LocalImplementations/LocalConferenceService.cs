@@ -220,7 +220,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
             return Task.FromResult(Result);
         }
 
-        public Task<Conference> GetByIdAsync(int? id)
+        public Task<Conference> GetByIdAsync(int id)
         {
             var result = _conferences.FirstOrDefault(item => item.Id == id);
             if (result != null)
