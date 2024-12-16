@@ -23,6 +23,7 @@ builder.Services.AddScoped<IConferenceService, ConferenceService>();
 builder.Services.AddScoped<IAbstractService, AbstractService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IVenueService, VenueService>();
+builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<DialogService>();
 builder.Services.AddRadzenComponents();

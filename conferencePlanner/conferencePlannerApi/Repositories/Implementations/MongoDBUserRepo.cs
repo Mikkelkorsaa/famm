@@ -17,22 +17,25 @@ namespace conferencePlannerApi.Repositories.Implementations
         {
             _config = config;
             _mongoClient = new MongoClient(_config["ConnectionStrings:mongoDB"]);
-            _database = _mongoClient.GetDatabase("ConferencePlaner");
+            _database = _mongoClient.GetDatabase("ConferencePlanner");
             _userCollection = _database.GetCollection<User>("Users");
         }
 
         public async Task<User> CreateAsync(User user)
         {
             user.Id = await GetNextUserIdAsync();
-            User response = await _userCollection.Find(Builders<User>.Filter.Eq("email", user.Email)).FirstOrDefaultAsync();
+            User response = await _userCollection.Find(Builders<User>.Filter.Eq("Email", user.Email)).FirstOrDefaultAsync();
             if (response == null)
             {
-                _userCollection.InsertOne(user);
+                await _userCollection.InsertOneAsync(user);
                 return user;
             }
             else
+            {
                 throw new Exception("Email already in use");
+            }
         }
+
         public async Task<bool> DeleteAsync(int id)
         {
             var filter = Builders<User>.Filter.Eq("_id", id);
@@ -79,12 +82,15 @@ namespace conferencePlannerApi.Repositories.Implementations
             {
             new BsonDocument("$group", new BsonDocument
             {
-                { "_id", null },
+                { "_id", 1 },
                 { "maxUserId", new BsonDocument("$max", "$_id") }
             })
         };
 
             var result = await _userCollection.Aggregate<BsonDocument>(pipeline).FirstOrDefaultAsync();
+
+            if (result == null)
+                return 0;
             return result["maxUserId"].AsInt32 + 1;
         }
     }

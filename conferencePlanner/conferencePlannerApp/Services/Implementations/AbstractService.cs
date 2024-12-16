@@ -18,12 +18,13 @@ namespace conferencePlannerApp.Services.Implementations
 		{
         try 
         {
-            var response = await _httpClient.PostAsJsonAsync("/api/abstract/createabstract", @abstract);
+            var response = await _httpClient.PostAsJsonAsync("/api/Abstract/CreateAbstract", @abstract);
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
                 throw new HttpRequestException($"Failed to create abstract: {errorContent}");
             }
+						System.Console.WriteLine("Abstract added successfully" + response);
             
             var newAbstract = await response.Content.ReadFromJsonAsync<Abstract>();
             return newAbstract!;
