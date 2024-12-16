@@ -1,5 +1,4 @@
-﻿using Blazored.LocalStorage;
-using conferencePlannerApp.Services.Interfaces;
+﻿using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerCore.Models;
 
 namespace conferencePlannerApp.Services.LocalImplementations

@@ -1,6 +1,5 @@
 ﻿using conferencePlannerApi.Repositories.Interfaces;
 using conferencePlannerCore.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace conferencePlannerApi.Repositories.LocalImplementations;
 
