@@ -196,7 +196,6 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
         };
         private int _lastId = 3;
 
-
         public async Task<Conference> GetByIdAsync(int id)
         {
             var response = _conferences.FirstOrDefault(c => c.Id == id);
@@ -245,12 +244,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
             return await Task.FromResult(true);
         }
 
-        public Task<List<string>> ListAllCriteria(int conferenceId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<string>> ListAllCategories(int conferenceId)
+        public Task<List<string>> ListAllCriteria(Conference conference)
         {
             throw new NotImplementedException();
         }

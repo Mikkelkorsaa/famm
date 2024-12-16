@@ -1,96 +1,97 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @inject IConferenceService conferenceService
-<div>
-    <EditForm Model="@conference" OnValidSubmit="HandleValidSubmit">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
 
-        <div class="mb-3">
-            <label class="form-label">Konferancens navn</label>
-            <InputText @bind-Value="conference.Name" class="form-control" />
+<EditForm Model="@conference" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Konferancens navn</label>
+        <InputText @bind-Value="conference.Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Abstrakt tidsfrist</label>
+        <InputDate @bind-Value="conference.AbstractDeadLine" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Bedømmelses tidsfrist</label>
+        <InputDate @bind-Value="conference.ReviewDeadline" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Start dato</label>
+        <InputDate @bind-Value="conference.StartDate" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Slut dato</label>
+        <InputDate @bind-Value="conference.EndDate" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Kategori</label>
+        <div class="input-group">
+            <InputText @bind-Value="newCategory" class="form-control" />
+            <button type="button" class="btn btn-outline-secondary" @onclick="AddCategory">Tilføj kategori</button>
         </div>
-
-        <div class="mb-3">
-            <label class="form-label">Abstrakt tidsfrist</label>
-            <InputDate @bind-Value="conference.AbstractDeadLine" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Bedømmelses tidsfrist</label>
-            <InputDate @bind-Value="conference.ReviewDeadline" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Start dato</label>
-            <InputDate @bind-Value="conference.StartDate" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Slut dato</label>
-            <InputDate @bind-Value="conference.EndDate" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Kategori</label>
-            <div class="input-group">
-                <InputText @bind-Value="newCategory" class="form-control" />
-                <button type="button" class="btn btn-outline-secondary" @onclick="AddCategory">Tilføj kategori</button>
-            </div>
-            <div class="mt-2">
-                @foreach (var category in conference.Category)
-                {
-                    <span class="badge bg-primary me-2 mb-2">
-                        @category
-                        <button type="button" class="btn-close btn-close-white btn-sm"
-                                @onclick="() => RemoveCategory(category)"></button>
-                    </span>
-                }
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Bedømmelse kriteria</label>
-            <div class="input-group">
-                <InputText @bind-Value="newCriteria" class="form-control" />
-                <button type="button" class="btn btn-outline-secondary" @onclick="AddCriteria">Tilføj kriteria</button>
-            </div>
-            <div class="mt-2">
-                @foreach (var criteria in conference.ReviewCriteria)
-                {
-                    <span class="badge bg-secondary me-2 mb-2">
-                        @criteria
-                        <button type="button" class="btn-close btn-close-white btn-sm"
-                                @onclick="() => RemoveCriteria(criteria)"></button>
-                    </span>
-                }
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Lokation</label>
-            @if (conference.Location != null)
+        <div class="mt-2">
+            @foreach (var category in conference.Category)
             {
-                <div class="card mb-2">
-                    <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">@conference.Location.Name</h6>
-                        <p class="card-text">@conference.Location.Address</p>
-                    </div>
-                </div>
+                <span class="badge bg-primary me-2 mb-2">
+                    @category
+                    <button type="button" class="btn-close btn-close-white btn-sm" 
+                            @onclick="() => RemoveCategory(category)"></button>
+                </span>
             }
-            <button type="button" class="btn btn-outline-primary" @onclick="ShowVenueModal">
-                @(conference.Location == null ? "Select Venue" : "Change Venue")
-            </button>
         </div>
-        <button type="submit" class="btn btn-primary">Gem konference</button>
-    </EditForm>
-</div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Bedømmelse kriteria</label>
+        <div class="input-group">
+            <InputText @bind-Value="newCriteria" class="form-control" />
+            <button type="button" class="btn btn-outline-secondary" @onclick="AddCriteria">Tilføj kriteria</button>
+        </div>
+        <div class="mt-2">
+            @foreach (var criteria in conference.ReviewCriteria)
+            {
+                <span class="badge bg-secondary me-2 mb-2">
+                    @criteria
+                    <button type="button" class="btn-close btn-close-white btn-sm" 
+                            @onclick="() => RemoveCriteria(criteria)"></button>
+                </span>
+            }
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Lokation</label>
+        @if (conference.Location != null)
+        {
+            <div class="card mb-2">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">@conference.Location.Name</h6>
+                    <p class="card-text">@conference.Location.Address</p>
+                </div>
+            </div>
+        }
+        <button type="button" class="btn btn-outline-primary" @onclick="ShowVenueModal">
+            @(conference.Location == null ? "Select Venue" : "Change Venue")
+        </button>
+    </div>
+    <button type="submit" class="btn btn-primary">Gem konference</button>
+</EditForm>
 
 @if (showVenueModal)
 {
     <ModalComponent OnClose="() => showVenueModal = false">
-        <CreateVenueComponent Venue="@conference.Location"
-                              OnSave="HandleVenueSave"
-                              OnCancel="() => showVenueModal = false" />
+        <CreateVenueComponent 
+            Venue="@conference.Location" 
+            OnSave="HandleVenueSave" 
+            OnCancel="() => showVenueModal = false"
+        />
     </ModalComponent>
 }
 
@@ -121,10 +122,10 @@
         if (conference == null)
         {
             conference = new Conference
-                {
-                    Category = new List<string>(),
-                    ReviewCriteria = new List<string>()
-                };
+            {
+                Category = new List<string>(),
+                ReviewCriteria = new List<string>()
+            };
         }
     }
 

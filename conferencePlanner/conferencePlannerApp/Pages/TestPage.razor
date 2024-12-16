@@ -10,7 +10,7 @@
 }
 
 @code {
-	private IEnumerable<Conference>? Conferences;
+	private IEnumerable<Conference> Conferences;
 
 	protected override async Task OnInitializedAsync(){
 		Conferences = await conferenceService.GetActiveConferencesAsync();
