@@ -57,7 +57,10 @@ namespace conferencePlannerApi.Repositories.Implementations
 
         public async Task<Abstract> UpdateReview(int abstractId, Review review)
         {
-           throw new NotImplementedException();
+            var filter = Builders<Abstract>.Filter.Eq(a => a.Id, abstractId);
+            var update = Builders<Abstract>.Update.Push(a => a.Reviews, review);
+            var result = await _abstractCollection.FindOneAndUpdateAsync(filter, update);
+            return result == null ? throw new Exception("Not found") : result;
         }
 
         public async Task<int> GetNextAbstractIdAsync()
