@@ -1,54 +1,54 @@
 /* Hides the scrollbar for WebKit browsers (Chrome, Safari) */
 html::-webkit-scrollbar, body::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
 
 /* Hides scrollbar for Internet Explorer */
 html, body {
-  -ms-overflow-style: none;
+    -ms-overflow-style: none;
 }
 
 /* Hides scrollbar for Firefox */
 html, body {
-  scrollbar-width: none;
+    scrollbar-width: none;
 }
 
 .sidebar-transition {
-  transition: width 0.5s ease, margin 0.5s ease;
+    transition: width 0.5s ease, margin 0.5s ease;
 }
 
 .content-column {
-  flex-wrap: wrap;
-  transition: margin-left 0.5s ease;
+    flex-wrap: wrap;
+    transition: margin-left 0.5s ease;
 }
 
 .view-abstract-column {
-  width: 70%; /* Fixed width for the abstract column */
-  flex-shrink: 0; /* Prevents it from shrinking */
-  flex-grow: 0; /* Prevents it from growing */
+    width: 70%; /* Fixed width for the abstract column */
+    flex-shrink: 0; /* Prevents it from shrinking */
+    flex-grow: 0; /* Prevents it from growing */
 }
 
 .review-column {
-  flex: 0 0 30%;
-  max-width: 30%;
-  min-width: 30%;
-  margin-left: -12px;
+    flex: 0 0 30%;
+    max-width: 30%;
+    min-width: 30%;
+    margin-left: -12px;
 }
 
 /* Adjustments for when the sidebar is collapsed or expanded */
 .sidebar-column-expanded {
-  margin-left: 270px;
+    margin-left: 270px;
 }
 
 .sidebar-column-collapsed {
-  margin-left: 60px;
+    margin-left: 60px;
 }
 
 .filler {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 .sidebar-column-expanded,
 .sidebar-column-collapsed {
-  transition: all 0.5s ease;
+    transition: all 0.5s ease;
 }
