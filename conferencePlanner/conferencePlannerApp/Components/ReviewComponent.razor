@@ -30,7 +30,7 @@
                     }
 
                     <div class="form-group">
-                        <label class="comment-label">Comment</label>
+                        <label class="comment-label">Kommentar</label>
                         <textarea class="comment-textarea"
                         rows="4"
                         @bind="_comment"
@@ -39,7 +39,7 @@
 
                     <div class="form-group">
                         <input type="checkbox" id="recommendCheckbox" @bind="recommend" />
-                        <label for="recommendCheckbox" class="recommend-label">Recommend Abstract</label>
+                        <label for="recommendCheckbox" class="recommend-label">Anbefal Abstrakt</label>
                     </div>
                 </div>
             </div>
@@ -103,9 +103,7 @@
                         UserId = UserId ?? 0,
                         Criterias = reviewCriteria.Select(c => new Criteria { Name = c }).ToList()
                     };
-                Console.WriteLine("Der findes ikke et review");
-                Console.WriteLine(Review);
-
+               
             }
             else 
             {
@@ -113,8 +111,6 @@
                 if (existingReview != null)
                 {
                     Review = existingReview;
-                    Console.WriteLine("Der findes et review");
-                    Console.WriteLine(Review);
                     _comment = Review.Comment ?? string.Empty;
                 }
             }
@@ -139,9 +135,7 @@
             Review.Recommend = recommend; // Ensure Recommend is set
             Review.Comment = _comment;
            
-            Console.WriteLine(Review);
             await ConferenceService.UpdateReview(SelectedAbstract.Id, Review);
-            Console.WriteLine(Review);
             // Optionally, display a success toast or notification
         }
         catch (Exception)

@@ -319,7 +319,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
 
             int maxReviewId = @abstract.Reviews.DefaultIfEmpty()
                                         .Max(r => r?.Id ?? 0);
-            Console.WriteLine(maxReviewId);
+           
             return Task.FromResult(maxReviewId + 1);
         }
 
