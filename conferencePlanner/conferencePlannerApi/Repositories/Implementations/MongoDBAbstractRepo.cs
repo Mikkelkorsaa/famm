@@ -79,6 +79,8 @@ namespace conferencePlannerApi.Repositories.Implementations
                 .Aggregate<BsonDocument>(pipeline)
                 .FirstOrDefaultAsync();
 
+            if (result == null)
+                return 0;
             return result["MaxAbstractId"].AsInt32 + 1;
         }
     }
