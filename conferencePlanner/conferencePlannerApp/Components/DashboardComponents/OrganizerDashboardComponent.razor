@@ -1,4 +1,48 @@
-﻿
-@code {
+﻿@using Microsoft.AspNetCore.Components
+@inject NavigationManager navigationManager
 
+<div class="dashboardButton" @onclick="() => ButtonClick(createConferenceUrl)">
+    Opret konference
+</div>
+<div class="dashboardButton" @onclick="() => ButtonClick(seeConferencesUrl)">
+    Se konferencer
+</div>
+<div class="dashboardButton" @onclick="() => ButtonClick(seeReviewsUrl)">
+    Se reviews
+</div>
+<div class="dashboardButton" @onclick="() => ButtonClick(createProgramUrl)">
+    Opret program
+</div>
+
+<style>
+    .dashboardButton {
+        background-color: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+
+        .dashboardButton:hover {
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transform: translateY(-2px);
+        }
+</style>
+
+@code {
+    private string createConferenceUrl = "create-conference";
+    private string seeConferencesUrl = "conferences";
+    private string seeReviewsUrl = "reviews";
+    private string createProgramUrl = "create-program";
+
+    private void ButtonClick(string url)
+    {
+        navigationManager.NavigateTo(url);
+    }
 }

@@ -16,7 +16,17 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddRadzenComponents();
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddAuthorizationCore();
+builder.Services.AddAuthorizationCore(options =>
+{
+	options.AddPolicy("AdminPolicy", policy =>
+		policy.RequireRole("Admin"));
+	options.AddPolicy("OrganizerPolicy", policy =>
+		policy.RequireRole("Organizer"));
+	options.AddPolicy("ReviewerPolicy", policy =>
+		policy.RequireRole("Reviewer"));
+	options.AddPolicy("ApplicantPolicy", policy =>
+		policy.RequireRole("Applicant"));
+});
 builder.Services.AddScoped<IAuthService, LocalStorageUserService>();
 builder.Services.AddScoped<IUserService, LocalUserService>();
 builder.Services.AddScoped<IConferenceService, ConferenceService>();
