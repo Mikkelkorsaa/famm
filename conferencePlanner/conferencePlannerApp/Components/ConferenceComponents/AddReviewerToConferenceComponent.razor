@@ -1,5 +1,107 @@
-﻿<h3>AddReviewerToConferenceComponent</h3>
+﻿@using Microsoft.AspNetCore.Components.Forms
+<div>
+<EditForm Model="@NewReviewer" OnValidSubmit="@HandleValidSubmit">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" class="form-control" @bind="searchText" placeholder="Søg efter bedømmer..." />
+                <button class="btn btn-outline-secondary" type="button" @onclick="HandleSearch">Søg</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <button type="button" class="btn btn-primary w-100">Send invitation</button>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="row row-cols-2 g-3">
+                @foreach (var category in Categories)
+                {
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="categoryCheckbox"
+                                   id="@($"category_{category}")"
+                                   checked="@selectedCategories.Contains(category)"
+                                   @onchange="@(e => HandleCategoryToggle(category, e.Value))" />
+                            <label class="form-check-label" for="@($"category_{category}")">
+                                @category
+                            </label>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-6">
+            <button type="submit" class="btn btn-success w-100">Gem bedømmer</button>
+        </div>
+        <div class="col-6">
+            <button type="button" class="btn btn-secondary w-100" @onclick="HandleCancel">Annuller</button>
+        </div>
+    </div>
+</EditForm>
+</div>
+@if (showInviteUserModal)
+{
+    <ModalComponent>
+
+    </ModalComponent>
+}
 
 @code {
+    [Parameter]
+    public Reviewer NewReviewer { get; set; } = new();
+    [Parameter]
+    public List<string> Categories { get; set; } = new();
+    [Parameter] 
+    public EventCallback<Reviewer> OnSave { get; set; }
+
+    public bool showInviteUserModal = false;
+    public bool showFindUserModal = false;
+
+    private string searchText = "";
+    private List<string> selectedCategories = new();
+
+
+    private void HandleSearch()
+    {
+        // Implement search logic
+    }
+
+    private void HandleCategoryToggle(string category, object? checkedValue)
+    {
+        if (checkedValue is bool isChecked)
+        {
+            if (isChecked && !selectedCategories.Contains(category))
+            {
+                selectedCategories.Add(category);
+            }
+            else if (!isChecked)
+            {
+                selectedCategories.Remove(category);
+            }
+        }
+    }
+
+
+    public async Task HandleValidSubmit()
+    {
+        NewReviewer.Categories = selectedCategories;
+        await OnSave.InvokeAsync(NewReviewer);
+    }
+
+    public void HandleCancel()
+    {
+        // Implement cancel logic
+    }
 
 }

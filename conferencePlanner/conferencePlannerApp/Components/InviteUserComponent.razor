@@ -1,0 +1,79 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@inject IUserService userService
+
+<EditForm Model="@formModel" OnValidSubmit="@HandleValidSubmit">
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="form-group">
+                <label for="name">Navn</label>
+                <InputText id="name"
+                           class="form-control"
+                           @bind-Value="formModel.Name" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <InputText id="email"
+                           class="form-control"
+                           @bind-Value="formModel.Email" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="form-group">
+                <label for="organization">Organisation</label>
+                <InputText id="organization"
+                           class="form-control"
+                           @bind-Value="formModel.Organization" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-6">
+            <button type="submit" class="btn btn-success w-100">Gem</button>
+        </div>
+        <div class="col-6">
+            <button type="button" class="btn btn-secondary w-100" @onclick="HandleCancel">Annuller</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public EventCallback<User> OnSave { get; set; }
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+    private InviteUserModel formModel = new();
+
+    private class InviteUserModel
+    {
+        public string Name { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Organization { get; set; } = "";
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        User user = new User
+            {
+                Email = formModel.Email,
+                Name = formModel.Name,
+                Organization = formModel.Organization,
+                Role = UserRole.Reviewer,
+                Password = "1234"
+            };
+        await OnSave.InvokeAsync(user);
+    }
+
+    private async void HandleCancel()
+    {
+        await OnCancel.InvokeAsync();
+    }
+}

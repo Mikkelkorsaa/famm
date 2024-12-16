@@ -16,7 +16,7 @@ namespace conferencePlannerApp.Services.Implementations
 
 		public async Task<Abstract> AddAbstract(Abstract @abstract)
 		{
-			var response = await _httpClient.PostAsJsonAsync("/api/abstract/createabstract", @abstract);
+			var response = await _httpClient.PostAsJsonAsync<Abstract>("/api/abstract/createabstract", @abstract);
 			response.EnsureSuccessStatusCode();
 			var newAbstract = await response.Content.ReadFromJsonAsync<Abstract>();
 			return newAbstract!;

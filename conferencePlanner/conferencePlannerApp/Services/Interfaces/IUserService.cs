@@ -11,5 +11,6 @@ namespace conferencePlannerApp.Services.Interfaces
     // Manipulation: Saves to database
     // Output: User object with generated ID
     Task UpdateUserAsync(User user);
+    Task<User> CreateUserAsync(User user);
   }
 }

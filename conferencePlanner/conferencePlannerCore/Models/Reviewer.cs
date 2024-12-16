@@ -11,6 +11,7 @@ namespace conferencePlannerCore.Models
     {
         [Required]
         public int UserId { get; set; } = -1;
+        public string NameUser { get; set; } = string.Empty;
         [Required]
         public List<string> Categories { get; set; } = new();
     }

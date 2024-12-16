@@ -53,10 +53,20 @@
         {
             <div class="card mb-2">
                 <div class="card-body">
-                    @foreach() { }
+                    @foreach (Reviewer reviewer in conference.Reviewers)
+                    {
+                        <span class="badge bg-secondary me-2 mb-2">
+                            @reviewer.NameUser
+                            <button type="button" class="btn-close btn-close-white btn-sm"
+                                    @onclick="() => RemoveReviewer(reviewer)"></button>
+                        </span>
+                    }
                 </div>
             </div>
         }
+        <button type="button" class="btn btn-outline-primary" @onclick="() => showReviewerModal = true">
+            Tilføj komitemedlem
+        </button>
     </div>
 
     <div class="mb-3">
@@ -88,7 +98,7 @@
                 </div>
             </div>
         }
-        <button type="button" class="btn btn-outline-primary" @onclick="ShowVenueModal">
+        <button type="button" class="btn btn-outline-primary" @onclick="() => showVenueModal = true">
             @(conference.Location == null ? "Select Venue" : "Change Venue")
         </button>
     </div>
@@ -104,12 +114,14 @@
     </ModalComponent>
 }
 
-if (showReviewerModal){
-<ModalComponent OnClose="() => showReviewerModal = false">
-    <CreateVenueComponent Reviewers="conference.Reviewers"
-                          OnSave="HandleReviewerSave"
-                          OnCancel="() => showReviewerModal = false" />
-</ModalComponent>
+@if (showReviewerModal)
+{
+    <ModalComponent OnClose="() => showReviewerModal = false">
+        <AddReviewerToConferenceComponent NewReviewer= "@newReviewer"
+                                          Categories = "conference.Category"
+                                          OnSave = "HandleReviewerSave"
+                                          OnCancel="() => showReviewerModal = false"/>
+    </ModalComponent>
 }
 
 @code {
@@ -124,15 +136,17 @@ if (showReviewerModal){
             ReviewDeadline = DateTime.Now,
             StartDate = DateTime.Now,
             EndDate = DateTime.Now,
-            Location = new Venue { Id = 0, Name = "", Address = "" }
+            Location = new Venue { Id = 0, Name = "", Address = "" },
+            Reviewers = new List<Reviewer>()
         };
 
     [Parameter] public EventCallback<Conference> OnSave { get; set; }
 
-    private bool showVenueModal = false;
-    private bool showReviewerModal = false;
-    private string newCategory = "";
-    private string newCriteria = "";
+    public Reviewer newReviewer = new(); 
+    public bool showVenueModal = false;
+    public bool showReviewerModal = false;
+    public string newCategory = "";
+    public string newCriteria = "";
 
     protected override void OnInitialized()
     {
@@ -158,7 +172,7 @@ if (showReviewerModal){
 
     private void RemoveCategory(string category)
     {
-        conference.Category.Remove(category);
+        conference.removeCategory(category);
     }
 
     private void AddCriteria()
@@ -180,14 +194,15 @@ if (showReviewerModal){
         showVenueModal = true;
     }
 
-    private void HandleVenueSave(Venue location)
+    public void HandleVenueSave(Venue location)
     {
         conference.Location = location;
         showVenueModal = false;
     }
 
-    public void HandleReviewerSave()
+    public void HandleReviewerSave(Reviewer reviewer)
     {
+        conference.Reviewers.Add(reviewer);
         showReviewerModal = false;
     }
 
@@ -195,5 +210,10 @@ if (showReviewerModal){
     {
         await conferenceService.CreateConferenceAsync(conference);
         await OnSave.InvokeAsync(conference);
+    }
+
+    public void RemoveReviewer(Reviewer reviewer)
+    {
+        conference.Reviewers.Remove(reviewer);
     }
 }

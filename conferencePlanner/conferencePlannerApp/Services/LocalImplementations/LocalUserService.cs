@@ -38,6 +38,11 @@ namespace conferencePlannerApp.Services.Implementations
             };
         }
 
+        public Task<User> CreateUserAsync(User user)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<User>> GetAllUsersAsync()
         {
             try

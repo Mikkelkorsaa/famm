@@ -60,9 +60,7 @@ namespace conferencePlannerApi.Controllers
                 }
 
                 var newAbstract = await _repo.CreateAsync(@abstract);
-                return CreatedAtAction(nameof(GetAbstractById), 
-                    new { id = newAbstract.Id }, 
-                    newAbstract);
+                return Ok(newAbstract);
             }
             catch(Exception ex)
             {

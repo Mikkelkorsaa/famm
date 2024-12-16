@@ -13,6 +13,16 @@ namespace conferencePlannerApp.Services.LocalImplementations
             _httpClient = httpClient;
         }
 
+        public async Task<User> CreateUserAsync(User newUser)
+        {
+            if (newUser == null)
+                throw new Exception("User is null");
+            var response = await _httpClient.PostAsJsonAsync("/api/abstract/CreateUser", newUser); ;
+            response.EnsureSuccessStatusCode();
+            var responseUser = await response.Content.ReadFromJsonAsync<User>();
+            return responseUser != null ? responseUser : throw new Exception("User == null");
+        }
+
         public async Task<List<User>> GetAllUsersAsync()
         {
             try

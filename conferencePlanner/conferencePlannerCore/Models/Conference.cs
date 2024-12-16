@@ -14,7 +14,6 @@ namespace conferencePlannerCore.Models
         public List<string> ReviewCriteria { get; set; } = new();
         public Venue Location { get; set; } = new();
         public List<Abstract> Abstracts { get; set; } = new();
-        [Required]
         public List<Reviewer> Reviewers { get; set; } = new();
 
         public void removeCategory(string category) {
