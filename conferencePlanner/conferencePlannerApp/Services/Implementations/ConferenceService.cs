@@ -107,11 +107,17 @@ namespace conferencePlannerApp.Services.Implementations
 
         public async Task<List<string>> GetCriteriaByIdAsync(int conferenceId)
         {
-            var response = _httpClient.GetAsync($"/api/Conference/AllCriteria/{conferenceId}");
+            var response = await _httpClient.GetAsync($"/api/Conference/AllCriteria/{conferenceId}");
 
 
             var result = await response.Content.ReadFromJsonAsync<List<string>>();
-            
+
+            if(result == null)
+            {
+                throw new InvalidOperationException("Failed to retrieve criteria.");
+            }
+            else return result;
+
         }
 
         public Task<int> GetNextReviewIdAsync(int abstractId)
