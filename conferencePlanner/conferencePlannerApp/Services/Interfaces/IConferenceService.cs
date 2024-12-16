@@ -58,6 +58,6 @@ namespace conferencePlannerApp.Services.Interfaces
         /// <param name="abstractId"></param>
         /// <returns></returns>
         Task<bool> HasReviewAsync(int? abstractId, int? userId);
-
+        Task<Review?> GetExistingReviewAsync(int abstractId, int userId);
     }
 }

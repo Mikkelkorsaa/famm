@@ -34,7 +34,7 @@
                         <textarea class="comment-textarea"
                         rows="4"
                         @bind="_comment"
-                        placeholder="Enter your detailed observations..."></textarea>
+                        placeholder="Enter your detailed observations...">@_comment</textarea>
                     </div>
 
                     <div class="form-group">
@@ -229,14 +229,6 @@
             if (!_hasReviewed)
             {
                 newReviewId = await ConferenceService.GetNextReviewIdAsync(SelectedAbstract.Id);
-            }
-        }
-        
-
-        if (conferenceId.HasValue)
-        {
-            try
-            {
                 reviewCriteria = await ConferenceService.GetCriteriaByIdAsync(conferenceId.Value);
 
                 Review = new Review
@@ -245,13 +237,25 @@
                         UserId = UserId ?? 0,
                         Criterias = reviewCriteria.Select(c => new Criteria { Name = c }).ToList()
                     };
+                Console.WriteLine("Der findes ikke et review");
+                Console.WriteLine(Review);
+
             }
-            catch (Exception)
+            else 
             {
-                // Handle the error appropriately, e.g., show an error message
-                return;
+                var existingReview = await ConferenceService.GetExistingReviewAsync(SelectedAbstract.Id, UserId.Value);
+                if (existingReview != null)
+                {
+                    Review = existingReview;
+                    Console.WriteLine("Der findes et review");
+                    Console.WriteLine(Review);
+                    _comment = Review.Comment ?? string.Empty;
+                }
             }
         }
+        
+
+       
     }
 
     private async Task UpdateReview()
@@ -264,12 +268,13 @@
         isSaving = true;
         try
         {
-            Review.UserId = UserId ?? 0; // Ensure UserId is set
+            
+            
             Review.Recommend = recommend; // Ensure Recommend is set
             Review.Comment = _comment;
-            SelectedAbstract.Reviews.Add(Review); // Add the new review to the abstract
-
-            await AbstractService.UpdateReview(SelectedAbstract.Id, Review);
+           
+            Console.WriteLine(Review);
+            await ConferenceService.UpdateReview(SelectedAbstract.Id, Review);
             Console.WriteLine(Review);
             // Optionally, display a success toast or notification
         }

@@ -104,5 +104,15 @@ namespace conferencePlannerApp.Services.Implementations
         {
             throw new NotImplementedException();
         }
+
+        public Task<bool> HasReviewAsync(int? abstractId, int? userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Review?> GetExistingReviewAsync(int abstractId, int userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
