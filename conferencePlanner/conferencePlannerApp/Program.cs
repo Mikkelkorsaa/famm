@@ -13,15 +13,19 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
+
+builder.Services.AddRadzenComponents();
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<IAuthService, LocalStorageUserService>();
 builder.Services.AddScoped<IUserService, LocalUserService>();
 builder.Services.AddScoped<IConferenceService, LocalConferenceService>();
 builder.Services.AddScoped<IAbstractService, AbstractService>();
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IVenueService, VenueService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<DialogService>();
 builder.Services.AddRadzenComponents();
 
 

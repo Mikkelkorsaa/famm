@@ -1,0 +1,94 @@
+﻿@page "/booking-form"
+@using Radzen
+@using Radzen.Blazor
+
+<RadzenTemplateForm TItem="SchedulerEvent" Data=@_eventModel Submit=@OnSubmit>
+    <RadzenFieldset Text="Booking Details">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <RadzenLabel Text="Titel" />
+            </div>
+            <div class="col-md-8">
+                <RadzenTextBox Name="Title" @bind-Value=@_eventModel.Title Class="w-100"
+                               Required="true" RequiredError="Titel er påkrævet" />
+                <RadzenRequiredValidator Component="Title" Text="Titel er påkrævet" />
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <RadzenLabel Text="Starttidspunkt" />
+            </div>
+            <div class="col-md-8">
+                <RadzenDatePicker Name="Start" @bind-Value=@_eventModel.Start
+                                  ShowTime="true" DateFormat="MM/dd/yyyy HH:mm" Class="w-100"
+                                  Required="true" RequiredError="Starttidspunkt er påkrævet" />
+                <RadzenRequiredValidator Component="Start" Text="Starttidspunkt er påkrævet" />
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <RadzenLabel Text="Sluttidspunkt" />
+            </div>
+            <div class="col-md-8">
+                <RadzenDatePicker Name="End" @bind-Value=@_eventModel.End
+                                  ShowTime="true" DateFormat="MM/dd/yyyy HH:mm" Class="w-100"
+                                  Required="true" RequiredError="Sluttidspunkt er påkrævet" />
+                <RadzenRequiredValidator Component="End" Text="sluttidspunkt er påkrævet" />
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <RadzenLabel Text="Rum" />
+            </div>
+            @if (Rooms is not null && Rooms.Count > 0)
+            {
+                <div class="col-md-8">
+                    <RadzenDropDown Name="RoomId"
+                                    Data=@Rooms
+                                    @bind-Value=@_eventModel.RoomId
+                                    Class="w-100"
+                                    TextProperty="Name"
+                                    ValueProperty="Id"
+                                    Required="true"
+                                    RequiredError="Rum er påkrævet" />
+                    <RadzenRequiredValidator Component="RoomId" Text="Rum er påkrævet"/>
+                </div>
+            }
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <RadzenLabel Text="Vælg farve" />
+            </div>
+            <div class="col-md-8">
+                <RadzenColorPicker Name="Color" @bind-Value=@_eventModel.Color Class="w-100" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <RadzenButton ButtonType="ButtonType.Submit" Text="Gem"
+                              ButtonStyle="ButtonStyle.Primary" Class="mr-2" />
+            </div>
+        </div>
+    </RadzenFieldset>
+</RadzenTemplateForm>
+
+@code {
+    [Parameter]
+    public List<Room>? Rooms { get; set; }
+
+    [Parameter]
+    public EventCallback<SchedulerEvent> OnSave { get; set; }
+
+    private SchedulerEvent _eventModel = new();
+
+    protected override void OnInitialized()
+    {
+        _eventModel = new();
+    }
+
+    private async Task OnSubmit()
+    {
+            await OnSave.InvokeAsync(_eventModel);
+            _eventModel = new SchedulerEvent();
+    }
+}

@@ -1,0 +1,93 @@
+﻿@using System.Globalization
+<div class="day-room-scheduler">
+    <div class="scheduler-header">
+        <button @onclick="PreviousDay">&lt;</button>
+        <h2>@CurrentDate.ToString("dddd - dd/MM/yyyy")</h2>
+        <button @onclick="NextDay">&gt;</button>
+    </div>
+    <div class="scheduler-body">
+        <div class="time-column">
+            <div class="time-slot">Rum</div>
+            @for (int hour = 8; hour <= 23; hour++)
+            {
+                <div class="time-slot">@(hour.ToString("D2")):00</div>
+            }
+        </div>
+        @foreach (var room in Rooms)
+        {
+            <div class="room-column">
+                <div class="room-header">@room.Name</div>
+                @for (int hour = 8; hour <= 23; hour++)
+                {
+                    <div class="time-slot"></div>
+                }
+                <div class="room-events">
+                    @foreach (var evt in Events.Where(e => e.RoomId == room.Id && e.Start.Date == CurrentDate.Date))
+                    {
+                        @if (IsEventVisible(evt))
+                        {
+                            var position = CalculateEventPosition(evt);
+                            <div class="event"
+                                 style="top: @(position.Top)px;
+                                        height: @(position.Height)px;
+                                        background-color: @evt.Color">
+                                @evt.Title (@evt.Start.ToString("HH:mm") - @evt.End.ToString("HH:mm"))
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<Room> Rooms { get; set; } = new List<Room>();
+
+    [Parameter]
+    public List<SchedulerEvent> Events { get; set; } = new List<SchedulerEvent>();
+
+    private DateTime CurrentDate { get; set; } = DateTime.Today;
+
+    private const int START_HOUR = 8;
+    private const int SLOT_HEIGHT = 30; // Height of each time slot in pixels
+    private const int TOTAL_HOURS = 16; // From 8:00 to 23:00
+    private const int TOTAL_HEIGHT = TOTAL_HOURS * 2 * SLOT_HEIGHT; // Total height in pixels
+
+    private void PreviousDay() => CurrentDate = CurrentDate.AddDays(-1);
+    private void NextDay() => CurrentDate = CurrentDate.AddDays(1);
+
+    private (double Top, double Height) CalculateEventPosition(SchedulerEvent evt)
+    {
+        // Each hour slot is 30px high
+        const int PIXELS_PER_HOUR = 30;
+
+        // Calculate hours from 8:00 AM (our start time)
+        double startOffset = (evt.Start.Hour - START_HOUR) + (evt.Start.Minute / 60.0);
+        double top = startOffset * PIXELS_PER_HOUR;
+
+        // Calculate duration in hours
+        double duration = (evt.End - evt.Start).TotalHours;
+        double height = duration * PIXELS_PER_HOUR;
+
+        // Debug output
+        Console.WriteLine($"Event: {evt.Title}");
+        Console.WriteLine($"Start: {evt.Start:HH:mm}, End: {evt.End:HH:mm}");
+        Console.WriteLine($"Start Offset: {startOffset} hours");
+        Console.WriteLine($"Duration: {duration} hours");
+        Console.WriteLine($"Top: {top}px, Height: {height}px");
+
+        return (top, height);
+    }
+
+    private bool IsEventVisible(SchedulerEvent evt)
+    {
+        var startTime = evt.Start.TimeOfDay;
+        var endTime = evt.End.TimeOfDay;
+        var schedulerStart = TimeSpan.FromHours(START_HOUR);
+        var schedulerEnd = TimeSpan.FromHours(23);
+
+        return startTime < schedulerEnd && endTime > schedulerStart;
+    }
+}
