@@ -15,7 +15,7 @@ namespace conferencePlannerApp.Services.Interfaces
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Conference object</returns>
-        Task<Conference> GetByIdAsync(int? id);
+        Task<Conference> GetByIdAsync(int id);
         /// <summary>
         /// gets the conference from the cashe. if no cashe contact api
         /// </summary>

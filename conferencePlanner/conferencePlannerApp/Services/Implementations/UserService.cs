@@ -1,16 +1,19 @@
 using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerCore.Models;
 using System.Net.Http.Json;
-
+using Blazored.LocalStorage;
 namespace conferencePlannerApp.Services.LocalImplementations
 {
     public class UserService : IUserService
     {
         private readonly HttpClient _httpClient;
+        private readonly ILocalStorageService _localStorage;
+        private const string IdStorageKey = "currentUserId";
 
-        public UserService(HttpClient httpClient)
+        public UserService(HttpClient httpClient, ILocalStorageService localStorage)
         {
             _httpClient = httpClient;
+            _localStorage = localStorage;
         }
 
         public async Task<List<User>> GetAllUsersAsync()
@@ -31,9 +34,15 @@ namespace conferencePlannerApp.Services.LocalImplementations
             }
         }
 
-        public Task<int?> GetCurrentUserIdAsync()
+        public async Task<int?> GetCurrentUserIdAsync()
         {
-            throw new NotImplementedException();
+            
+            var userId = await _localStorage.GetItemAsync<int?>(IdStorageKey);
+            
+            if (userId == 0)
+                return 0;
+            else
+                return userId;
         }
 
         public async Task UpdateUserAsync(User user)
