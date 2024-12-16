@@ -22,15 +22,8 @@ namespace conferencePlannerApi.Controllers
        [Route("GetAllUsers")]
        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
        {
-           try
-           {
                var users = await _repo.GetAllAsync();
                return Ok(users);
-           }
-           catch(Exception ex)
-           {
-               return StatusCode(500, ex.Message);
-           }
        }
 
        [HttpGet]

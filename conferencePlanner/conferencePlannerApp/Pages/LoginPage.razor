@@ -2,6 +2,7 @@
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject IAuthService AuthService
+@inject ILoginService LoginService
 
 <div class="row justify-content-center">
 	<div class="col-md-4">
@@ -95,27 +96,11 @@
 	{
 		try
 		{
-			var response = await Http.PostAsJsonAsync("https://localhost:7000/api/user/login", loginModel);
-			if (response.IsSuccessStatusCode)
-			{
-				var user = await response.Content.ReadFromJsonAsync<User>();
-				if (user != null)
-				{
-					await AuthService.SetCurrentUser(user);
-					await AuthService.SetCurrentUserId(user);
-					NavigationManager.NavigateTo("/dashboard", forceLoad: true);
-				}
-				else
-				{
-					errorMessage = "Error retrieving user information";
-					return;
-				}
+				var user = await LoginService.LoginAsync(loginModel);
+				await AuthService.SetCurrentUser(user);
+				await AuthService.SetCurrentUserId(user);
+				NavigationManager.NavigateTo("/dashboard", forceLoad: true);
 				NavigationManager.NavigateTo("/");
-			}
-			else
-			{
-				errorMessage = "Invalid login attempt";
-			}
 		}
 		catch
 		{
@@ -127,22 +112,7 @@
 	{
 		try
 		{
-			if (registerModel.Password != registerModel.ConfirmPassword)
-			{
-				errorMessage = "Passwords do not match";
-				return;
-			}
-			var response = await Http.PostAsJsonAsync("https://localhost:7000/api/user/register", registerModel);
-			if (response.IsSuccessStatusCode)
-			{
-				registerModel = new();
-				isLogin = true;
-				errorMessage = string.Empty;
-			}
-			else
-			{
-				errorMessage = "Registration failed. Please try again.";
-			}
+			await LoginService.RegisterAsync(registerModel);
 		}
 		catch
 		{
