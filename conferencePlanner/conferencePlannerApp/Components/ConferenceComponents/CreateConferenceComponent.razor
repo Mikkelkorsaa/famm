@@ -41,11 +41,22 @@
             {
                 <span class="badge bg-primary me-2 mb-2">
                     @category
-                    <button type="button" class="btn-close btn-close-white btn-sm" 
+                    <button type="button" class="btn-close btn-close-white btn-sm"
                             @onclick="() => RemoveCategory(category)"></button>
                 </span>
             }
         </div>
+    </div>
+    <div class="=mb-3">
+        <label class="form-label">Bedømmelseskomité </label>
+        @if (conference.Reviewers.Count != 0)
+        {
+            <div class="card mb-2">
+                <div class="card-body">
+                    @foreach() { }
+                </div>
+            </div>
+        }
     </div>
 
     <div class="mb-3">
@@ -59,7 +70,7 @@
             {
                 <span class="badge bg-secondary me-2 mb-2">
                     @criteria
-                    <button type="button" class="btn-close btn-close-white btn-sm" 
+                    <button type="button" class="btn-close btn-close-white btn-sm"
                             @onclick="() => RemoveCriteria(criteria)"></button>
                 </span>
             }
@@ -87,22 +98,18 @@
 @if (showVenueModal)
 {
     <ModalComponent OnClose="() => showVenueModal = false">
-        <CreateVenueComponent 
-            Venue="@conference.Location" 
-            OnSave="HandleVenueSave" 
-            OnCancel="() => showVenueModal = false"
-        />
+        <CreateVenueComponent Venue="@conference.Location"
+                              OnSave="HandleVenueSave"
+                              OnCancel="() => showVenueModal = false" />
     </ModalComponent>
 }
 
 if (showReviewerModal){
-    <ModalComponent OnClose="() => showReviewerModal = false">
-        <CreateVenueComponent
-            Reviewers ="conference.Reviewers"
-            OnSave = "HandleReviewerSave"
-            OnCancel="() => showReviewerModal = false"
-        />
-    </ModalComponent>
+<ModalComponent OnClose="() => showReviewerModal = false">
+    <CreateVenueComponent Reviewers="conference.Reviewers"
+                          OnSave="HandleReviewerSave"
+                          OnCancel="() => showReviewerModal = false" />
+</ModalComponent>
 }
 
 @code {
@@ -133,10 +140,10 @@ if (showReviewerModal){
         if (conference == null)
         {
             conference = new Conference
-            {
-                Category = new List<string>(),
-                ReviewCriteria = new List<string>()
-            };
+                {
+                    Category = new List<string>(),
+                    ReviewCriteria = new List<string>()
+                };
         }
     }
 
@@ -179,7 +186,10 @@ if (showReviewerModal){
         showVenueModal = false;
     }
 
-    public void HandleReviewerSave(List<Review>)
+    public void HandleReviewerSave()
+    {
+        showReviewerModal = false;
+    }
 
     private async Task HandleValidSubmit()
     {
