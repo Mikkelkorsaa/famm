@@ -55,7 +55,7 @@ namespace conferencePlannerApi.Repositories.Implementations
             
         }
 
-        public Task<Abstract> UpdateReview(int abstractId, Review review)
+        public async Task<Abstract> UpdateReview(int abstractId, Review review)
         {
             var filter = Builders<Abstract>.Filter.Eq(a => a.Id, abstractId);
             var update = Builders<Abstract>.Update.Push(a => a.Reviews, review);
