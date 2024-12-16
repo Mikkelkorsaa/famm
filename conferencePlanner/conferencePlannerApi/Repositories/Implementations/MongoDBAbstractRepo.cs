@@ -55,7 +55,7 @@ namespace conferencePlannerApi.Repositories.Implementations
             
         }
 
-        public async Task<Abstract> UpdateReview(int abstractId, Review review)
+        public Task<Abstract> UpdateReview(int abstractId, Review review)
         {
            throw new NotImplementedException();
         }
