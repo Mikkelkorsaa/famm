@@ -260,5 +260,10 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
         {
             throw new NotImplementedException();
         }
+
+        public Task<List<string>> ListAllCriteria(Conference conference)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

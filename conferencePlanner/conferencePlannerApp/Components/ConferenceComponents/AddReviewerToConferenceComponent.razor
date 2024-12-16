@@ -53,8 +53,15 @@
 @if (showInviteUserModal)
 {
     <ModalComponent OnClose="() => showInviteUserModal = false">
-        <InviteUserComponent />
+        <InviteUserComponent OnCancel="()=> showInviteUserModal =false"
+                             OnSave="HandleInviteUser" />
     </ModalComponent>
+}
+@if (showFindUserModal)
+{
+     <ModalComponent OnClose="() => showInviteUserModal = false">
+        
+     </ModalComponent>   
 }
 
 @code {
@@ -107,7 +114,7 @@
         if (user.Id == -1)
         {
             errorMessage = "Der skal vælges en bruger, eller sendes en invitation ud til dit nye komite medlem";
-            return Task.;
+            return;
         }
 
         NewReviewer.Categories = selectedCategories;

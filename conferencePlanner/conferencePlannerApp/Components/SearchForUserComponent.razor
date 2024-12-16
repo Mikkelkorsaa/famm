@@ -1,0 +1,86 @@
+﻿<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   @bind="searchTerm"
+                   @bind:event="oninput"
+                   placeholder="Søg efter bruger..." />
+            <button class="btn btn-outline-secondary"
+                    type="button"
+                    @onclick="HandleSearch">
+                Søg
+            </button>
+        </div>
+    </div>
+</div>
+
+@if (FoundUsers.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Navn</th>
+                    <th>Email</th>
+                    <th>Organisation</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in FoundUsers)
+                {
+                    <tr style="cursor: pointer" @onclick="() => HandleUserSelection(user)">
+                        <td>@user.Name</td>
+                        <td>@user.Email</td>
+                        <td>@user.Organization</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string SearchParameter { get; set; } = string.Empty;
+
+    [Parameter]
+    public List<User> FoundUsers { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<User> OnUserSelected { get; set; }
+
+    private string searchTerm;
+
+    protected override void OnParametersSet()
+    {
+        if (searchTerm == null)
+        {
+            searchTerm = SearchParameter;
+        }
+    }
+
+    private async Task HandleSearch()
+    {
+        // Call the findUsers method that will be implemented externally
+        FoundUsers = await findUsers(searchTerm);
+        StateHasChanged();
+    }
+
+    private async Task HandleUserSelection(User user)
+    {
+        if (OnUserSelected.HasDelegate)
+        {
+            await OnUserSelected.InvokeAsync(user);
+        }
+    }
+
+    [Inject]
+    private IUserService UserService { get; set; }
+
+    private async Task<List<User>> findUsers(string searchWord)
+    {
+        // This will be implemented externally
+        throw new NotImplementedException();
+    }
+}
