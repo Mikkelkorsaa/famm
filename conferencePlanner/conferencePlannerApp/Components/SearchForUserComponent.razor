@@ -1,4 +1,6 @@
-﻿<div class="row mb-3">
+﻿@inject IUserService userService
+
+<div class="row mb-3">
     <div class="col-md-6">
         <div class="input-group">
             <input type="text"
@@ -63,7 +65,7 @@
     private async Task HandleSearch()
     {
         // Call the findUsers method that will be implemented externally
-        FoundUsers = await findUsers(searchTerm);
+        FoundUsers = await userService.findUsers(searchTerm);
         StateHasChanged();
     }
 
@@ -75,12 +77,4 @@
         }
     }
 
-    [Inject]
-    private IUserService UserService { get; set; }
-
-    private async Task<List<User>> findUsers(string searchWord)
-    {
-        // This will be implemented externally
-        throw new NotImplementedException();
-    }
 }
