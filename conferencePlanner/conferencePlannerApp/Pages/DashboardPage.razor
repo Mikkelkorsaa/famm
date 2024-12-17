@@ -1,24 +1,26 @@
 ﻿@page "/dashboard"
 @inject Blazored.LocalStorage.ILocalStorageService localStorage;
-@inject NavigationManager navigationManager;
 @attribute [Authorize(Roles = "Admin, Organizer, Reviewer, Applicant")]
 
 <div class="container dashboardContainer">
 	<AuthorizeView Roles="Admin">
 		<Authorized>
-			<AdminDashboardComponent></AdminDashboardComponent>
+			<AdminDashboardComponent />
 		</Authorized>
 	</AuthorizeView>
 	<AuthorizeView Roles="Organizer">
 		<Authorized>
+			<OrganizerDashboardComponent />
 		</Authorized>
 	</AuthorizeView>
 	<AuthorizeView Roles="Reviewer">
 		<Authorized>
+			<ReviewerDashboardComponent />
 		</Authorized>
 	</AuthorizeView>
 	<AuthorizeView Roles="Applicant">
 		<Authorized>
+			<ApplicantDashboardComponent></ApplicantDashboardComponent>
 		</Authorized>
 	</AuthorizeView>
 </div>

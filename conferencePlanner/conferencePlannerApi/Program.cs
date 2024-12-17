@@ -15,7 +15,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IUserRepo, MongoDBUserRepo>();
 builder.Services.AddSingleton<IConferenceRepo, MongoDBConferenceRepo>();
 builder.Services.AddSingleton<IAbstractRepo, MongoDBAbstractRepo>();
-builder.Services.AddSingleton<IVenueRepo, LocalVenueRepo>();
+builder.Services.AddSingleton<IVenueRepo, MongoDBVenueRepo>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.Configure<MongoDBSettings>(options =>
