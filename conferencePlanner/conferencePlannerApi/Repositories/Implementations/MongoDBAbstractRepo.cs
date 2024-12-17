@@ -1,5 +1,7 @@
 ﻿using conferencePlannerApi.Repositories.Interfaces;
+using conferencePlannerCore.Configurations;
 using conferencePlannerCore.Models;
+using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
@@ -8,17 +10,14 @@ namespace conferencePlannerApi.Repositories.Implementations
 {
     public class MongoDBAbstractRepo : IAbstractRepo
     {
-        readonly private IConfiguration _config;
-        private IMongoClient _mongoClient;
-        private IMongoDatabase _database;
         private IMongoCollection<Abstract> _abstractCollection;
 
-        public MongoDBAbstractRepo(IConfiguration config)
+        public MongoDBAbstractRepo(IOptions<MongoDBSettings> options)
         {
-            _config = config;
-            _mongoClient = new MongoClient(_config["ConnectionStrings:mongoDB"]);
-            _database = _mongoClient.GetDatabase("ConferencePlanner");
-            _abstractCollection = _database.GetCollection<Abstract>("Abstracts");
+            var connectionString = options.Value.ConnectionString;
+            var client = new MongoClient(connectionString);
+            var database = client.GetDatabase("ConferencePlanner");
+            _abstractCollection = database.GetCollection<Abstract>("Abstracts");
         }
         public async Task<Abstract> CreateAsync(Abstract abs)
         {

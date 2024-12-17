@@ -17,6 +17,13 @@ namespace conferencePlannerApp.Services.Interfaces
         /// <returns>Conference object</returns>
         Task<Conference> GetByIdAsync(int id);
         /// <summary>
+        /// Updates the conference with matching id in the DB and
+        /// then it returns the same object back
+        /// </summary>
+        /// <param name="conference"></param>
+        /// <returns>The updated Conference Objekt</returns>
+        Task<Conference> UpdateAsync(Conference conference);
+        /// <summary>
         /// gets the conference from the cashe. if no cashe contact api
         /// </summary>
         /// <returns>Conference Id</returns>

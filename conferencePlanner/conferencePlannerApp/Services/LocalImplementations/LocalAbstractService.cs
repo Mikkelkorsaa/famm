@@ -72,17 +72,20 @@ namespace conferencePlannerApp.Services.Implementations
             return await Task.FromResult(newAbstract);
         }
 
-        public async Task UpdateAbstract(Abstract @abstract)
+        public async Task<bool> UpdateAbstract(Abstract @abstract)
         {
             var existingAbstract = _abstracts.FirstOrDefault(a => a.Id == @abstract.Id);
             if (existingAbstract == null)
             {
+                return false;
                 throw new KeyNotFoundException($"Abstract with ID {@abstract.Id} not found.");
+                
             }
 
             var index = _abstracts.IndexOf(existingAbstract);
             _abstracts[index] = @abstract;
             await Task.CompletedTask;
+            return true;
         }
 
         public async Task DeleteAbstract(Abstract @abstract)

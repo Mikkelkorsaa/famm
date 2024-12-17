@@ -3,23 +3,21 @@ using conferencePlannerApi.MongoResponseClasses;
 using conferencePlannerCore.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Data;
+using Microsoft.Extensions.Options;
+using conferencePlannerCore.Configurations;
 
 namespace conferencePlannerApi.Repositories.Implementations
 {
     public class MongoDBConferenceRepo : IConferenceRepo
     {
-        readonly private IConfiguration _config;
-        private IMongoClient _mongoClient;
-        private IMongoDatabase _database;
         private IMongoCollection<Conference> _conferenceCollection;
 
-        public MongoDBConferenceRepo(IConfiguration config)
+        public MongoDBConferenceRepo(IOptions<MongoDBSettings> options)
         {
-            _config = config;
-            _mongoClient = new MongoClient(_config["ConnectionStrings:mongoDB"]);
-            _database = _mongoClient.GetDatabase("ConferencePlanner");
-            _conferenceCollection = _database.GetCollection<Conference>("Conferences");
+            var connectionString = options.Value.ConnectionString;
+            var client = new MongoClient(connectionString);
+            var database = client.GetDatabase("ConferencePlanner");
+            _conferenceCollection = database.GetCollection<Conference>("Conferences");
         }
 
         public async Task<Conference> CreateAsync(Conference conference)

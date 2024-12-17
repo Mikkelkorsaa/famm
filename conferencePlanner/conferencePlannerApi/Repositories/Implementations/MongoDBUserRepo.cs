@@ -2,23 +2,21 @@
 using conferencePlannerApi.Repositories.Interfaces;
 using MongoDB.Driver;
 using MongoDB.Bson;
+using Microsoft.Extensions.Options;
+using conferencePlannerCore.Configurations;
 
 namespace conferencePlannerApi.Repositories.Implementations
 {
     public class MongoDBUserRepo : IUserRepo
     {
-        readonly private IConfiguration _config;
-        private IMongoClient _mongoClient;
-        private IMongoDatabase _database;
-        private IMongoCollection<User> _userCollection;
+        private readonly IMongoCollection<User> _userCollection;
 
-
-        public MongoDBUserRepo(IConfiguration config)
+        public MongoDBUserRepo(IOptions<MongoDBSettings> options)
         {
-            _config = config;
-            _mongoClient = new MongoClient(_config["ConnectionStrings:mongoDB"]);
-            _database = _mongoClient.GetDatabase("ConferencePlanner");
-            _userCollection = _database.GetCollection<User>("Users");
+            var connectionString = options.Value.ConnectionString;
+            var client = new MongoClient(connectionString);
+            var database = client.GetDatabase("ConferencePlanner");
+            _userCollection = database.GetCollection<User>("Users");
         }
 
         public async Task<User> CreateAsync(User user)

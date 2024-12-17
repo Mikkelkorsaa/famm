@@ -102,7 +102,6 @@
 			await AuthService.SetCurrentUser(user);
 			await AuthService.SetCurrentUserId(user);
 			NavigationManager.NavigateTo("/dashboard", forceLoad: true);
-			NavigationManager.NavigateTo("/");
 		}
 		catch (Exception ex)
 		{

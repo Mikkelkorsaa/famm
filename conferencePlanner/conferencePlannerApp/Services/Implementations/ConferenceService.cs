@@ -62,7 +62,7 @@ namespace conferencePlannerApp.Services.Implementations
         {
             try
             {
-                var conferences = await _httpClient.GetAsync("/api/conference/GetAllConferences");
+                var conferences = await _httpClient.GetAsync("/api/Conference/GetAllConferences");
                 conferences.EnsureSuccessStatusCode();
                 var result = await conferences.Content.ReadFromJsonAsync<List<Conference>>();
                 if(result == null)
@@ -142,5 +142,13 @@ namespace conferencePlannerApp.Services.Implementations
         {
             throw new NotImplementedException();
         }
-    }
+
+		public async Task<Conference> UpdateAsync(Conference conference)
+		{
+			var response = await _httpClient.PutAsJsonAsync("/api/conference/UpdateConference", conference);
+			var result = await response.Content.ReadFromJsonAsync<Conference>();
+			if (result == null) throw new Exception("No conference found");
+			else return result;
+		}
+	}
 }
