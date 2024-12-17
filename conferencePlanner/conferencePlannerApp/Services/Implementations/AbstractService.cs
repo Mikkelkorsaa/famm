@@ -48,13 +48,15 @@ namespace conferencePlannerApp.Services.Implementations
 			return abstracts;
 		}
 
-		public async Task UpdateAbstract(Abstract _abstract)
+		public async Task<bool> UpdateAbstract(Abstract _abstract)
 		{
-			var response = await _httpClient.PutAsJsonAsync("/api/abstract/updateabstract/", _abstract);
-			response.EnsureSuccessStatusCode();	
+			var response = await _httpClient.PutAsJsonAsync("/api/Abstract/UpdateAbstract/", _abstract);
+            
+			response.EnsureSuccessStatusCode();
+			return true;
         }
 
-                public Task DeleteAbstract(Abstract _abstract)
+        public Task DeleteAbstract(Abstract _abstract)
 		{
 			throw new NotImplementedException();
 		}
@@ -89,17 +91,26 @@ namespace conferencePlannerApp.Services.Implementations
 
         public async Task<int> GetNextReviewIdAsync(int abstractId)
         {
-			var response = await GetById(abstractId);
-			if (response != null)
-			{
-				int latestId = response.Reviews.Max(abs => abs.Id);
-				int newId = latestId++;
-				return newId;
-			}
-			else throw new Exception("No abstract with the given Id");
-
-            
+            var response = await GetById(abstractId);
+            if (response != null)
+            {
+                if (response.Reviews.Any())
+                {
+                    int latestId = response.Reviews.Max(abs => abs.Id);
+                    int newId = latestId + 1;
+                    return newId;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            else
+            {
+                throw new Exception("No abstract with the given Id");
+            }
         }
+
 
         public async Task<Abstract> GetById(int abstractId)
         {
