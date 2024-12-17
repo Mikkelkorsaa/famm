@@ -69,6 +69,29 @@ namespace conferencePlannerApp.Services.LocalImplementations
                 throw new InvalidOperationException($"Failed to update user with ID {user.Id}.", ex);
             }
         }
+
+        public async Task<List<User>> GetUsersBySearchOrFilter(UserFilter filter)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("/api/user/filter/or", filter);
+                response.EnsureSuccessStatusCode();
+
+                var users = await response.Content.ReadFromJsonAsync<List<User>>()
+                    ?? throw new InvalidOperationException("Failed to deserialize users response.");
+
+                return users;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to fetch users from the API.", ex);
+            }
+        }
+
+        public Task<int> GetUsersBySearchOrFilterHits(UserFilter filter)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

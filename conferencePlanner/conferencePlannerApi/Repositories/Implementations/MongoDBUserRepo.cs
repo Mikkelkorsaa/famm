@@ -93,5 +93,31 @@ namespace conferencePlannerApi.Repositories.Implementations
                 return 0;
             return result["maxUserId"].AsInt32 + 1;
         }
+
+        public async Task<List<User>> GetFilterORSearch(UserFilter filter)
+        {
+            var queryFilter = Builders<User>.Filter.Or(
+                   Builders<User>.Filter.Regex(u => u.Name, new BsonRegularExpression(filter.Query, "i")),
+                   Builders<User>.Filter.Regex(u => u.Email, new BsonRegularExpression(filter.Query, "i")),
+                   Builders<User>.Filter.Regex(u => u.Organization, new BsonRegularExpression(filter.Query, "i"))
+               );
+            var response = await _userCollection.Find(queryFilter)
+                .Skip(filter.numberOfUsersSkipped)
+                .Limit(filter.numberOfUsersShown)
+                .ToListAsync();
+            return response == null ? new List<User>(): response;
+        }
+
+        public async Task<int> GetFilterOrSearchNumberOfHits(UserFilter filter)
+        {
+            var queryFilter = Builders<User>.Filter.Or(
+                Builders<User>.Filter.Regex(u => u.Name, new BsonRegularExpression(filter.Query, "i")),
+                Builders<User>.Filter.Regex(u => u.Email, new BsonRegularExpression(filter.Query, "i")),
+                Builders<User>.Filter.Regex(u => u.Organization, new BsonRegularExpression(filter.Query, "i"))
+            );
+
+            var count = await _userCollection.CountDocumentsAsync(queryFilter);
+            return (int)count;
+        }
     }
 }

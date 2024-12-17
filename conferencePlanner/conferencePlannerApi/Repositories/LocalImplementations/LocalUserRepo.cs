@@ -104,5 +104,15 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
             _users.RemoveAt(index);
             return await Task.FromResult(true);
         }
+
+        public Task<List<User>> GetFilterORSearch(UserFilter filter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> GetFilterOrSearchNumberOfHits(UserFilter filter)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

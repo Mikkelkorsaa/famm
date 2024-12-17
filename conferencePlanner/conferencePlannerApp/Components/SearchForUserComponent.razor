@@ -52,20 +52,17 @@
     [Parameter]
     public EventCallback<User> OnUserSelected { get; set; }
 
-    private string searchTerm;
+    private UserFilter searchTerm;
 
     protected override void OnParametersSet()
     {
-        if (searchTerm == null)
-        {
-            searchTerm = SearchParameter;
-        }
+            searchTerm.Query = SearchParameter;
     }
 
     private async Task HandleSearch()
     {
         // Call the findUsers method that will be implemented externally
-        FoundUsers = await userService.findUsers(searchTerm);
+        FoundUsers = await userService.GetUsersBySearchOrFilter(searchTerm);
         StateHasChanged();
     }
 

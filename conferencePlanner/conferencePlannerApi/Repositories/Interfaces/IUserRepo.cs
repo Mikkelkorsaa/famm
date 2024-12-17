@@ -30,5 +30,18 @@ namespace conferencePlannerApi.Repositories.Interfaces
         // Input: Email string
         // Output: User object or null if not found
         Task<User> GetByEmailAsync(string email);
+
+        /// <summary>
+        /// Input: A UserFilter object, containg a string Query and how long the list should be and how many should be skipped
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns>A list of users matching the criteria</returns>
+        Task<List<User>> GetFilterORSearch(UserFilter filter);
+        /// <summary>
+        /// Input: UserFilter, cares only about the query and sees how many hits it gives. 
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        Task<int> GetFilterOrSearchNumberOfHits(UserFilter filter);
     }
 }
