@@ -5,6 +5,7 @@
 @inject IAbstractService AbstractService
 @inject IJSRuntime JSRuntime
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IAuthService authService
 @inject IConferenceService ConferenceService
 @inject NavigationManager Navigation
 
@@ -93,7 +94,7 @@
     {
         _conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
         _abstractList = await AbstractService.GetAbstracts();
-        _user = await localStorage.GetItemAsync<User>("user");
+        _user = await authService.GetCurrentUser();
         var currentPage = Navigation.ToBaseRelativePath(Navigation.Uri);
         
         if(_conferenceId == null){

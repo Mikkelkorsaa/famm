@@ -1,5 +1,6 @@
 ﻿@page "/dashboard"
 @inject IAuthService AuthService
+@inject NavigationManager navigationmanager
 @inject Blazored.LocalStorage.ILocalStorageService localStorage;
 
 @if (_user is not null)
@@ -28,5 +29,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		_user = await AuthService.GetCurrentUser();
+		if (_user is null)
+			navigationmanager.NavigateTo("/login");
 	}
 }
