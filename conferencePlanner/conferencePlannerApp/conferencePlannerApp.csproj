@@ -7,6 +7,18 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="Components\DashboardComponents\AdminDashboardComponent.razor.css" />
+      <None Remove="Components\DashboardComponents\ApplicantDashboardComponent.razor.css" />
+      <None Remove="Components\DashboardComponents\OrganizerDashboardComponent.razor.css" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Components\DashboardComponents\AdminDashboardComponent.razor.css" />
+      <Content Include="Components\DashboardComponents\ApplicantDashboardComponent.razor.css" />
+      <Content Include="Components\DashboardComponents\OrganizerDashboardComponent.razor.css" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Blazored.FluentValidation" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.11" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.11" />
