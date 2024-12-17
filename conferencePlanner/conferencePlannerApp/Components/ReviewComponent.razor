@@ -2,6 +2,7 @@
 @inject IConferenceService ConferenceService
 @inject IUserService UserService
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject IJSRuntime JS
 
 <EditForm Model="Review" OnValidSubmit="UpdateReview">
     <DataAnnotationsValidator />
@@ -20,8 +21,8 @@
                                 {
                                     int gradeValue = i;
                                     <button type="button"
-                                    class="grade-button @(criteria.Grade == gradeValue ? "selected" : "")"
-                                    @onclick="() => SetCriteriaGrade(criteria.Name, gradeValue)">
+                                            class="grade-button @(criteria.Grade == gradeValue ? "selected" : "")"
+                                            @onclick="() => SetCriteriaGrade(criteria.Name, gradeValue)">
                                         @gradeValue
                                     </button>
                                 }
@@ -32,9 +33,9 @@
                     <div class="form-group">
                         <label class="comment-label">Kommentar</label>
                         <textarea class="comment-textarea"
-                        rows="4"
-                        @bind="_comment"
-                        placeholder="Enter your detailed observations...">@_comment</textarea>
+                                  rows="4"
+                                  @bind="_comment"
+                                  placeholder="Enter your detailed observations...">@_comment</textarea>
                     </div>
 
                     <div class="form-group">
@@ -47,8 +48,8 @@
 
         <div class="button-container">
             <button type="submit"
-            class="save-button"
-            disabled="@(isSaving)">
+                    class="save-button"
+                    disabled="@(isSaving)">
                 @if (isSaving)
                 {
                     <span class="spinner"></span>
@@ -74,6 +75,7 @@
     private string _comment = "";
     private Review Review = new();
     private bool _hasReviewed = false;
+    private bool _updateSuccess;
 
     protected override async Task OnInitializedAsync()
     {
@@ -141,16 +143,17 @@
         isSaving = true;
         try
         {
-            Review.Recommend = recommend; // Ensure Recommend is set
+            Review.Recommend = recommend;
             Review.Comment = _comment;
             SelectedAbstract.Reviews.Add(Review);
-            await AbstractService.UpdateAbstract(SelectedAbstract);
-            // Optionally, display a success toast or notification
+            _updateSuccess = await AbstractService.UpdateAbstract(SelectedAbstract);
+            ShowUpdateResult();
         }
         catch (Exception ex)
         {
-            // Optionally, display an error notification
+            _updateSuccess = false;
             Console.WriteLine($"Update failed: {ex.Message}");
+            ShowUpdateResult();
         }
         finally
         {
@@ -170,6 +173,16 @@
             Review.Criterias.Add(new Criteria { Name = criteriaName, Grade = gradeValue });
         }
     }
+
+    private async void ShowUpdateResult()
+    {
+        if (_updateSuccess)
+        {
+            await JS.InvokeVoidAsync("alert", "Review saved successfully!");
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Failed to save review.");
+        }
+    }
 }
-
-

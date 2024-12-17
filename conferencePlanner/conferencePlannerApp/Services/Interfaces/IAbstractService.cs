@@ -14,7 +14,7 @@ namespace conferencePlannerApp.Services.Interfaces
 
 		//Input: Abstract obj.
 		//Manipulation: 1. Finds abstract in Db with matching id 2.Updates the existing obj. in the Db with the current obj. from clientside
-		Task UpdateAbstract (Abstract _abstract);
+		Task<bool> UpdateAbstract (Abstract _abstract);
 
 		//Input: Abstract obj.
 		//Manipulation: Find abstract with matching id in DB and then deletes it

@@ -80,7 +80,9 @@ namespace conferencePlannerApi.Controllers
                 }
 
                 var updatedAbstract = await _repo.UpdateAsync(@abstract);
-                var updatedConference = await _conferenceRepo.GetByIdAsync(updatedAbstract.Id);
+                
+
+                
                 return updatedAbstract == null 
                     ? NotFound($"Abstract with ID {@abstract.Id} not found") 
                     : Ok(updatedAbstract);
