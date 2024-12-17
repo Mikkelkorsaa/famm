@@ -1,10 +1,11 @@
-﻿@using Microsoft.AspNetCore.Components.Forms
+﻿@inject IUserService userService;
+@using Microsoft.AspNetCore.Components.Forms
 <div>
 <EditForm Model="@NewReviewer" OnValidSubmit="@HandleValidSubmit">
     <div class="row mb-3">
         <div class="col-md-6">
             <div class="input-group">
-                <input type="text" class="form-control" @bind="searchText" placeholder="Søg efter bedømmer..." />
+                <input type="text" class="form-control" @bind="searchFilter.Query" placeholder="Søg efter bedømmer..." />
                 <button class="btn btn-outline-secondary" type="button" @onclick="HandleSearch">Søg</button>
             </div>
         </div>
@@ -12,7 +13,7 @@
 
     <div class="row mb-3">
         <div class="col-12">
-            <button type="button" class="btn btn-primary w-100">Send invitation</button>
+            <button type="button" class="btn btn-primary w-100" @onclick="()=> showInviteUserModal = true">Send invitation</button>
         </div>
     </div>
 
@@ -60,7 +61,12 @@
 @if (showFindUserModal)
 {
      <ModalComponent OnClose="() => showInviteUserModal = false">
-        
+        <SearchForUserComponent OnCancel="() => showFindUserModal = false"
+                                OnUserSelected="HandleInviteUser"
+                                searchTerm = "searchFilter"
+                                totalResults="searchResults"
+                                FoundUsers="searchResult"
+            />
      </ModalComponent>   
 }
 
@@ -75,17 +81,22 @@
     public EventCallback OnCancel { get; set; }
     public string errorMessage = string.Empty;
     public User user = new();
-    public bool sendEmail = false;
+    public int searchResults = 0;
     public bool showInviteUserModal = false;
     public bool showFindUserModal = false;
-
-    private string searchText = "";
+    public List<User> searchResult = new();
     private List<string> selectedCategories = new();
+    private UserFilter searchFilter = new UserFilter{
+        Query = string.Empty,
+        numberOfUsersShown = 12,
+        numberOfUsersSkipped = 0
+    };
 
-
-    private void HandleSearch()
+    private async void HandleSearch()
     {
-        // Implement search logic
+        searchResults = await userService.GetUsersBySearchOrFilterHits(searchFilter);
+        searchResult = await userService.GetUsersBySearchOrFilter(searchFilter);
+        showFindUserModal = true;
     }
 
     private void HandleCategoryToggle(string category, object? checkedValue)
@@ -106,7 +117,6 @@
     public void HandleInviteUser(User invitedUser)
     {
         invitedUser = user;
-        sendEmail = true;
     }
 
     public async Task HandleValidSubmit()

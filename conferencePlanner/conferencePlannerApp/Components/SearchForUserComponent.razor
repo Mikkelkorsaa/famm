@@ -5,7 +5,7 @@
         <div class="input-group">
             <input type="text"
                    class="form-control"
-                   @bind="searchTerm"
+                   @bind="searchTerm.Query"
                    @bind:event="oninput"
                    placeholder="Søg efter bruger..." />
             <button class="btn btn-outline-secondary"
@@ -16,6 +16,27 @@
         </div>
     </div>
 </div>
+
+@if (totalResults > 0)
+{
+    <div class="row mb-2">
+        <div class="col d-flex justify-content-between align-items-center">
+            <small class="text-muted fst-italic">
+                Viser @(searchTerm.numberOfUsersSkipped + 1)-@Math.Min(searchTerm.numberOfUsersSkipped + searchTerm.numberOfUsersShown, totalResults) af @totalResults resultater
+            </small>
+            <div>
+                @if (searchTerm.numberOfUsersSkipped > 0)
+                {
+                    <button class="btn btn-sm btn-outline-primary me-2" @onclick="HandlePrevious">Forrige</button>
+                }
+                @if (searchTerm.numberOfUsersSkipped + searchTerm.numberOfUsersShown < totalResults)
+                {
+                    <button class="btn btn-sm btn-outline-primary" @onclick="HandleNext">Næste</button>
+                }
+            </div>
+        </div>
+    </div>
+}
 
 @if (FoundUsers.Any())
 {
@@ -44,24 +65,29 @@
 
 @code {
     [Parameter]
-    public string SearchParameter { get; set; } = string.Empty;
-
-    [Parameter]
     public List<User> FoundUsers { get; set; } = new();
-
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
     [Parameter]
     public EventCallback<User> OnUserSelected { get; set; }
+    [Parameter]
+    public UserFilter searchTerm { get; set; } = new UserFilter
+        {
+            Query = String.Empty,
+            numberOfUsersShown = 12,
+            numberOfUsersSkipped = 0
+        };
+    [Parameter]
+    public int totalResults { get; set; } = 0;
 
-    private UserFilter searchTerm;
-
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-            searchTerm.Query = SearchParameter;
+        await HandleSearch();
     }
 
     private async Task HandleSearch()
     {
-        // Call the findUsers method that will be implemented externally
+        totalResults = await userService.GetUsersBySearchOrFilterHits(searchTerm);
         FoundUsers = await userService.GetUsersBySearchOrFilter(searchTerm);
         StateHasChanged();
     }
@@ -74,4 +100,15 @@
         }
     }
 
+    private async Task HandleNext()
+    {
+        searchTerm.numberOfUsersSkipped += searchTerm.numberOfUsersShown;
+        await HandleSearch();
+    }
+
+    private async Task HandlePrevious()
+    {
+        searchTerm.numberOfUsersSkipped = Math.Max(0, searchTerm.numberOfUsersSkipped - searchTerm.numberOfUsersShown);
+        await HandleSearch();
+    }
 }
