@@ -1,9 +1,9 @@
 ﻿@inject IJSRuntime JS
 
 <div class="modal-overlay" @onclick="CloseModal">
-    <div class="modal-content card shadow bg-dark text-light" @onclick:stopPropagation="true">
+    <div class="modal-content card shadow bg-white text-dark" @onclick:stopPropagation="true">
         <div class="card-body">
-            <button type="button" class="btn-close btn-close-white float-end" aria-label="Close" @onclick="CloseModal"></button>
+            <button type="button" class="btn-close float-end" aria-label="Close" @onclick="CloseModal"></button>
             @ChildContent
         </div>
     </div>

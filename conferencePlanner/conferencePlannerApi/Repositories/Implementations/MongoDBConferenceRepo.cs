@@ -118,5 +118,10 @@ namespace conferencePlannerApi.Repositories.Implementations
 
             return result.Category ?? new List<string>();
         }
+
+        public Task<List<string>> ListAllCriteria(Conference conference)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
