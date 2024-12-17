@@ -45,7 +45,7 @@ else
 
 			if (_conference.Location?.Id != null)
 			{
-				_venue = await venueService.GetByIdAsync(_conference.Location.Id);
+				_venue = _conference.Location;
 				_rooms = _venue?.Rooms;
 				_sortedEvents = sortEvents(events);
 			}

@@ -28,7 +28,7 @@ builder.Services.AddAuthorizationCore(options =>
 		policy.RequireRole("Applicant"));
 });
 builder.Services.AddScoped<IAuthService, LocalStorageUserService>();
-builder.Services.AddScoped<IUserService, LocalUserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IConferenceService, ConferenceService>();
 builder.Services.AddScoped<IAbstractService, AbstractService>();
 builder.Services.AddScoped<IImageService, ImageService>();
