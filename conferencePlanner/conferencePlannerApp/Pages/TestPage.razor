@@ -1,6 +1,7 @@
 ﻿@page "/view-conference"
+@inject IAuthService AuthService
+@inject NavigationManager navigationmanager
 @inject IConferenceService conferenceService
-@attribute [Authorize(Roles = "Admin, Organizer")]
 
 <h3>TestPage</h3>
 @if(Conferences != null)
@@ -13,6 +14,10 @@
 	private IEnumerable<Conference>? Conferences;
 
 	protected override async Task OnInitializedAsync(){
+		var CurrentUser = await AuthService.GetCurrentUser();
+		if (CurrentUser is null)
+			navigationmanager.NavigateTo("/login");
+
 		Conferences = await conferenceService.GetActiveConferencesAsync();
 		Console.WriteLine(Conferences);
 		foreach(var c in Conferences)

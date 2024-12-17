@@ -1,35 +1,35 @@
 ﻿@page "/dashboard"
+@inject IAuthService AuthService
+@inject NavigationManager navigationmanager
 @inject Blazored.LocalStorage.ILocalStorageService localStorage;
-@attribute [Authorize(Roles = "Admin, Organizer, Reviewer, Applicant")]
 
-<div class="container dashboardContainer">
-	<AuthorizeView Roles="Admin">
-		<Authorized>
-			<AdminDashboardComponent />
-		</Authorized>
-	</AuthorizeView>
-	<AuthorizeView Roles="Organizer">
-		<Authorized>
-			<OrganizerDashboardComponent />
-		</Authorized>
-	</AuthorizeView>
-	<AuthorizeView Roles="Reviewer">
-		<Authorized>
-			<ReviewerDashboardComponent />
-		</Authorized>
-	</AuthorizeView>
-	<AuthorizeView Roles="Applicant">
-		<Authorized>
-			<ApplicantDashboardComponent></ApplicantDashboardComponent>
-		</Authorized>
-	</AuthorizeView>
-</div>
-
+@if (_user is not null)
+{
+	<div class="container dashboardContainer">
+		@switch (_user.Role.ToString())
+		{
+			case "Admin":
+				<AdminDashboardComponent />
+				break;
+			case "Organizer":
+				<OrganizerDashboardComponent />
+				break;
+			case "Reviewer":
+				<ReviewerDashboardComponent />
+				break;
+			case "Applicant":
+				<ApplicantDashboardComponent></ApplicantDashboardComponent>
+				break;
+		}
+	</div>
+}
 
 @code {
 	private User? _user;
 	protected override async Task OnInitializedAsync()
 	{
-		_user = await localStorage.GetItemAsync<User>("user");
+		_user = await AuthService.GetCurrentUser();
+		if (_user is null)
+			navigationmanager.NavigateTo("/login");
 	}
 }

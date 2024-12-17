@@ -1,16 +1,33 @@
-﻿<div class="dashboardButton">
-	Opret konference
+﻿@inject NavigationManager navigationmanager
+
+<div class="dashboardButton" @onclick="() => OnButtonClick(_createConferenceUrl)">
+    Opret konference
 </div>
-<div class="dashboardButton">
-	Se konferencer
+<div class="dashboardButton" @onclick="() => OnButtonClick(_viewConferencesUrl)">
+    Se konferencer
 </div>
-<div class="dashboardButton">
-	Se reviews
+<div class="dashboardButton" @onclick="() => OnButtonClick(_seeReviewsUrl)">
+    Se reviews
 </div>
-<div class="dashboardButton">
-	Opret program
+<div class="dashboardButton" @onclick="() => OnButtonClick(_createProgramUrl)">
+    Opret program
+</div>
+<div class="dashboardButton" @onclick="() => OnButtonClick(_viewAllProfilesUrl)">
+    Alle profiler
+</div>
+<div class="dashboardButton" @onclick="() => OnButtonClick(_uploadAbstractUrl)">
+    Indsend Abstrakt
 </div>
 
 @code {
-
+    private string _createConferenceUrl = "/conferences";
+    private string _viewConferencesUrl = "/conferences";
+    private string _seeReviewsUrl = "/review";
+    private string _createProgramUrl = "/scheduler";
+    private string _viewAllProfilesUrl = "/admin/users";
+    private string _uploadAbstractUrl = "/upload-abstract";
+    private void OnButtonClick(string url)
+    {
+        navigationmanager.NavigateTo(url);
+    }
 }

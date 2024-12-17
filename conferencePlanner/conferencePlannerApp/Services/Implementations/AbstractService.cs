@@ -1,7 +1,6 @@
 ﻿using System.Net.Http.Json;
 using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerCore.Models;
-
 namespace conferencePlannerApp.Services.Implementations
 {
     public class AbstractService : IAbstractService
@@ -51,7 +50,6 @@ namespace conferencePlannerApp.Services.Implementations
 		public async Task<bool> UpdateAbstract(Abstract _abstract)
 		{
 			var response = await _httpClient.PutAsJsonAsync("/api/Abstract/UpdateAbstract/", _abstract);
-            
 			response.EnsureSuccessStatusCode();
 			return true;
         }
@@ -131,5 +129,5 @@ namespace conferencePlannerApp.Services.Implementations
             }
             else throw new Exception("No abstract with the given abstractId");
         }
-    }
+	}
 }

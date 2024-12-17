@@ -1,7 +1,6 @@
 ﻿@page "/pick-conference/{target:alpha}"
 @inject IConferenceService conferenceService
 @inject NavigationManager Navigation
-@attribute [Authorize(Roles = "Admin, Organizer, Reviewer")]
 
 <h3>SimpleConferenceComponent</h3>
 

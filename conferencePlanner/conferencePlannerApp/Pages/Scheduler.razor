@@ -1,12 +1,15 @@
 ﻿@page "/scheduler"
 @inject IConferenceService conferenceService;
 @inject IVenueService venueService;
+@inject IAuthService AuthService;
+@inject NavigationManager navigationmanager;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 @if (_conferenceId != null && _sortedEvents != null && _rooms != null && _conference != null)
 {
 	<div class="container">
 		<button class="btn btn-primary" @onclick="()=> _showEventFormModal = true">Tilføj session</button>
+		<button class="btn btn-primary" @onclick="OnSave">Gem Konferenceplan</button>
 		<SchedulerComponent Rooms="@_rooms" Events="@_sortedEvents" />
 		@if (_showEventFormModal)
 		{
@@ -14,7 +17,7 @@
 				<EventFormComponent Rooms="@_rooms" OnSave="AddEvent" />
 			</ModalComponent>
 		}
-		<button class="btn btn-primary" @onclick="OnSave">Gem Konferenceplan</button>
+		
 	</div>
 }
 else
@@ -35,6 +38,13 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
+		var CurrentUser = await AuthService.GetCurrentUser();
+		if (CurrentUser is null)
+			navigationmanager.NavigateTo("/login");
+		else if (CurrentUser.Role.ToString() != "Organizer" && CurrentUser.Role.ToString() != "Admin")
+		{
+			navigationmanager.NavigateTo("/dashboard");
+		}
 
 		_conferenceId = await conferenceService.GetCurrentConferenceIdAsync();
 		if (_conferenceId is not null)
