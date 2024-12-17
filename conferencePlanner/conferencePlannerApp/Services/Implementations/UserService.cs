@@ -88,9 +88,13 @@ namespace conferencePlannerApp.Services.LocalImplementations
             }
         }
 
-        public Task<int> GetUsersBySearchOrFilterHits(UserFilter filter)
+        public async Task<int> GetUsersBySearchOrFilterHits(UserFilter filter)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.PostAsJsonAsync("/api/user/filter/or/hits", filter);
+            response.EnsureSuccessStatusCode();
+
+            var hits = await response.Content.ReadFromJsonAsync<int>();
+            return hits;
         }
     }
 
