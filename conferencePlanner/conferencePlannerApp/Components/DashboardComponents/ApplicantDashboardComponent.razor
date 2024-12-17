@@ -1,7 +1,8 @@
-﻿<div class="dashboardButton">
+﻿@inject NavigationManager navigationmanager
+<div class="dashboardButton" @onclick="()=>OnButtonClick(myProfileUrl)" >
 	Se min Profil
 </div>
-<div class="dashboardButton">
+<div class="dashboardButton" @onclick="()=>OnButtonClick(submitAbstractUrl)">
 	Indsend Abstrakt
 </div>
 
@@ -30,5 +31,12 @@
 	
 </style>
 @code {
+	private string myProfileUrl = "/profile";
+	private string submitAbstractUrl = "/upload-abstract";
+
+	private void OnButtonClick(string url)
+	{
+		navigationmanager.NavigateTo(url);
+	}
 
 }

@@ -62,7 +62,7 @@ namespace conferencePlannerApp.Services.Implementations
         {
             try
             {
-                var conferences = await _httpClient.GetAsync("/api/conference/GetAllConferences");
+                var conferences = await _httpClient.GetAsync("/api/Conference/GetAllConferences");
                 conferences.EnsureSuccessStatusCode();
                 var result = await conferences.Content.ReadFromJsonAsync<List<Conference>>();
                 if(result == null)

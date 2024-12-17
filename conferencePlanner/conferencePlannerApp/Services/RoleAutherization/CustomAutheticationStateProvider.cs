@@ -31,7 +31,6 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 		var claims = new List<Claim>
 	{
 		new Claim(ClaimTypes.Role, user.Role.ToString()),
-        // Add a name claim as well
         new Claim(ClaimTypes.Name, user.Name ?? "anonymous")
 	};
 
@@ -41,7 +40,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 			Console.WriteLine($"Adding claim: {claim.Type}: {claim.Value}");
 		}
 
-		var identity = new ClaimsIdentity(claims, "Bearer");
+		var identity = new ClaimsIdentity(claims, "CustomAuth");
 		var principal = new ClaimsPrincipal(identity);
 
 		// Verify the principal has the role
