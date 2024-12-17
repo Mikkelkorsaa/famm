@@ -19,16 +19,32 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 	public override async Task<AuthenticationState> GetAuthenticationStateAsync()
 	{
 		var user = await _authService.GetCurrentUser();
+		Console.WriteLine($"Current user: {user?.ToString() ?? "null"}");
+		Console.WriteLine($"Current user role: {user?.Role.ToString() ?? "null"}");
 
 		if (user == null)
 		{
+			Console.WriteLine("No user found - returning empty AuthenticationState");
 			return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
 		}
 
-		var claims = new List<Claim> { new Claim(ClaimTypes.Role, user.Role.ToString()) };
+		var claims = new List<Claim>
+	{
+		new Claim(ClaimTypes.Role, user.Role.ToString()),
+        new Claim(ClaimTypes.Name, user.Name ?? "anonymous")
+	};
 
-		var identity = new ClaimsIdentity(claims, "custom");
+		// Print all claims for debugging
+		foreach (var claim in claims)
+		{
+			Console.WriteLine($"Adding claim: {claim.Type}: {claim.Value}");
+		}
+
+		var identity = new ClaimsIdentity(claims, "CustomAuth");
 		var principal = new ClaimsPrincipal(identity);
+
+		// Verify the principal has the role
+		Console.WriteLine($"Is in role {user.Role}: {principal.IsInRole(user.Role.ToString())}");
 
 		return new AuthenticationState(principal);
 	}
