@@ -10,158 +10,175 @@
 @inject NavigationManager Navigation
 @inject IImageService ImageService
 
+
 <div class="container-fluid">
-    <div class="filler" />
-    <div class="row no-gutters">
-        <div class="@sidebarColumnClass">
-            <AbstractListComponent @ref="_abstractListComponent" AbstractList="@_abstractList"
-                OnAbstractSelected="@(async (abs) => await SetAbstract(abs))" OnCollapseChanged="HandleCollapseChanged">
-            </AbstractListComponent>
-        </div>
-        <div class="@contentColumnClass">
-            <div class="row">
-                <div class="view-abstract-column">
-                    @if (_currentAbstract != null)
-                    {
-                        <ViewAbstractComponent SelectedAbstract="@_currentAbstract" ImageResponse="@_image">
-                        </ViewAbstractComponent>
-                    }
-                </div>
-                <div class="review-column">
-                    @if (_currentAbstract != null && _user is not null)
-                    {
-                        @if (_user.Role.ToString() == "Organizer")
-                        {
-                            <FinalReviewComponent SelectedAbstract="@_currentAbstract" />
-                        }
-                        else
-                        {
-                            <ReviewComponent SelectedAbstract="@_currentAbstract" />
-                        }
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="filler" />
+	<div class="row no-gutters">
+		<div class="@sidebarColumnClass">
+			@* list of abstracts that has eventcallback for selecting an abstract *@
+			<AbstractListComponent @ref="_abstractListComponent" AbstractList="@_abstractList"
+								   OnAbstractSelected="@(async (abs) => await SetAbstract(abs))" OnCollapseChanged="HandleCollapseChanged">
+			</AbstractListComponent>
+		</div>
+		<div class="@contentColumnClass">
+			<div class="row">
+				<div class="view-abstract-column">
+					@* if the current abstract is set the view abstract component will be displayed *@
+					@if (_currentAbstract != null)
+					{
+						<ViewAbstractComponent SelectedAbstract="@_currentAbstract" ImageResponse="@_image">
+						</ViewAbstractComponent>
+					}
+				</div>
+				<div class="review-column">
+					@* if the user is an organizer the final review component will be displayed, else the review component will be displayed *@
+					@if (_currentAbstract != null && _user is not null)
+					{
+						@if (_user.Role.ToString() == "Organizer")
+						{
+							<FinalReviewComponent SelectedAbstract="@_currentAbstract" />
+						}
+						else
+						{
+							<ReviewComponent SelectedAbstract="@_currentAbstract" />
+						}
+					}
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
+@* script for handling sidebar collapse and window resize events *@
 <script>
-    window.registerHandlers = (sidebarRef, dotNetHelper) => {
-        document.addEventListener("click", (event) => {
-            const sidebarElement = sidebarRef && sidebarRef.getBoundingClientRect();
-            const isClickInside =
-                sidebarElement &&
-                event.clientX >= sidebarElement.left &&
-                event.clientX <= sidebarElement.right &&
-                event.clientY >= sidebarElement.top &&
-                event.clientY <= sidebarElement.bottom;
-            if (!isClickInside) {
-                dotNetHelper.invokeMethodAsync("CollapseSidebar");
-            }
-        });
+	window.registerHandlers = (sidebarRef, dotNetHelper) => {
+		document.addEventListener("click", (event) => {
+			const sidebarElement = sidebarRef && sidebarRef.getBoundingClientRect();
+			const isClickInside =
+				sidebarElement &&
+				event.clientX >= sidebarElement.left &&
+				event.clientX <= sidebarElement.right &&
+				event.clientY >= sidebarElement.top &&
+				event.clientY <= sidebarElement.bottom;
+			if (!isClickInside) {
+				dotNetHelper.invokeMethodAsync("CollapseSidebar");
+			}
+		});
 
-        window.addEventListener("resize", () => {
-            dotNetHelper.invokeMethodAsync("OnResize", window.innerWidth);
-        });
-    };
+		window.addEventListener("resize", () => {
+			dotNetHelper.invokeMethodAsync("OnResize", window.innerWidth);
+		});
+	};
 
-    window.unregisterHandlers = () => {
-        document.removeEventListener("click");
-        window.removeEventListener("resize");
-    };
+	window.unregisterHandlers = () => {
+		document.removeEventListener("click");
+		window.removeEventListener("resize");
+	};
 </script>
 
 
 @code {
-    private AbstractListComponent? _abstractListComponent;
-    private List<Abstract> _abstractList = new();
-    private Abstract? _currentAbstract;
-    private string? _image;
-    private bool isSidebarCollapsed;
-    private int windowWidth;
-    private User? _user;
-    private int _conferenceId;
-    private Conference? _conference;
+	private AbstractListComponent? _abstractListComponent;
+	private List<Abstract> _abstractList = new();
+	private Abstract? _currentAbstract;
+	private string? _image;
+	private bool isSidebarCollapsed;
+	private int windowWidth;
+	private User? _user;
+	private int _conferenceId;
+	private Conference? _conference;
 
-    private string sidebarColumnClass => isSidebarCollapsed
-    ? "col-2 sidebar-transition sidebar-column-collapsed"
-    : "col-1 sidebar-transition sidebar-column-expanded";
+	// css classes for sidebar and content columns
+	private string sidebarColumnClass => isSidebarCollapsed
+	? "col-2 sidebar-transition sidebar-column-collapsed"
+	: "col-1 sidebar-transition sidebar-column-expanded";
 
-    private string contentColumnClass => isSidebarCollapsed
-    ? "col-11 sidebar-transition content-column sidebar-column-collapsed"
-    : "col-10 sidebar-transition content-column sidebar-column-expanded";
+	private string contentColumnClass => isSidebarCollapsed
+	? "col-11 sidebar-transition content-column sidebar-column-collapsed"
+	: "col-10 sidebar-transition content-column sidebar-column-expanded";
 
-    protected override async Task OnInitializedAsync()
-    {
-        Console.WriteLine("step 0");
-        _conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
-        Console.WriteLine("step 1");
-        var currentPage = Navigation.ToBaseRelativePath(Navigation.Uri);
-        Console.WriteLine("step 3");
-        if (_conferenceId == 0) 
-        {
-            Navigation.NavigateTo($"/pick-conference/{currentPage}");
-            return;
-        }
-        Console.WriteLine("step 4");
-        _conference = await ConferenceService.GetByIdAsync(_conferenceId);
-        Console.WriteLine("step 5");
-        _abstractList = await AbstractService.GetAllAbstractsByConferenceIdAsync(_conferenceId);
-        _user = await authService.GetCurrentUser();
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		//Checking if there is a conference in local storage. If not, the user will be redirected to the pick conference page.
+		_conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
+		var currentPage = Navigation.ToBaseRelativePath(Navigation.Uri);
+		if (_conferenceId == 0)
+		{
+			Navigation.NavigateTo($"/pick-conference/{currentPage}");
+			return;
+		}
+
+		//Checking if the user is logged in and has the correct role. If not, the user will be redirected to the login page or dashboard.
+		var CurrentUser = await authService.GetCurrentUser();
+		if (CurrentUser is null) Navigation.NavigateTo("/login");
+		else if (CurrentUser.Role.ToString() != "Applicant" && CurrentUser.Role.ToString() != "Admin")
+			Navigation.NavigateTo("/dashboard");
+
+		//Getting the current conference and the abstracts for the conference
+		_conference = await ConferenceService.GetByIdAsync(_conferenceId);
+		_abstractList = await AbstractService.GetAllAbstractsByConferenceIdAsync(_conferenceId);
+		_user = await authService.GetCurrentUser();
+	}
 
 
+	// Registering the event handlers for sidebar collapse and window resize events
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		//firstRender is true when the component is rendered for the first time
+		if (firstRender)
+		{
+			//Registering the event handlers for sidebar collapse and window resize events
+			var dotNetRef = DotNetObjectReference.Create(this);
+			await JSRuntime.InvokeVoidAsync("registerHandlers", _abstractListComponent?.PublicSidebarRef, dotNetRef);
+			windowWidth = await JSRuntime.InvokeAsync<int>("eval", "window.innerWidth");
+		}
+	}
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            var dotNetRef = DotNetObjectReference.Create(this);
-            await JSRuntime.InvokeVoidAsync("registerHandlers", _abstractListComponent?.PublicSidebarRef, dotNetRef);
-            windowWidth = await JSRuntime.InvokeAsync<int>("eval", "window.innerWidth");
-        }
-    }
+	// Method for handling the window resize event and updating the window width variable
+	[JSInvokable]
+	public void OnResize(int width)
+	{
+		windowWidth = width;
+		StateHasChanged();
+	}
 
-    [JSInvokable]
-    public void OnResize(int width)
-    {
-        windowWidth = width;
-        StateHasChanged();
-    }
+	// Method for setting the current abstract and the image for the abstract
+	private async Task SetAbstract(Abstract abs)
+	{
+		_currentAbstract = abs;
+		if (!string.IsNullOrEmpty(abs.Picture))
+		{
+			var imageResponse = await ImageService.GetImageAsync(abs.Picture);
+			_image = $"data:image/jpeg;base64,{Convert.ToBase64String(imageResponse.Content)}";
+		}
+		else
+		{
+			_image = null;
+		}
+		StateHasChanged();
+	}
 
-    private async Task SetAbstract(Abstract abs)
-    {
-        _currentAbstract = abs;
-        if (!string.IsNullOrEmpty(abs.Picture))
-        {
-            var imageResponse = await ImageService.GetImageAsync(abs.Picture);
-            _image = $"data:image/jpeg;base64,{Convert.ToBase64String(imageResponse.Content)}";
-        }
-        else
-        {
-            _image = null;
-        }
-        StateHasChanged();
-    }
+	// Method for handling the sidebar collapse event and updating the isSidebarCollapsed variable
+	private void HandleCollapseChanged(bool isCollapsed)
+	{
+		isSidebarCollapsed = isCollapsed;
+		StateHasChanged();
+	}
 
-    private void HandleCollapseChanged(bool isCollapsed)
-    {
-        isSidebarCollapsed = isCollapsed;
-        StateHasChanged();
-    }
+	// Method for collapsing the sidebar
+	[JSInvokable]
+	public void CollapseSidebar()
+	{
+		if (!isSidebarCollapsed)
+		{
+			isSidebarCollapsed = true;
+			StateHasChanged();
+		}
+	}
 
-    [JSInvokable]
-    public void CollapseSidebar()
-    {
-        if (!isSidebarCollapsed)
-        {
-            isSidebarCollapsed = true;
-            StateHasChanged();
-        }
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await JSRuntime.InvokeVoidAsync("unregisterHandlers");
-    }
+	// Method for disposing the event handlers
+	public async ValueTask DisposeAsync()
+	{
+		await JSRuntime.InvokeVoidAsync("unregisterHandlers");
+	}
 }

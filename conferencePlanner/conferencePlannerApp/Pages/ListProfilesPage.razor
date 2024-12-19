@@ -4,7 +4,6 @@
 @inject IAuthService AuthService
 @inject NavigationManager navigationmanager
 
-<UploadImageComponent></UploadImageComponent>
 <div class="container mx-4 my-4">
     <h1 class="text-2xl font-bold mb-4">User Management</h1>
 
@@ -93,6 +92,7 @@
     private string selectedRole = "";
     private Timer? searchTimer;
 
+    // Check if the user is logged in and has the correct role. If not, the user will be redirected to the login page or dashboard.
     protected override async Task OnInitializedAsync()
     {
         var CurrentUser = await AuthService.GetCurrentUser();
@@ -104,11 +104,13 @@
         await LoadUsers();
     }
 
+    // Load all users from the database
     private async Task LoadUsers()
     {
         users = await UserService.GetAllUsersAsync();
     }
 
+    // Filter users based on search term and selected role
     private IEnumerable<User> FilteredUsers
     {
         get
@@ -134,13 +136,14 @@
         }
     }
 
+    // Handle search input
     private async Task HandleSearch()
     {
         if (searchTimer != null)
         {
             await searchTimer.DisposeAsync();
         }
-
+        // Set a timer to wait for the user to stop typing before searching
         searchTimer = new Timer(async _ =>
         {
             await InvokeAsync(StateHasChanged);
@@ -148,6 +151,7 @@
         }, null, 300, Timeout.Infinite);
     }
 
+    // Update user role
     private async Task UpdateUserRole(User user, ChangeEventArgs e)
     {
         if (Enum.TryParse<UserRole>(e.Value?.ToString(), out var newRole))
@@ -157,6 +161,7 @@
         }
     }
 
+    // Toggle user status (activate/deactivate)
     private async Task ToggleUserStatus(User user)
     {
         user.IsActive = !user.IsActive;

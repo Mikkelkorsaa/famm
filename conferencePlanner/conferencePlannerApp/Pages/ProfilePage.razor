@@ -6,6 +6,7 @@
 @inject IAuthService AuthService
 
 <div class="container py-5">
+    @* if the currentuser isn't set at spinner will be shown *@
   @if (CurrentUser is null)
   {
     <div class="text-center">
@@ -16,6 +17,7 @@
   }
   else
   {
+      @* Showing the user profile information and with an edit button that allows the user to edit their information. *@
     <div class="card shadow-sm mx-auto" style="max-width: 700px;">
       <div class="card-header bg-white py-3">
         <div class="d-flex justify-content-between align-items-center">
@@ -46,6 +48,7 @@
       <div class="card-body">
         <div class="mb-4">
           <label class="form-label">Navn</label>
+          @* Displaying the editing mode *@
           @if (IsEditing)
           {
             @if (EditUser != null)
@@ -125,10 +128,11 @@
     if (CurrentUser is null)
       NavigationManager.NavigateTo("/login");
 
-
+      // Setting the EditUser to the current user
     EditUser = CurrentUser! with { };
   }
 
+  // Toggles the edit mode
   private void ToggleEditMode()
   {
     if (IsEditing)
@@ -138,6 +142,7 @@
     IsEditing = !IsEditing;
   }
 
+  // Deletes the user account and logs the user out 
   private async void DeleteAccount()
   {
     var updatedUser = CurrentUser! with { IsActive = false };
@@ -146,12 +151,14 @@
     NavigationManager.NavigateTo("/");
   }
 
+  // Logs the user out 
   private void LogOut()
   {
     AuthService.ClearCurrentUser();
     NavigationManager.NavigateTo("/");
   }
 
+  // Saves the changes made to the user account 
   private async Task SaveChanges()
   {
     try

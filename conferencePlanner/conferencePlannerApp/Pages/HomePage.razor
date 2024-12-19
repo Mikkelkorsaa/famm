@@ -14,7 +14,8 @@
 
 @code {
     private bool isVisible = false;
-
+    // This method is called after the component has rendered for the first time
+    // and is used to trigger a UI update to animate the content
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

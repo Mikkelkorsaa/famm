@@ -41,6 +41,7 @@
 	private bool showConferenceTableModal = false;
 	private List<Conference> conferences = new List<Conference>();
 
+	//Checks if the user is logged in and has the correct role. If not, the user will be redirected to the login page or dashboard.
 	protected override async Task OnInitializedAsync()
 	{
 		var CurrentUser = await AuthService.GetCurrentUser();
@@ -51,11 +52,16 @@
 
 	}
 
+	//Method for creating a conference
 	private void createConference()
 	{
 		showModal = true;
 		StateHasChanged();
 	}
+
+	//Method for displaying all active conferences
+	// It fetches a list of active conferences from the database and stores it in local storage
+	//  before showing the conference table modal
 	private async Task ShowConferences()
 	{
 		var conferenceList = await conferenceService.GetActiveConferencesAsync();
@@ -63,6 +69,8 @@
 		showConferenceTableModal = true;
 		StateHasChanged();
 	}
+
+	//Method for editing a conference by setting the conference in local storage and redirecting the user to the edit conference page
 	private async Task editConference(Conference conference)
 	{
 		await localStorage.SetItemAsync<Conference>("TemplateConference", conference);
@@ -70,6 +78,7 @@
 		StateHasChanged();
 	}
 
+	//Method for handling the save event when creating a conference
 	private void HandleSave(Conference conference)
 	{
 		showModal = false;
