@@ -211,7 +211,7 @@
 	{
 		var currentPage = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
 		_conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
-		if (_conferenceId == -1) NavigationManager.NavigateTo($"/pick-conference/{currentPage}");
+		if (_conferenceId == 0) NavigationManager.NavigateTo($"/pick-conference/{currentPage}");
 		Categories = await ConferenceService.GetCategoriesByIdAsync(_conferenceId);
 
 		var CurrentUser = await AuthService.GetCurrentUser();
