@@ -1,24 +1,30 @@
 ﻿@inject IConferenceService conferenceService
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject NavigationManager navigationManager
-<div @onclick="OnNewButton">
+<button class="btn btn-primary" @onclick="OnNewButton">
 	<span>Ny konference</span>
-</div>
-<div @onclick="OnTemplateButton">
+</button>
+<button class="btn btn-primary" @onclick="OnTemplateButton">
 	<span>Find Skabelon</span>
-</div>
-@if (conferences.Count() > 0 )
+</button>
+@if (onShowSelection)
 {
 	<ModalComponent>
 		<ConferenceTableComponent conferences="@conferences" OnConferenceSelected="CreateFromTemplate"></ConferenceTableComponent>
+		<button class="btn btn-danger" @onclick="CancelCreateConference">Afbryd</button>
 	</ModalComponent>
 }
 
 @code {
 	private List<Conference> conferences = new List<Conference>();
+	[Parameter]
+	public EventCallback OnCancel { get; set; }
+	private bool onShowSelection;
 
-	
-
+	private async Task CancelCreateConference()
+	{
+		await OnCancel.InvokeAsync();
+	}
 	private async Task CreateFromTemplate(Conference conference)
 	{
 		await localStorage.SetItemAsync<Conference?>("TemplateConference", conference);
@@ -31,7 +37,12 @@
 	}
 	private async Task OnTemplateButton(MouseEventArgs e)
 	{
-		var conferences= await conferenceService.GetConferencesAsync();
+		var conferenceList = await conferenceService.GetConferencesAsync();
+		if (conferenceList is not null)
+			await localStorage.SetItemAsync<List<Conference>>("ConferenceList", conferenceList);
+
+		onShowSelection = true;
+		StateHasChanged();
 
 	}
 }

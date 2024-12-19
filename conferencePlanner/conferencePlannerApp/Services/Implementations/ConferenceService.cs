@@ -38,7 +38,7 @@ namespace conferencePlannerApp.Services.Implementations
             }
             
         }
-		private async Task<List<Conference>> GetConferencesAsync()
+		public async Task<List<Conference>> GetConferencesAsync()
 		{
 			try
 			{

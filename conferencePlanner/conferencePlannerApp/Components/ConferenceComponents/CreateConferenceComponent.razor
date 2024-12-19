@@ -1,5 +1,6 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @inject IConferenceService conferenceService
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <PageTitle>Conference Form</PageTitle>
 <div class="container">
@@ -167,20 +168,13 @@
     [Parameter]
     public Conference conference { get; set; } = new Conference
         {
-            Id = 0,
-            Name = "",
-            Category = new List<string>(),
-            ReviewCriteria = new List<string>(),
             AbstractDeadLine = DateTime.Now,
             ReviewDeadline = DateTime.Now,
             StartDate = DateTime.Now,
             EndDate = DateTime.Now,
-            Location = new Venue { Id = 0, Name = "", Address = "" },
-            Reviewers = new List<Reviewer>()
         };
 
     [Parameter] public EventCallback<Conference> OnSave { get; set; }
-
     private Reviewer newReviewer = new();
     private bool showVenueModal = false;
     private bool showReviewerModal = false;
@@ -189,16 +183,17 @@
     private string? message;
     private string messageClass = string.Empty;
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        if (conference == null)
-        {
-            conference = new Conference
-                {
-                    Category = new List<string>(),
-                    ReviewCriteria = new List<string>()
-                };
-        }
+       Conference template = await localStorage.GetItemAsync<Conference>("TemplateConference");
+       if (template != null)
+	   {
+		   conference.Category = template.Category;
+           conference.ReviewCriteria = template.ReviewCriteria;
+           conference.Location = template.Location;
+           conference.Reviewers = template.Reviewers;
+		   await localStorage.RemoveItemAsync("TemplateConference");
+	   }
     }
 
     private void ShowMessage(string text, bool isSuccess)

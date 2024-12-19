@@ -107,10 +107,10 @@ namespace conferencePlannerApp.Services.LocalImplementations
             _localStorage = localStorage;
         }
 
-        public Task<IEnumerable<Conference>> GetActiveConferencesAsync()
+        public Task<List<Conference>> GetActiveConferencesAsync()
         {
             IEnumerable<Conference> Result = _conferences;
-            return Task.FromResult(Result);
+            return Task.FromResult(Result.ToList());
         }
 
         public Task<Conference> GetByIdAsync(int id)
@@ -160,10 +160,6 @@ namespace conferencePlannerApp.Services.LocalImplementations
             throw new NotImplementedException();
         }
 
-        Task<List<Conference>> IConferenceService.GetActiveConferencesAsync()
-        {
-            throw new NotImplementedException();
-        }
 
         public Task<Conference> UpdateAsync(Conference conference)
         {
@@ -194,5 +190,10 @@ namespace conferencePlannerApp.Services.LocalImplementations
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+        public Task<List<Conference>> GetConferencesAsync()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

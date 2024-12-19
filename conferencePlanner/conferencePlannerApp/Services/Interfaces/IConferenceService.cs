@@ -9,7 +9,7 @@ namespace conferencePlannerApp.Services.Interfaces
         Task<Conference> CreateConferenceAsync(Conference conference);
         //A user want to see all conferences that have not yet concluded.
         //The method will return all conferences with a EndDate in the future.
-        Task<IEnumerable<Conference>> GetActiveConferencesAsync();
+        Task<List<Conference>> GetActiveConferencesAsync();
 		/// <summary>
 		/// Returns all conferences
 		/// </summary>
@@ -22,13 +22,6 @@ namespace conferencePlannerApp.Services.Interfaces
 		/// <returns>Conference object</returns>
 		///
 		Task<Conference> GetByIdAsync(int id);
-        Task<List<Conference>> GetActiveConferencesAsync();
-        /// <summary>
-        /// Gets the conference by the ID
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns>Conference object</returns>
-        Task<Conference> GetByIdAsync(int id);
         /// <summary>
         /// Updates the conference with matching id in the DB and
         /// then it returns the same object back
@@ -47,20 +40,6 @@ namespace conferencePlannerApp.Services.Interfaces
         /// <param name="id"></param>
         /// <returns>Conference Object</returns>
         Task<Conference> SetCurrentConferenceAsync(int id);
-        /// <summary>
-        /// Gets all abstracts in a conference
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns>A list of abstracs</returns>
-        Task<List<Abstract>> GetAllAbstractsByIdAsync(int id);
-        
-        /// <summary>
-        /// Updates the conference with a new review
-        /// </summary>
-        /// <param name="abstractId"></param>
-        /// <param name="review"></param>
-        /// <returns></returns>
-        Task UpdateReview(int abstractId, Review review);
         /// <summary>
         /// Get the review criterias for a specific conference using the id
         /// </summary>

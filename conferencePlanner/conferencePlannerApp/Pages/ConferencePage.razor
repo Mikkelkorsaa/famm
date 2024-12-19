@@ -8,45 +8,46 @@
 
 @if (showModal)
 {
-    <ModalComponent OnClose="() => showModal = false">
-        <CreateConferenceComponent OnSave="HandleSave" />
-    </ModalComponent>
+
+	<ModalComponent OnClose="() => showModal = false">
+		<OnCreateConferenceComponent OnCancel="() => showModal = false"></OnCreateConferenceComponent>
+	</ModalComponent>
 }
 <button type="button" class="btn btn-primary w-50 btn-sm" @onclick="editConferences">Vis active konferencer</button>
 
-@if (conferences.Count() > 0){
-    <ConfrenceTableComponent conferences="@conferences"/>
+@if (conferences.Count() > 0)
+{
+	<ConferenceTableComponent conferences="@conferences" />
 }
 
 @code {
-    private bool showModal = false;
-    private IEnumerable<Conference> conferences = new List<Conference>();
+	private bool showModal = false;
+	private IEnumerable<Conference> conferences = new List<Conference>();
 
-    protected override async Task OnInitializedAsync()
-    {
-        var CurrentUser = await AuthService.GetCurrentUser();
-        if (CurrentUser is null)
-            navigationmanager.NavigateTo("/login");
-        else if (CurrentUser.Role.ToString() != "Organizer" && CurrentUser.Role.ToString() != "Admin")
-            navigationmanager.NavigateTo("/dashboard");
-        
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		var CurrentUser = await AuthService.GetCurrentUser();
+		if (CurrentUser is null)
+			navigationmanager.NavigateTo("/login");
+		else if (CurrentUser.Role.ToString() != "Organizer" && CurrentUser.Role.ToString() != "Admin")
+			navigationmanager.NavigateTo("/dashboard");
 
-    private void createConference()
-    {
-        showModal = true;
-        StateHasChanged();
-        Console.WriteLine($"{showModal}");
-    }
+	}
 
-    private async Task editConferences()
-    {
-        conferences = await conferenceService.GetActiveConferencesAsync();
-    }
+	private void createConference()
+	{
+		showModal = true;
+		StateHasChanged();
+	}
 
-    private void HandleSave(Conference conference)
-    {
-        showModal = false;
-        StateHasChanged();
-    }
+	private async Task editConferences()
+	{
+		conferences = await conferenceService.GetActiveConferencesAsync();
+	}
+
+	private void HandleSave(Conference conference)
+	{
+		showModal = false;
+		StateHasChanged();
+	}
 }

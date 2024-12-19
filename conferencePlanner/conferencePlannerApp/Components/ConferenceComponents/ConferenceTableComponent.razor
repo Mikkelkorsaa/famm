@@ -51,6 +51,13 @@
     [Parameter]
     public EventCallback<Conference> OnConferenceSelected { get; set; }
 
+    protected override async Task OnInitializedAsync()
+	{
+		var conferencesList = await localStorage.GetItemAsync<List<Conference>>("ConferenceList");
+		if (conferencesList is not null)
+			conferences = conferencesList;
+		
+	}
 
     public void displayConference(Conference conference)
     {
