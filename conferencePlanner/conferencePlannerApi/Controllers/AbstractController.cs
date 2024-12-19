@@ -18,6 +18,13 @@ namespace conferencePlannerApi.Controllers
             _conferenceRepo = conferenceRepo;
         }
 
+        /// <summary>
+        /// Retrieves all Abstract objects from the database
+        /// </summary>
+        /// <returns>
+        /// 200 OK with IEnumerable of Abstract objects
+        /// 500 Internal Server Error if an exception occurs
+        /// </returns>
         [HttpGet]
         [Route("GetAllAbstracts")]
         public async Task<ActionResult<IEnumerable<Abstract>>> GetAllAbstracts()
@@ -33,6 +40,15 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Retrieves an abstract by its unique identifier
+        /// </summary>
+        /// <param name="id">The unique identifier of the abstract to retrieve</param>
+        /// <returns>
+        /// 200 OK with the abstract if found
+        /// 404 Not Found if the abstract doesn't exist
+        /// 500 Internal Server Error if an error occurs during retrieval
         [HttpGet]
         [Route("GetAbstractById/{id}")]
         public async Task<ActionResult<Abstract>> GetAbstractById(int id)
@@ -48,6 +64,15 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Creates a new abstract in the system
+        /// </summary>
+        /// <param name="abstract">The abstract object to create</param>
+        /// <returns>
+        /// 200 OK with the created abstract
+        /// 400 Bad Request if the model state is invalid
+        /// 500 Internal Server Error if an error occurs during creation
+        /// </returns>
         [HttpPost]
         [Route("CreateAbstract")]
         public async Task<ActionResult<Abstract>> CreateAbstract(Abstract @abstract)
@@ -58,16 +83,25 @@ namespace conferencePlannerApi.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-
                 var newAbstract = await _repo.CreateAsync(@abstract);
                 return Ok(newAbstract);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
         }
 
+        /// <summary>
+        /// Updates an existing abstract in the system
+        /// </summary>
+        /// <param name="abstract">The abstract object with updated values</param>
+        /// <returns>
+        /// 200 OK with the updated abstract
+        /// 400 Bad Request if the model state is invalid
+        /// 404 Not Found if the abstract doesn't exist
+        /// 500 Internal Server Error if an error occurs during update
+        /// </returns>
         [HttpPut]
         [Route("UpdateAbstract")]
         public async Task<ActionResult<Abstract>> UpdateAbstract(Abstract @abstract)
@@ -78,13 +112,10 @@ namespace conferencePlannerApi.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-
                 var updatedAbstract = await _repo.UpdateAsync(@abstract);
-                
 
-                
-                return updatedAbstract == null 
-                    ? NotFound($"Abstract with ID {@abstract.Id} not found") 
+                return updatedAbstract == null
+                    ? NotFound($"Abstract with ID {@abstract.Id} not found")
                     : Ok(updatedAbstract);
             }
             catch
@@ -93,6 +124,14 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Deletes an abstract from the system by its ID
+        /// </summary>
+        /// <param name="id">The unique identifier of the abstract to delete</param>
+        /// <returns>
+        /// 200 OK if deletion is successful
+        /// 500 Internal Server Error if an error occurs during deletion
+        /// </returns>
         [HttpDelete]
         [Route("DeleteAbstract/{id}")]
         public async Task<ActionResult> DeleteAbstract(int id)
