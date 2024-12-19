@@ -48,7 +48,7 @@ namespace conferencePlannerApi.Controllers
             try
             {
                 var newUser = await _repo.CreateAsync(user);
-                return CreatedAtAction(nameof(GetUserById), new { id = newUser!.Id }, newUser);
+                return Ok(newUser);
             }
             catch (Exception e)
             {
@@ -104,7 +104,7 @@ namespace conferencePlannerApi.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var user = await _repo.GetByEmailAsync(model.Email);
+                var user = await _repo.GetByEmailAsync(model.Email.ToLower());
                 if (user == null || !ValidatePassword(user, model.Password))
                 {
                     return Unauthorized("Invalid email or password");
@@ -138,7 +138,7 @@ namespace conferencePlannerApi.Controllers
                 var user = new User
                 {
                     Name = request.Name,
-                    Email = request.Email,
+                    Email = request.Email.ToLower(),
                     Password = request.Password,
                     Organization = request.Organization,
                     Role = UserRole.Applicant,

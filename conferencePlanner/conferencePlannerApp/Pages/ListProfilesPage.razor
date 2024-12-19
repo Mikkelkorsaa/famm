@@ -1,6 +1,8 @@
 @page "/admin/users"
 @using conferencePlannerCore.Models
 @inject IUserService UserService
+@inject IAuthService AuthService
+@inject NavigationManager navigationmanager
 
 <UploadImageComponent></UploadImageComponent>
 <div class="container mx-4 my-4">
@@ -93,6 +95,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var CurrentUser = await AuthService.GetCurrentUser();
+        if (CurrentUser is null)
+            navigationmanager.NavigateTo("/login");
+        else if (CurrentUser.Role.ToString() != "Admin")
+            navigationmanager.NavigateTo("/dashboard");
+
         await LoadUsers();
     }
 

@@ -13,7 +13,6 @@ namespace conferencePlannerCore.Models
         public List<string> Category { get; set; } = new();
         public List<string> ReviewCriteria { get; set; } = new();
         public Venue Location { get; set; } = new();
-        public List<Abstract> Abstracts { get; set; } = new();
         public List<Reviewer> Reviewers { get; set; } = new();
         public ConferencePlan Plan { get; set; } = new();
         

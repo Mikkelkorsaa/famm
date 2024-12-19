@@ -41,43 +41,6 @@ namespace conferencePlannerApp.Services.LocalImplementations
                   Id = 1,
                   Name = "Grand Tech Conference Center",
                   Address = "123 Innovation Boulevard, San Francisco, CA 94105, USA"
-                },
-                Abstracts = new List<Abstract>
-                {
-                    new Abstract
-                    {
-                        Id = 1,
-                        ConferenceId = 1,
-                        SenderName = "Dr. Sarah Johnson",
-                        PresenterEmail = "s.johnson@university.edu",
-                        CoAuthors = new List<string> { "Dr. Michael Chen", "Prof. Emma Williams" },
-                        Organization = "University of Technology",
-                        Title = "Test1",
-                        KeyValues = "climate modeling, machine learning, neural networks, weather prediction",
-                        AbstractText = "This study presents a novel approach to climate change prediction using advanced machine learning techniques. We demonstrate how neural networks can be applied to historical climate data to improve the accuracy of future climate projections. Our results show a 15% improvement in prediction accuracy compared to traditional methods.",
-                        Category = "Machine Learning",
-                        Picture = "string.Empty",
-                        Reviews = new List<Review>
-                        {
-                            new Review
-                            {
-                                Id = 1,
-                                UserId = 3,
-                                Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 5 }, new Criteria { Name = "Originality", Grade = 4 } },
-                                Comment = "Excellent application of machine learning in a critical area. DET HER HAR BOB SKREVET",
-                                Recommend = false
-                            },
-                            new Review
-                            {
-                                Id = 2,
-                                UserId = 102,
-                                Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 4 }, new Criteria { Name = "Originality", Grade = 5 } },
-                                Comment = "Innovative approach with promising results.",
-                                Recommend = true
-
-                            }
-                        }
-                    }
                 }
             },
             new Conference
@@ -106,41 +69,8 @@ namespace conferencePlannerApp.Services.LocalImplementations
                 Id = 2,
                 Name = "Berlin Congress Center",
                 Address = "456 Data Street, 10117 Berlin, Germany"
-              },
-              Abstracts = new List<Abstract>
-              {
-                  new Abstract
-                  {
-                      Id = 2,
-                      ConferenceId = 2,
-                      SenderName = "Prof. David Martinez",
-                      PresenterEmail = "dmartinez@research.org",
-                      CoAuthors = new List<string> { "Dr. Lisa Cooper" },
-                      Organization = "Research Institute of Biotechnology",
-                      Title = "Test 2",
-                      KeyValues = "CRISPR, gene editing, genetic disorders, therapeutic applications",
-                      AbstractText = "Our research explores innovative applications of CRISPR technology in treating rare genetic disorders. Through a series of controlled experiments, we have developed a modified CRISPR-Cas9 system that shows promising results in correcting specific genetic mutations with minimal off-target effects.",
-                      Category = "Biotechnology",
-                      Picture = "string.Empty",
-                      Reviews = new List<Review>
-                      {
-                          new Review
-                          {
-                              Id = 3,
-                              UserId = 103,
-                              Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 5 }, new Criteria { Name = "Originality", Grade = 4 } },
-                              Comment = "Groundbreaking research with significant potential."
-                          },
-                          new Review
-                          {
-                              Id = 4,
-                              UserId = 104,
-                              Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 4 }, new Criteria { Name = "Originality", Grade = 5 } },
-                              Comment = "Innovative approach with promising results."
-                          }
-                      }
-                  }
               }
+
             },
             new Conference
             {
@@ -168,50 +98,13 @@ namespace conferencePlannerApp.Services.LocalImplementations
                 Id = 3,
                 Name = "Singapore Tech Hub",
                 Address = "789 Cyber Road, Downtown Core, Singapore 018956"
-              },
-              Abstracts = new List<Abstract>
-              {
-                  new Abstract
-                  {
-                      Id = 3,
-                      ConferenceId = 3,
-                      SenderName = "Dr. Rachel Anderson",
-                      PresenterEmail = "anderson.r@sustaintech.com",
-                      CoAuthors = new List<string> { "Dr. James Wilson", "Dr. Maria Garcia", "Dr. Tom Baker" },
-                      Organization = "SustainTech Solutions",
-                      Title = "Test 3",
-                      KeyValues = "smart cities, sustainability, urban planning, IoT integration",
-                      AbstractText = "This paper presents a comprehensive framework for implementing smart city solutions in urban development. By integrating IoT sensors, renewable energy systems, and adaptive traffic management, our approach has demonstrated significant improvements in urban efficiency and sustainability. Case studies from three major cities show reductions in energy consumption and traffic congestion.",
-                      Category = "Urban Development",
-                      Picture = "string.Empty",
-                      Reviews = new List<Review>
-                      {
-                          new Review
-                          {
-                              Id = 5,
-                              UserId = 105,
-                              Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 3 }, new Criteria { Name = "Originality", Grade = 4 } },
-                              Comment = "Innovative approach with promising results."
-                          },
-                          new Review
-                          {
-                              Id = 6,
-                              UserId = 106,
-                              Criterias = new List<Criteria> { new Criteria { Name = "Relevance", Grade = 4 }, new Criteria { Name = "Originality", Grade = 5 } },
-                              Comment = "Excellent application of smart city technologies."
-                          }
-                      }
-                  }
               }
+
             }
         };
         public LocalConferenceService(ILocalStorageService localStorage)
         {
             _localStorage = localStorage;
-        }
-        public Task CreateConferenceAsync(Conference conference)
-        {
-            throw new NotImplementedException();
         }
 
         public Task<IEnumerable<Conference>> GetActiveConferencesAsync()
@@ -249,52 +142,6 @@ namespace conferencePlannerApp.Services.LocalImplementations
 
         }
 
-        public Task<List<Abstract>> GetAllAbstractsByIdAsync(int id)
-        {
-            var conference = _conferences.FirstOrDefault(c => c.Id == id);
-            if (conference != null)
-            {
-                return Task.FromResult(conference.Abstracts);
-            }
-            else
-            {
-                throw new Exception("Conference not found");
-            }
-        }
-
-
-        public Task UpdateReview(int abstractId, Review review)
-        {
-            var conference = _conferences.FirstOrDefault(c => c.Abstracts.Any(a => a.Id == abstractId));
-            if (conference != null)
-            {
-                var abstractItem = conference.Abstracts.FirstOrDefault(a => a.Id == abstractId);
-                if (abstractItem != null)
-                {
-                    var existingReview = abstractItem.Reviews.FirstOrDefault(r => r.Id == review.Id);
-                    if (existingReview != null)
-                    {
-                        existingReview.UserId = review.UserId;
-                        existingReview.Criterias = review.Criterias;
-                        existingReview.Comment = review.Comment;
-                    }
-                    else
-                    {
-                        abstractItem.Reviews.Add(review);
-                    }
-                    return Task.CompletedTask;
-                }
-                else
-                {
-                    throw new Exception("Abstract not found");
-                }
-            }
-            else
-            {
-                throw new Exception("Conference not found");
-            }
-        }
-
         public Task<List<string>> GetCriteriaByIdAsync(int conferenceId)
         {
             var conference = _conferences.FirstOrDefault(c => c.Id == conferenceId);
@@ -308,56 +155,44 @@ namespace conferencePlannerApp.Services.LocalImplementations
             }
         }
 
+        public Task<Conference> CreateConferenceAsync(Conference conference)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<Conference>> IConferenceService.GetActiveConferencesAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Conference> UpdateAsync(Conference conference)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateReview(int abstractId, Review review)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<int> GetNextReviewIdAsync(int abstractId)
         {
-            var @abstract = _conferences.SelectMany(c => c.Abstracts)
-                                        .FirstOrDefault(a => a.Id == abstractId);
-            if (@abstract == null)
-            {
-                throw new Exception("Abstract not found");
-            }
-
-            int maxReviewId = @abstract.Reviews.DefaultIfEmpty()
-                                        .Max(r => r?.Id ?? 0);
-           
-            return Task.FromResult(maxReviewId + 1);
+            throw new NotImplementedException();
         }
 
         public Task<bool> HasReviewAsync(int? abstractId, int? userId)
         {
-            var conference = _conferences.FirstOrDefault(c => c.Abstracts.Any(a => a.Id == abstractId));
-            if (conference != null)
-            {
-                var abstractItem = conference.Abstracts.FirstOrDefault(a => a.Id == abstractId);
-                if (abstractItem != null)
-                {
-                    var review = abstractItem.Reviews.FirstOrDefault(r => r.UserId == userId);
-                    return Task.FromResult(review != null);
-                }
-            }
-            return Task.FromResult(false);
+            throw new NotImplementedException();
         }
 
         public Task<Review?> GetExistingReviewAsync(int abstractId, int userId)
         {
-            var conference = _conferences.FirstOrDefault(c => c.Abstracts.Any(a => a.Id == abstractId));
-            if (conference != null)
-            {
-                var abstractItem = conference.Abstracts.FirstOrDefault(a => a.Id == abstractId);
-                if (abstractItem != null)
-                {
-                    var existingReview = abstractItem.Reviews.FirstOrDefault(r => r.UserId == userId);
-                    return Task.FromResult(existingReview);
-                }
-                else
-                {
-                    throw new Exception("Abstract not found");
-                }
-            }
-            else
-            {
-                throw new Exception("Conference not found");
-            }
+            throw new NotImplementedException();
         }
-    }
+
+		public Task<List<string>> GetCategoriesByIdAsync(int conferenceId)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

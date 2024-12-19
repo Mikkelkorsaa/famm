@@ -3,23 +3,21 @@ using conferencePlannerApi.MongoResponseClasses;
 using conferencePlannerCore.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Data;
+using Microsoft.Extensions.Options;
+using conferencePlannerCore.Configurations;
 
 namespace conferencePlannerApi.Repositories.Implementations
 {
     public class MongoDBConferenceRepo : IConferenceRepo
     {
-        readonly private IConfiguration _config;
-        private IMongoClient _mongoClient;
-        private IMongoDatabase _database;
         private IMongoCollection<Conference> _conferenceCollection;
 
-        public MongoDBConferenceRepo(IConfiguration config)
+        public MongoDBConferenceRepo(IOptions<MongoDBSettings> options)
         {
-            _config = config;
-            _mongoClient = new MongoClient(_config["ConnectionStrings:mongoDB"]);
-            _database = _mongoClient.GetDatabase("ConferencePlanner");
-            _conferenceCollection = _database.GetCollection<Conference>("Conferences");
+            var connectionString = options.Value.ConnectionString;
+            var client = new MongoClient(connectionString);
+            var database = client.GetDatabase("ConferencePlanner");
+            _conferenceCollection = database.GetCollection<Conference>("Conferences");
         }
 
         public async Task<Conference> CreateAsync(Conference conference)
@@ -65,9 +63,17 @@ namespace conferencePlannerApi.Repositories.Implementations
             return (response.ModifiedCount == 0) ? throw new Exception("Conference not found") : updatedConference;
         }
 
-        // Help function, gets the highest ID, and adds 1, ensuring that we have an unused valid ID.
-        // If the collection is empty it will be assigned the value 0.
-        public async Task<int> GetNextConferenceIdAsync()
+		public async Task<IEnumerable<Conference>> GetAllActiveAsync()
+		{
+			var filter = Builders<Conference>.Filter.Lt("EndDate", DateTime.Now);
+			var response = await _conferenceCollection.FindAsync(filter);
+			var result = response.ToListAsync();
+			return (result != null) ? result.Result : throw new Exception("No conferences found");
+		}
+
+		// Help function, gets the highest ID, and adds 1, ensuring that we have an unused valid ID.
+		// If the collection is empty it will be assigned the value 0.
+		public async Task<int> GetNextConferenceIdAsync()
         {
             var pipeline = new[]
             {
@@ -82,7 +88,7 @@ namespace conferencePlannerApi.Repositories.Implementations
                 .Aggregate<BsonDocument>(pipeline)
                 .FirstOrDefaultAsync();
 
-            return (result != null ? result["maxUserId"].AsInt32 + 1 : 0) + 1;
+            return (result != null ? result["maxUserId"].AsInt32 + 1 : 0);
         }
 
         public async Task<List<string>> ListAllCriteria(int conferenceId)
@@ -99,7 +105,7 @@ namespace conferencePlannerApi.Repositories.Implementations
                 .Project<ConferenceCriteria>(projection)
                 .FirstOrDefaultAsync();
 
-            return result.ReviewCriteria ?? new List<string>();
+            return result == null ? new List<string>() : result.ReviewCriteria ;
         }
 
         public async Task<List<string>> ListAllCategories(int conferenceId)

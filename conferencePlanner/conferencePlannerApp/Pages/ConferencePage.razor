@@ -1,5 +1,7 @@
 ﻿@inject IConferenceService conferenceService
 @page "/conference"
+@inject NavigationManager navigationmanager
+@inject IAuthService AuthService
 
 <h3>ConferencePage</h3>
 <button type="button" class="btn btn-primary w-50 btn-sm" @onclick="createConference">Opret konferencer</button>
@@ -19,6 +21,16 @@
 @code {
     private bool showModal = false;
     private IEnumerable<Conference> conferences = new List<Conference>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var CurrentUser = await AuthService.GetCurrentUser();
+        if (CurrentUser is null)
+            navigationmanager.NavigateTo("/login");
+        else if (CurrentUser.Role.ToString() != "Organizer" && CurrentUser.Role.ToString() != "Admin")
+            navigationmanager.NavigateTo("/dashboard");
+        
+    }
 
     private void createConference()
     {

@@ -1,61 +1,256 @@
-﻿@if (conference != null)
-{
-    <div class="card">
-        <div class="card-header">
-            <h3>@conference.Name</h3>
+﻿@using System
+@inject IConferenceService ConferenceService
+
+<RadzenCard class="m-4">
+    <div class="space-y-4">
+        <!-- Name -->
+        <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+            <div class="flex-grow">
+                @if (editingField == "name")
+                {
+                    <div class="flex gap-2">
+                        <RadzenTextBox @bind-Value="@editValue" class="w-full" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="check" Click="@(() => SaveEdit("name"))" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="close" Click="@CancelEdit" />
+                    </div>
+                }
+                else
+                {
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="text-sm text-gray-500">Conference Name</div>
+                            <div>@Conference.Name</div>
+                        </div>
+                        <RadzenButton ButtonStyle="ButtonStyle.Light"
+                                      Icon="edit"
+                                      Click="@(() => StartEdit("name", Conference.Name))"
+                                      Class="p-2" />
+                    </div>
+                }
+            </div>
         </div>
-        <div class="card-body">
-            <div class="row mb-3">
-                <div class="col">
-                    <h5>Vigtige datoer</h5>
-                    <ul class="list-unstyled">
-                        <li><strong>Abstract Deadline:</strong> @conference.AbstractDeadLine.ToString("d")</li>
-                        <li><strong>Review Deadline:</strong> @conference.ReviewDeadline.ToString("d")</li>
-                        <li><strong>Konference Period:</strong> @conference.StartDate.ToString("d") - @conference.EndDate.ToString("d")</li>
-                    </ul>
-                </div>
-            </div>
 
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <h5>Kategorier</h5>
-                    <div class="d-flex flex-wrap gap-2">
-                        @foreach (var category in conference.Category)
-                        {
-                            <span class="badge bg-primary">@category</span>
-                        }
+        <!-- Abstract Deadline -->
+        <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+            <div class="flex-grow">
+                @if (editingField == "abstractDeadline")
+                {
+                    <div class="flex gap-2">
+                        <RadzenDatePicker @bind-Value="@editDateValue" class="w-full" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="check" Click="@(() => SaveEdit("abstractDeadline"))" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="close" Click="@CancelEdit" />
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <h5>Bedømmelses kriterier</h5>
-                    <div class="d-flex flex-wrap gap-2">
-                        @foreach (var criteria in conference.ReviewCriteria)
-                        {
-                            <span class="badge bg-secondary">@criteria</span>
-                        }
+                }
+                else
+                {
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="text-sm text-gray-500">Abstract Deadline</div>
+                            <div>@Conference.AbstractDeadLine.ToShortDateString()</div>
+                        </div>
+                        <RadzenButton ButtonStyle="ButtonStyle.Light"
+                                      Icon="edit"
+                                      Click="@(() => StartEdit("abstractDeadline", Conference.AbstractDeadLine))"
+                                      Class="p-2" />
                     </div>
-                </div>
+                }
             </div>
+        </div>
 
-            @if (conference.Location != null)
-            {
-                <div class="row">
-                    <div class="col">
-                        <h5>Lokation</h5>
-                        <div class="card">
-                            <div class="card-body">
-                                <h6 class="card-title">@conference.Location.Name</h6>
-                                <p class="card-text">@conference.Location.Address</p>
-                            </div>
+        <!-- Review Deadline -->
+        <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+            <div class="flex-grow">
+                @if (editingField == "reviewDeadline")
+                {
+                    <div class="flex gap-2">
+                        <RadzenDatePicker @bind-Value="@editDateValue" class="w-full" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="check" Click="@(() => SaveEdit("reviewDeadline"))" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="close" Click="@CancelEdit" />
+                    </div>
+                }
+                else
+                {
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="text-sm text-gray-500">Review Deadline</div>
+                            <div>@Conference.ReviewDeadline.ToShortDateString()</div>
+                        </div>
+                        <RadzenButton ButtonStyle="ButtonStyle.Light"
+                                      Icon="edit"
+                                      Click="@(() => StartEdit("reviewDeadline", Conference.ReviewDeadline))"
+                                      Class="p-2" />
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Conference Dates -->
+        <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+            <div class="flex-grow">
+                @if (editingField == "dates")
+                {
+                    <div class="flex gap-2">
+                        <div class="flex-grow">
+                            <RadzenLabel Text="Start Date" />
+                            <RadzenDatePicker @bind-Value="@editStartDate" class="w-full mb-2" />
+                            <RadzenLabel Text="End Date" />
+                            <RadzenDatePicker @bind-Value="@editEndDate" class="w-full" />
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="check" Click="@(() => SaveEdit("dates"))" />
+                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="close" Click="@CancelEdit" />
                         </div>
                     </div>
-                </div>
-            }
+                }
+                else
+                {
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="text-sm text-gray-500">Conference Dates</div>
+                            <div>@Conference.StartDate.ToShortDateString() - @Conference.EndDate.ToShortDateString()</div>
+                        </div>
+                        <RadzenButton ButtonStyle="ButtonStyle.Light"
+                                      Icon="edit"
+                                      Click="@(() => StartEdit("dates", null))"
+                                      Class="p-2" />
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+            <div class="flex-grow">
+                @if (editingField == "categories")
+                {
+                    <div class="flex gap-2">
+                        <div class="flex-grow">
+                            <RadzenTextBox @bind-Value="@newCategory" class="w-full mb-2"
+                                           Placeholder="Add new category" />
+                            <div class="flex flex-wrap gap-2">
+                                @foreach (var category in Conference.Category)
+                                {
+                                    <div class="bg-gray-100 rounded p-2 flex items-center gap-2">
+                                        <span>@category</span>
+                                        <RadzenButton ButtonStyle="ButtonStyle.Danger"
+                                                      Icon="close"
+                                                      Click="@(() => RemoveCategory(category))"
+                                                      Class="p-1" />
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <RadzenButton ButtonStyle="ButtonStyle.Success"
+                                          Icon="add"
+                                          Click="@AddCategory"
+                                          Disabled="@(string.IsNullOrWhiteSpace(newCategory))" />
+                            <RadzenButton ButtonStyle="ButtonStyle.Light"
+                                          Icon="close"
+                                          Click="@CancelEdit" />
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="text-sm text-gray-500">Categories</div>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach (var category in Conference.Category)
+                                {
+                                    <span class="bg-gray-100 rounded px-2 py-1">@category</span>
+                                }
+                            </div>
+                        </div>
+                        <RadzenButton ButtonStyle="ButtonStyle.Light"
+                                      Icon="edit"
+                                      Click="@(() => StartEdit("categories", null))"
+                                      Class="p-2" />
+                    </div>
+                }
+            </div>
         </div>
     </div>
-}
+</RadzenCard>
 
 @code {
     [Parameter]
-    public Conference? conference { get; set; }
+    public Conference Conference { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<Conference> OnConferenceUpdated { get; set; }
+
+    private string? editingField;
+    private string editValue = string.Empty;
+    private DateTime editDateValue;
+    private DateTime editStartDate;
+    private DateTime editEndDate;
+    private string newCategory = string.Empty;
+
+    private void StartEdit(string field, object? value)
+    {
+        editingField = field;
+        switch (field)
+        {
+            case "name":
+                editValue = value?.ToString() ?? string.Empty;
+                break;
+            case "abstractDeadline":
+            case "reviewDeadline":
+                editDateValue = (DateTime)value!;
+                break;
+            case "dates":
+                editStartDate = Conference.StartDate;
+                editEndDate = Conference.EndDate;
+                break;
+        }
+    }
+
+    private async Task SaveEdit(string field)
+    {
+        switch (field)
+        {
+            case "name":
+                Conference.Name = editValue;
+                break;
+            case "abstractDeadline":
+                Conference.AbstractDeadLine = editDateValue;
+                break;
+            case "reviewDeadline":
+                Conference.ReviewDeadline = editDateValue;
+                break;
+            case "dates":
+                Conference.StartDate = editStartDate;
+                Conference.EndDate = editEndDate;
+                break;
+        }
+
+        await OnConferenceUpdated.InvokeAsync(Conference);
+        CancelEdit();
+    }
+
+    private void CancelEdit()
+    {
+        editingField = null;
+        editValue = string.Empty;
+        newCategory = string.Empty;
+        StateHasChanged();
+    }
+
+    private async Task AddCategory()
+    {
+        if (!string.IsNullOrWhiteSpace(newCategory) && !Conference.Category.Contains(newCategory))
+        {
+            Conference.Category.Add(newCategory);
+            newCategory = string.Empty;
+            await OnConferenceUpdated.InvokeAsync(Conference);
+        }
+    }
+
+    private async Task RemoveCategory(string category)
+    {
+        Conference.removeCategory(category);
+        await OnConferenceUpdated.InvokeAsync(Conference);
+    }
 }

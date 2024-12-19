@@ -9,7 +9,6 @@ namespace conferencePlannerCore.Models
 {
     public class UserFilter
     {
-        [Required]
         public string Query { get; set; } = string.Empty;
         public int numberOfUsersShown {get; set;} = 0;
         public int numberOfUsersSkipped { get; set; } = 0;

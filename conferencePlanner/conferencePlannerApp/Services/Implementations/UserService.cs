@@ -20,7 +20,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
         {
             if (newUser == null)
                 throw new Exception("User is null");
-            var response = await _httpClient.PostAsJsonAsync("/api/abstract/CreateUser", newUser); ;
+            var response = await _httpClient.PostAsJsonAsync("/api/user/CreateUser", newUser); ;
             response.EnsureSuccessStatusCode();
             var responseUser = await response.Content.ReadFromJsonAsync<User>();
             return responseUser != null ? responseUser : throw new Exception("User == null");

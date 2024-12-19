@@ -69,6 +69,7 @@
                 Role = UserRole.Reviewer,
                 Password = "1234"
             };
+        user = await userService.CreateUserAsync(user);
         await OnSave.InvokeAsync(user);
     }
 

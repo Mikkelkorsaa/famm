@@ -5,8 +5,6 @@ using Blazored.LocalStorage;
 using conferencePlannerApp.Services.Interfaces;
 using conferencePlannerApp.Services.LocalImplementations;
 using conferencePlannerApp.Services.Implementations;
-using Microsoft.AspNetCore.Components.Authorization;
-using conferencePlannerApp.Services.RoleAutherization;
 using Radzen;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -16,7 +14,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddRadzenComponents();
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<IAuthService, LocalStorageUserService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IConferenceService, ConferenceService>();
@@ -24,7 +21,6 @@ builder.Services.AddScoped<IAbstractService, AbstractService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IVenueService, VenueService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<DialogService>();
 builder.Services.AddRadzenComponents();
 

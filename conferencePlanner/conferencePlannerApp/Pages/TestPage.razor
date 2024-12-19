@@ -1,23 +1,445 @@
-﻿@page "/view-conference"
-@inject IConferenceService conferenceService
-@attribute [Authorize(Roles = "Admin, Organizer")]
+﻿@page "/conference-edit"
+@inject IConferenceService ConferenceService
 
-<h3>TestPage</h3>
-@if(Conferences != null)
-{
-	@* <ConfrenceTableComponent conferences="Conferences" /> *@
-	<SimpleConferenceComponent Conferences="Conferences"/>
-}
+<PageTitle>Edit Conference</PageTitle>
 
+<RadzenCard class="m-4">
+    <div class="space-y-4">
+        <!-- Name -->
+        <div class="p-4 border rounded">
+            <div class="flex-grow">
+                @if (editingField == "name")
+                {
+                    <div class="flex gap-2">
+                        <RadzenTextBox @bind-Value="@editValue" class="w-100" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="check" Click="@(() => SaveEdit("name"))" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="close" Click="@CancelEdit" />
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <RadzenLabel Text="Conference Name" Class="mb-2 d-block text-muted" />
+                            <div>@Conference.Name</div>
+                        </div>
+                        <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit"
+                                      Click="@(() => StartEdit("name", Conference.Name))" />
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Dates Section -->
+        <div class="p-4 border rounded">
+            <RadzenLabel Text="Important Dates" Class="h5 mb-3" />
+            <div class="row">
+                <!-- Abstract & Review Deadlines -->
+                <div class="col-md-6 mb-3">
+                    @if (editingField == "abstractDeadline")
+                    {
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="flex-grow-1">
+                                <RadzenLabel Text="Abstract Deadline" Class="mb-2" />
+                                <RadzenDatePicker @bind-Value="@editDateValue" Class="w-100" />
+                            </div>
+                            <div class="d-flex flex-column gap-2">
+                                <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="check"
+                                              Click="@(() => SaveEdit("abstractDeadline"))" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="close"
+                                              Click="@CancelEdit" />
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <RadzenLabel Text="Abstract Deadline" Class="mb-2 d-block text-muted" />
+                                <div>@Conference.AbstractDeadLine.ToShortDateString()</div>
+                            </div>
+                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit"
+                                          Click="@(() => StartEdit("abstractDeadline", Conference.AbstractDeadLine))" />
+                        </div>
+                    }
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    @if (editingField == "reviewDeadline")
+                    {
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="flex-grow-1">
+                                <RadzenLabel Text="Review Deadline" Class="mb-2" />
+                                <RadzenDatePicker @bind-Value="@editDateValue" Class="w-100" />
+                            </div>
+                            <div class="d-flex flex-column gap-2">
+                                <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="check"
+                                              Click="@(() => SaveEdit("reviewDeadline"))" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="close"
+                                              Click="@CancelEdit" />
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <RadzenLabel Text="Review Deadline" Class="mb-2 d-block text-muted" />
+                                <div>@Conference.ReviewDeadline.ToShortDateString()</div>
+                            </div>
+                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit"
+                                          Click="@(() => StartEdit("reviewDeadline", Conference.ReviewDeadline))" />
+                        </div>
+                    }
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    @if (editingField == "conferenceDates")
+                    {
+                        <div class="d-flex gap-2">
+                            <div class="flex-grow-1">
+                                <RadzenLabel Text="Conference Dates" Class="mb-2" />
+                                <div class="d-flex gap-2 align-items-center mb-2">
+                                    <RadzenDatePicker @bind-Value="@editStartDate" Class="w-100" />
+                                    <span>to</span>
+                                    <RadzenDatePicker @bind-Value="@editEndDate" Class="w-100" />
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column gap-2">
+                                <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="check"
+                                              Click="@(() => SaveEdit("conferenceDates"))" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="close"
+                                              Click="@CancelEdit" />
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <RadzenLabel Text="Conference Dates" Class="mb-2 d-block text-muted" />
+                                <div>
+                                    @Conference.StartDate.ToShortDateString() - @Conference.EndDate.ToShortDateString()
+                                </div>
+                            </div>
+                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit"
+                                          Click="@(() => StartEdit("conferenceDates", null))" />
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 border rounded">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <RadzenLabel Text="Categories" Class="h5 mb-0" />
+                @if (editingField != "categories")
+                {
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit"
+                                  Click="@(() => StartEdit("categories", null))" />
+                }
+            </div>
+
+            @if (editingField == "categories")
+            {
+                <div class="mb-3">
+                    <div class="d-flex gap-2 mb-3">
+                        <RadzenTextBox @bind-Value="@newCategory" Class="w-100"
+                                       Placeholder="Enter new category" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add"
+                                      Click="@AddCategory"
+                                      Disabled="@(string.IsNullOrWhiteSpace(newCategory))" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="close"
+                                      Click="@CancelEdit" />
+                    </div>
+                </div>
+            }
+
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var category in Conference.Category)
+                {
+                    <div class="bg-light rounded p-2 d-flex align-items-center gap-2">
+                        <span>@category</span>
+                        @if (editingField == "categories")
+                        {
+                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close"
+                                          Click="@(() => RemoveCategory(category))" Class="p-1" />
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="p-4 border rounded">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <RadzenLabel Text="Review Criteria" Class="h5 mb-0" />
+                @if (editingField != "criteria")
+                {
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit"
+                                  Click="@(() => StartEdit("criteria", null))" />
+                }
+            </div>
+
+            @if (editingField == "criteria")
+            {
+                <div class="mb-3">
+                    <div class="d-flex gap-2 mb-3">
+                        <RadzenTextBox @bind-Value="@newCriteria" Class="w-100"
+                                       Placeholder="Enter new criteria" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add"
+                                      Click="@AddCriteria"
+                                      Disabled="@(string.IsNullOrWhiteSpace(newCriteria))" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="close"
+                                      Click="@CancelEdit" />
+                    </div>
+                </div>
+            }
+
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var criteria in Conference.ReviewCriteria)
+                {
+                    <div class="bg-light rounded p-2 d-flex align-items-center gap-2">
+                        <span>@criteria</span>
+                        @if (editingField == "criteria")
+                        {
+                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close"
+                                          Click="@(() => RemoveCriteria(criteria))" Class="p-1" />
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Reviewers Section -->
+        <div class="p-4 border rounded">
+            <RadzenLabel Text="Reviewers" Class="h5 mb-3" />
+            @foreach (var reviewer in Conference.Reviewers)
+            {
+                <div class="mb-3 p-3 border rounded">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <div class="font-weight-bold">@reviewer.NameUser</div>
+                        </div>
+                        <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit"
+                                      Click="@(() => StartEditReviewer(reviewer))" />
+                    </div>
+
+                    @if (editingReviewer?.Id == reviewer.Id)
+                    {
+                        <div class="mt-3">
+                            <RadzenLabel Text="Assigned Categories" Class="mb-2" />
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var category in Conference.Category)
+                                {
+                                    <RadzenCheckBox @bind-Value="@reviewerCategories[category]"
+                                                    Class="me-2" />
+                                    <span class="me-3">@category</span>
+                                }
+                            </div>
+                            <div class="d-flex gap-2 mt-3">
+                                <RadzenButton ButtonStyle="ButtonStyle.Success" Text="Save"
+                                              Click="@SaveReviewerCategories" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel"
+                                              Click="@CancelEditReviewer" />
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var category in reviewer.Categories)
+                            {
+                                <span class="bg-light rounded px-2 py-1">@category</span>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="p-4 border rounded">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <RadzenLabel Text="Venue" Class="h5 mb-0" />
+                @if (editingField != "venue")
+                {
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit"
+                                  Click="@(() => StartEdit("venue", null))" />
+                }
+            </div>
+
+            @if (editingField == "venue")
+            {
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <RadzenLabel Text="Venue Name" Class="mb-2" />
+                        <RadzenTextBox @bind-Value="@Conference.Location.Name" Class="w-100" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <RadzenLabel Text="Address" Class="mb-2" />
+                        <RadzenTextBox @bind-Value="@Conference.Location.Address" Class="w-100" />
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-end">
+                    <RadzenButton ButtonStyle="ButtonStyle.Success" Text="Save"
+                                  Click="@(() => SaveEdit("venue"))" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel"
+                                  Click="@CancelEdit" />
+                </div>
+            }
+            else
+            {
+                <div>
+                    <div class="mb-2">
+                        <RadzenLabel Text="Venue Name" Class="d-block text-muted" />
+                        <div>@Conference.Location.Name</div>
+                    </div>
+                    <div>
+                        <RadzenLabel Text="Address" Class="d-block text-muted" />
+                        <div>@Conference.Location.Address</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</RadzenCard>
 @code {
-	private IEnumerable<Conference>? Conferences;
+    [Parameter]
+    public Conference Conference { get; set; } = new();
 
-	protected override async Task OnInitializedAsync(){
-		Conferences = await conferenceService.GetActiveConferencesAsync();
-		Console.WriteLine(Conferences);
-		foreach(var c in Conferences)
-		{
-			Console.WriteLine(c.Name);
-		}
-	}
+    [Parameter]
+    public EventCallback<Conference> OnConferenceUpdated { get; set; }
+
+    private string? editingField;
+    private string editValue = string.Empty;
+    private DateTime editDateValue;
+    private DateTime editStartDate;
+    private DateTime editEndDate;
+    private string newCategory = string.Empty;
+    private string newCriteria = string.Empty;
+    private Reviewer? editingReviewer;
+    private Dictionary<string, bool> reviewerCategories = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Conference = await ConferenceService.GetByIdAsync(0);
+    }
+
+    private void StartEdit(string field, object? value)
+    {
+        editingField = field;
+        switch (field)
+        {
+            case "name":
+                editValue = value?.ToString() ?? string.Empty;
+                break;
+            case "abstractDeadline":
+            case "reviewDeadline":
+                editDateValue = (DateTime)value!;
+                break;
+            case "conferenceDates":
+                editStartDate = Conference.StartDate;
+                editEndDate = Conference.EndDate;
+                break;
+        }
+    }
+
+    private void StartEditReviewer(Reviewer reviewer)
+    {
+        editingReviewer = reviewer;
+        reviewerCategories = Conference.Category.ToDictionary(
+            c => c,
+            c => reviewer.Categories.Contains(c)
+        );
+    }
+
+    private async Task SaveEdit(string field)
+    {
+        switch (field)
+        {
+            case "name":
+                Conference.Name = editValue;
+                break;
+            case "abstractDeadline":
+                Conference.AbstractDeadLine = editDateValue;
+                break;
+            case "reviewDeadline":
+                Conference.ReviewDeadline = editDateValue;
+                break;
+            case "conferenceDates":
+                Conference.StartDate = editStartDate;
+                Conference.EndDate = editEndDate;
+                break;
+            case "venue":
+                // Venue is directly bound to Conference.Location
+                break;
+        }
+
+        await OnConferenceUpdated.InvokeAsync(Conference);
+        CancelEdit();
+    }
+
+    private void CancelEdit()
+    {
+        editingField = null;
+        editValue = string.Empty;
+        newCategory = string.Empty;
+        newCriteria = string.Empty;
+        StateHasChanged();
+    }
+
+    private void CancelEditReviewer()
+    {
+        editingReviewer = null;
+        reviewerCategories.Clear();
+        StateHasChanged();
+    }
+
+    private async Task AddCategory()
+    {
+        if (!string.IsNullOrWhiteSpace(newCategory) && !Conference.Category.Contains(newCategory))
+        {
+            Conference.Category.Add(newCategory);
+            newCategory = string.Empty;
+            await OnConferenceUpdated.InvokeAsync(Conference);
+            StateHasChanged();
+        }
+    }
+
+    private async Task RemoveCategory(string category)
+    {
+        Conference.removeCategory(category);
+        await OnConferenceUpdated.InvokeAsync(Conference);
+        StateHasChanged();
+    }
+
+    private async Task AddCriteria()
+    {
+        if (!string.IsNullOrWhiteSpace(newCriteria) && !Conference.ReviewCriteria.Contains(newCriteria))
+        {
+            Conference.ReviewCriteria.Add(newCriteria);
+            newCriteria = string.Empty;
+            await OnConferenceUpdated.InvokeAsync(Conference);
+            StateHasChanged();
+        }
+    }
+
+    private async Task RemoveCriteria(string criteria)
+    {
+        Conference.ReviewCriteria.Remove(criteria);
+        await OnConferenceUpdated.InvokeAsync(Conference);
+        StateHasChanged();
+    }
+
+    private async Task SaveReviewerCategories()
+    {
+        if (editingReviewer != null)
+        {
+            editingReviewer.Categories = Conference.Category
+                .Where(c => reviewerCategories[c])
+                .ToList();
+
+            await OnConferenceUpdated.InvokeAsync(Conference);
+            CancelEditReviewer();
+        }
+    }
 }

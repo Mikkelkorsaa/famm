@@ -4,8 +4,8 @@
 @inject HttpClient Http
 @inject IAbstractService AbstractService
 @inject IJSRuntime JSRuntime
-@attribute [Authorize(Roles = "Admin, Organizer, Reviewer")]
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IAuthService authService
 @inject IConferenceService ConferenceService
 @inject NavigationManager Navigation
 
@@ -28,18 +28,16 @@
                     }
                 </div>
                 <div class="review-column">
-                    @if (_currentAbstract != null)
+                    @if (_currentAbstract != null && _user is not null)
                     {
-                        <AuthorizeView Roles="Organizer">
-                            <Authorized>
-                                <FinalReviewComponent SelectedAbstract="@_currentAbstract" />
-                            </Authorized>
-                        </AuthorizeView>
-                        <AuthorizeView Roles="Reviewer">
-                            <Authorized>
-                                <ReviewComponent SelectedAbstract="@_currentAbstract" />
-                            </Authorized>
-                        </AuthorizeView>
+                        @if (_user.Role.ToString() == "Organizer")
+                        {
+                            <FinalReviewComponent SelectedAbstract="@_currentAbstract" />
+                        }
+                        else
+                        {
+                            <ReviewComponent SelectedAbstract="@_currentAbstract" />
+                        }  
                     }
                 </div>
             </div>
@@ -96,7 +94,7 @@
     {
         _conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
         _abstractList = await AbstractService.GetAbstracts();
-        _user = await localStorage.GetItemAsync<User>("user");
+        _user = await authService.GetCurrentUser();
         var currentPage = Navigation.ToBaseRelativePath(Navigation.Uri);
         
         if(_conferenceId == null){

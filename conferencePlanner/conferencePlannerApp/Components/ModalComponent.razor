@@ -1,9 +1,9 @@
 ﻿@inject IJSRuntime JS
 
 <div class="modal-overlay" @onclick="CloseModal">
-    <div class="modal-content card shadow bg-dark text-light" @onclick:stopPropagation="true">
+    <div class="modal-content card shadow bg-white text-dark" @onclick:stopPropagation="true">
         <div class="card-body">
-            <button type="button" class="btn-close btn-close-white float-end" aria-label="Close" @onclick="CloseModal"></button>
+            <button type="button" class="btn-close float-end" aria-label="Close" @onclick="CloseModal"></button>
             @ChildContent
         </div>
     </div>
@@ -11,10 +11,12 @@
 
 @code
 {
-
+    // any component or page file that ends in .razor
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
+    // A function that defines what happens when the closes. The function can change a bool,
+    // and/or any other needed information. This is defined in the calling component/page.
     [Parameter]
     public EventCallback OnClose { get; set; }
 
