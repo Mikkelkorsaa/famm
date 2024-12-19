@@ -93,14 +93,21 @@
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("step 0");
         _conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
+        Console.WriteLine("step 1");
         var currentPage = Navigation.ToBaseRelativePath(Navigation.Uri);
-        if (_conferenceId == 0) Navigation.NavigateTo($"/pick-conference/{currentPage}");
-
+        Console.WriteLine("step 3");
+        if (_conferenceId == 0) 
+        {
+            Navigation.NavigateTo($"/pick-conference/{currentPage}");
+            return;
+        }
+        Console.WriteLine("step 4");
         _conference = await ConferenceService.GetByIdAsync(_conferenceId);
+        Console.WriteLine("step 5");
         _abstractList = await AbstractService.GetAllAbstractsByConferenceIdAsync(_conferenceId);
         _user = await authService.GetCurrentUser();
-
     }
 
 
