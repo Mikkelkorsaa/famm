@@ -4,32 +4,47 @@ namespace conferencePlannerApi.Repositories.Interfaces
 {
         public interface IAbstractRepo
         {
-                // Input: Abstract ID
-                // Output: Abstract object or null if not found
-                Task<Abstract> GetByIdAsync(int id);
+        /// <summary>
+        /// Retrieves an Abstract by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the Abstract.</param>
+        /// <returns>The Abstract object if found</returns>
+        Task<Abstract> GetByIdAsync(int id);
 
-                // Output: Collection of all Abstract objects
-                Task<List<Abstract>> GetAllAsync();
+        /// <summary>
+        /// Retrieves all Abstract entities from the database.
+        /// </summary>
+        /// <returns>A list containing all Abstract objects.</returns>
+        Task<List<Abstract>> GetAllAsync();
 
-                // Input: Abstract object without ID
-                // Manipulation: Saves to database
-                // Output: Abstract object with generated ID
-                Task<Abstract> CreateAsync(Abstract @abstract);
+        /// <summary>
+        /// Creates a new Abstract entity in the database.
+        /// </summary>
+        /// <param name="abstract">The Abstract object to create (without ID).</param>
+        /// <returns>The created Abstract object with its generated ID.</returns>
+        Task<Abstract> CreateAsync(Abstract @abstract);
 
-                // Input: Abstract ID and updated Abstract object
-                // Manipulation: Updates existing record
-                // Output: Updated Abstract object or null if not found
-                Task<Abstract> UpdateAsync(Abstract @abstract);
+        /// <summary>
+        /// Updates an existing Abstract entity in the database.
+        /// </summary>
+        /// <param name="abstract">The Abstract object with updated values.</param>
+        /// <returns>The updated Abstract object if found</returns>
+        Task<Abstract> UpdateAsync(Abstract @abstract);
 
-                // Input: Abstract ID
-                // Manipulation: Removes from database
-                // Output: True if deleted, false if not found
-                Task DeleteAsync(int id);
+        /// <summary>
+        /// Deletes an Abstract entity from the database.
+        /// </summary>
+        /// <param name="id">The unique identifier of the Abstract to delete.</param>
+        /// <returns>True if the Abstract was deleted <returns>
+        Task DeleteAsync(int id);
 
 
-                //Input: Abstract Id & Review
-                //Manipulation: Updates the abstract with the review
-                //Output: Updated abstract
-                Task<Abstract> UpdateReview(int abstractId, Review review);
+        /// <summary>
+        /// Updates the review for a specific Abstract entity.
+        /// </summary>
+        /// <param name="abstractId">The unique identifier of the Abstract.</param>
+        /// <param name="review">The Review object containing the updated review information.</param>
+        /// <returns>The Abstract object with the updated review.</returns>
+        Task<Abstract> UpdateReview(int abstractId, Review review);
     }
 }

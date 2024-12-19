@@ -1,5 +1,8 @@
 ﻿@inject IJSRuntime JS
 
+<!-- This is a modal component that can be used to display a modal. -->
+<!-- The modal is a card that is centered on the screen. -->
+<!-- The modal has a close button in the top right corner. -->
 <div class="modal-overlay" @onclick="CloseModal">
     <div class="modal-content card shadow bg-white text-dark" @onclick:stopPropagation="true">
         <div class="card-body">
@@ -22,17 +25,23 @@
 
     protected override async Task OnInitializedAsync()
     {
+        // Add the class to the body element to prevent scrolling when the modal is open
+        // This is done when the modal is opened
         await JS.InvokeVoidAsync("document.body.classList.add", "modal-open");
     }
 
+    // This function is called when the modal is closed
     private async Task CloseModal()
     {
+        // Remove the class from the body element to allow scrolling when the modal is closed
         await JS.InvokeVoidAsync("document.body.classList.remove","modal-open");
         await OnClose.InvokeAsync();
     }
 
+    // This function is called when the component is disposed
     public async ValueTask DisposeAsync()
     {
+        // Remove the class from the body element to allow scrolling when the modal is closed
         await JS.InvokeVoidAsync("document.body.classList.remove","modal-open");
     }
 }

@@ -4,7 +4,9 @@
 @inject IJSRuntime JSRuntime
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
 
+<!-- sidebar for displaying the list of abstracts-->
 <div class="abstract-sidebar @(IsCollapsed ? "collapsed" : "expanded")" @ref="PublicSidebarRef">
+    <!-- Toggle button for collapsing/expanding the sidebar-->
     <div class="collapse-toggle" @onclick="ToggleCollapse">
         <i class="bi bi-list"></i>
     </div>
@@ -34,7 +36,7 @@
         </div>
     }
 </div>
-
+<!-- Script for handling the sidebar -->
 <script>
     window.addEventListener('scroll', function () {
     var sidebar = document.querySelector('.abstract-sidebar');
@@ -50,20 +52,25 @@
 </script>
 
 @code {
+    // EventCallback for when an abstract is selected
     [Parameter]
     public EventCallback<Abstract> OnAbstractSelected { get; set; }
 
+    // EventCallback for when the sidebar is collapsed/expanded
     [Parameter]
     public EventCallback<bool> OnCollapseChanged { get; set; }
 
+    // List of abstracts to display in the sidebar
     [Parameter]
     public List<Abstract>? AbstractList { get; set; }
 
+    // Reference to the sidebar element for registering/unregistering the event handlers
     public ElementReference PublicSidebarRef { get; private set; }
 
     private Abstract? SelectedAbstract { get; set; }
     private bool IsCollapsed { get; set; } = false;
 
+    // Get the current conference id and load the abstracts for the conference
     protected override async Task OnParametersSetAsync()
     {
         int id = await ConferenceService.GetCurrentConferenceIdAsync();
@@ -76,7 +83,7 @@
             AbstractList = new List<Abstract>();
         }
     }
-
+    // Register the event handlers when the component is rendered
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -86,6 +93,7 @@
         }
     }
 
+    // Method for collapsing the sidebar
     [JSInvokable]
     public async Task CollapseSidebar()
     {
@@ -98,13 +106,15 @@
         
     }
 
-
+    // Method for setting the selected abstract and invoking the
+    // event callback to send the selected abstract to the parent component
     private async Task SetAbstract(Abstract abstractItem)
     {
         SelectedAbstract = abstractItem;
         await OnAbstractSelected.InvokeAsync(abstractItem);
     }
 
+    // Method for toggling the collapse state of the sidebar
     private async Task ToggleCollapse()
     {
         IsCollapsed = !IsCollapsed;
@@ -112,6 +122,7 @@
         StateHasChanged();
     }
 
+    // Unregister the event handlers when the component is disposed
     public async ValueTask DisposeAsync()
     {
         await JSRuntime.InvokeVoidAsync("unregisterHandlers");

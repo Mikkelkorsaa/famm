@@ -15,6 +15,15 @@ namespace conferencePlannerApi.Controllers
             _repo = repo;
         }
 
+        /// <summary>
+        /// Gets a venue by its ID
+        /// </summary>
+        /// <param name="id">The ID of the venue to retrieve</param>
+        /// <returns>
+        /// 200 OK with venue data
+        /// 404 Not Found if venue doesn't exist
+        /// 500 Internal Server Error if processing fails
+        /// </returns>
         [HttpGet]
         [Route("GetVenueById/{id}")]
         public async Task<ActionResult<Venue>> GetVenueById(int id)
@@ -30,6 +39,15 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Creates a new venue
+        /// </summary>
+        /// <param name="venue">The venue data to create</param>
+        /// <returns>
+        /// 201 Created with the new venue data and location header
+        /// 400 Bad Request if validation fails
+        /// 500 Internal Server Error if processing fails
+        /// </returns>
         [HttpPost]
         [Route("CreateVenue")]
         public async Task<ActionResult<Venue>> CreateVenue(Venue venue)
@@ -52,6 +70,16 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates an existing venue
+        /// </summary>
+        /// <param name="venue">The venue data to update</param>
+        /// <returns>
+        /// 200 OK with updated venue data
+        /// 400 Bad Request if validation fails
+        /// 404 Not Found if venue doesn't exist
+        /// 500 Internal Server Error if processing fails
+        /// </returns>
         [HttpPut]
         [Route("UpdateVenue")]
         public async Task<ActionResult<Venue>> UpdateVenue(Venue venue)
@@ -74,6 +102,15 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Deletes a venue by its ID
+        /// </summary>
+        /// <param name="id">The ID of the venue to delete</param>
+        /// <returns>
+        /// 204 No Content if successful
+        /// 404 Not Found if venue doesn't exist
+        /// 500 Internal Server Error if processing fails
+        /// </returns>
         [HttpDelete]
         [Route("DeleteVenue/{id}")]
         public async Task<ActionResult> DeleteVenue(int id)

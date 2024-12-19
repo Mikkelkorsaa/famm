@@ -3,7 +3,7 @@
 @inject NavigationManager Navigation
 
 <h1 class="text-center">Select a conference</h1>
-
+<!-- rendering the conferences from the conference list-->
 <div class="row">
     @if (Conferences != null)
     {
@@ -21,18 +21,23 @@
 </div>
 
 @code {
+    // The target page to navigate to after selecting a conference
     [Parameter] 
     public string? Target { get; set; }
+    // The list of conferences to render
     [Parameter]
     public IEnumerable<Conference>? Conferences { get; set; }
+    // The id of the selected conference
     [Parameter]
     public int? conferenceId { get; set; }
 
+    //getting the active conferences when the component is initialized
     protected override async Task OnInitializedAsync()
     {
         Conferences = await conferenceService.GetActiveConferencesAsync();
     }
 
+    // Method for selecting a conference and navigating to the target page
     private async Task SelectConference(Conference conference)
     {
         await conferenceService.SetCurrentConferenceAsync(conference.Id);

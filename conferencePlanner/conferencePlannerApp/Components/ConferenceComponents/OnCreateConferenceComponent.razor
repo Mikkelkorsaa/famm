@@ -16,25 +16,35 @@
 }
 
 @code {
+	// The list of conferences to render
 	private List<Conference> conferences = new List<Conference>();
+	//EventCallback for canceling the create conference
 	[Parameter]
 	public EventCallback OnCancel { get; set; }
+	//Boolean for showing the selection modal
 	private bool onShowSelection;
 
+	// method for invoking the cancel event
 	private async Task CancelCreateConference()
 	{
 		await OnCancel.InvokeAsync();
 	}
+
+	//Method for saving the selected conference as a template and navigating to the create conference page
 	private async Task CreateFromTemplate(Conference conference)
 	{
 		await localStorage.SetItemAsync<Conference?>("TemplateConference", conference);
 		navigationManager.NavigateTo("/create-conference");
 	}
+
+	//Method that set the template to be a new conference and navigates to the create conference page
 	private async Task OnNewButton(MouseEventArgs e)
 	{
 		await localStorage.SetItemAsync<Conference?>("TemplateConference", new Conference());
 		navigationManager.NavigateTo("/create-conference");
 	}
+
+	//Method for getting the conference list, saving it to local storage and showing the selection modal
 	private async Task OnTemplateButton(MouseEventArgs e)
 	{
 		var conferenceList = await conferenceService.GetConferencesAsync();

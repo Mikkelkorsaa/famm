@@ -18,6 +18,10 @@ namespace conferencePlannerApi.Controllers
             _emailService = emailService;
         }
 
+        /// <summary>
+        /// Retrieves all users from the system
+        /// </summary>
+        /// <returns>200 OK with a collection of all users</returns>
         [HttpGet]
         [Route("GetAllUsers")]
         public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
@@ -26,6 +30,15 @@ namespace conferencePlannerApi.Controllers
             return Ok(users);
         }
 
+        /// <summary>
+        /// Retrieves a specific user by their ID
+        /// </summary>
+        /// <param name="id">The unique identifier of the user to retrieve</param>
+        /// <returns>
+        /// 200 OK with the user if found
+        /// 404 Not Found if the user doesn't exist
+        /// 500 Internal Server Error if an error occurs during retrieval
+        /// </returns>
         [HttpGet]
         [Route("GetUserById/{id}")]
         public async Task<ActionResult<User>> GetUserById(int id)
@@ -41,6 +54,14 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Creates a new user in the system
+        /// </summary>
+        /// <param name="user">The user object to create</param>
+        /// <returns>
+        /// 200 OK with the created user
+        /// 500 Internal Server Error if an error occurs during creation
+        /// </returns>
         [HttpPost]
         [Route("CreateUser")]
         public async Task<ActionResult<User>> CreateUser(User user)
@@ -56,6 +77,16 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates an existing user's information
+        /// </summary>
+        /// <param name="user">The user object with updated values</param>
+        /// <returns>
+        /// 200 OK with the updated user
+        /// 400 Bad Request if the model state is invalid
+        /// 404 Not Found if the user doesn't exist
+        /// 500 Internal Server Error if an error occurs during update
+        /// </returns>
         [HttpPut]
         [Route("UpdateUser")]
         public async Task<ActionResult<User>> UpdateUser(User user)
@@ -78,6 +109,16 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Deletes a user from the system
+        /// </summary>
+        /// <param name="id">The unique identifier of the user to delete</param>
+        /// <returns>
+        /// 204 No Content if deletion is successful
+        /// 404 Not Found if the user doesn't exist
+        /// 500 Internal Server Error if an error occurs during deletion
+        /// </returns>
         [HttpDelete]
         [Route("DeleteUser/{id}")]
         public async Task<ActionResult> DeleteUser(int id)
@@ -93,6 +134,17 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Authenticates a user and logs them into the system
+        /// </summary>
+        /// <param name="model">The login credentials</param>
+        /// <returns>
+        /// 200 OK with the user if authentication is successful
+        /// 400 Bad Request if the model state is invalid
+        /// 401 Unauthorized if credentials are invalid
+        /// 403 Forbidden if account is inactive
+        /// 500 Internal Server Error if an error occurs during login
+        /// </returns>
         [HttpPost]
         [Route("Login")]
         public async Task<ActionResult<User>> Login(LoginModel model)
@@ -123,6 +175,15 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Registers a new user in the system
+        /// </summary>
+        /// <param name="request">The registration information</param>
+        /// <returns>
+        /// 200 OK with the created user
+        /// 400 Bad Request if the model state is invalid or user creation fails
+        /// 500 Internal Server Error if an error occurs during registration
+        /// </returns>
         [HttpPost]
         [Route("Register")]
         public async Task<IActionResult> Register(RegisterModel request)
@@ -163,6 +224,15 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves a user by their email address
+        /// </summary>
+        /// <param name="email">The email address of the user to retrieve</param>
+        /// <returns>
+        /// 200 OK with the user if found
+        /// 404 Not Found if the user doesn't exist
+        /// 500 Internal Server Error if an error occurs during retrieval
+        /// </returns>
         [HttpGet]
         [Route("GetUserByEmail/{email}")]
         public async Task<ActionResult<User>> GetUserByEmail(string email)
@@ -178,6 +248,13 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Sends a test email using the email service
+        /// </summary>
+        /// <returns>
+        /// 200 OK if email is sent successfully
+        /// 500 Internal Server Error if an error occurs while sending the email
+        /// </returns>
         [HttpPost]
         [Route("SendEmail")]
         public async Task<IActionResult> SendEmail()
@@ -197,6 +274,14 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves filtered users using OR logic between filter criteria
+        /// </summary>
+        /// <param name="filter">The filter criteria to apply</param>
+        /// <returns>
+        /// 200 OK with the filtered list of users
+        /// Empty list if no matches found
+        /// </returns>
         [HttpPost]
         [Route("filter/or")]
         public async Task<ActionResult<IEnumerable<User>>> GetOrFilterUsers(UserFilter filter) {
@@ -208,6 +293,13 @@ namespace conferencePlannerApi.Controllers
             return user.Password == password;
         }
 
+        /// <summary>
+        /// Gets the total number of users matching the OR filter criteria
+        /// </summary>
+        /// <param name="filter">The filter criteria to apply</param>
+        /// <returns>
+        /// 200 OK with the count of matching users
+        /// </returns>
         [HttpPost]
         [Route("filter/or/hits")]
         public async Task<ActionResult<int>> GetHitsOrFilter(UserFilter filter){

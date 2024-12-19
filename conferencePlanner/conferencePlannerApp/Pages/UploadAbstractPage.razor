@@ -6,16 +6,17 @@
 @inject NavigationManager NavigationManager
 
 
-<PageTitle>Upload Abstract VIRK DIT LORTE PROGRAM</PageTitle>
+
 <div class="container">
 	<RadzenCard class="m-4">
+		@*  Display success/error messages to the user *@
 		@if (!string.IsNullOrEmpty(message))
 		{
 			<div class="alert @messageClass mb-4" role="alert">
 				@message
 			</div>
 		}
-
+		@* Main form using Radzen's template form component *@
 		<RadzenTemplateForm TItem="Abstract" Data="@_abstract" Submit="@HandleSubmit" InvalidSubmit="@HandleInvalidSubmit">
 			<div class="row">
 				<div class="col-md-6 mb-3">
@@ -53,8 +54,9 @@
 				<RadzenRequiredValidator Component="Title" Text="Titel er påkrævet" />
 			</div>
 
+			@* Keywords section with character counter *@
 			<div class="mb-3">
-				<RadzenLabel Text="Nøgleord" Component="KeyValues" />
+				<RadzenLabel Text="Nøglebuskab" Component="KeyValues" />
 				<div class="position-relative">
 					<RadzenTextArea @bind-Value="@_abstract.KeyValues" Class="w-100"
 									Rows="3" Name="KeyValues"
@@ -111,6 +113,7 @@
 								  Disabled="@(!CanAddCoAuthor)" />
 				</div>
 
+				@* Displaying the list of added co-authors *@
 				@if (_abstract.CoAuthors.Any())
 				{
 					<div class="mt-2">
@@ -130,6 +133,7 @@
 				}
 			</div>
 
+			@* Image upload section with preview *@
 			<div class="mb-3">
 				<RadzenLabel Text="Billede" />
 				<InputFile OnChange="@OnFileSelected" class="w-100" accept="image/*" />
@@ -151,6 +155,7 @@
 
 </div>
 @code {
+	// Constants for form validation
 	private const int MinKeyValuesLength = 10;
 	private const int MaxKeyValuesLength = 400;
 	private const int MinAbstractLength = 100;
@@ -158,9 +163,10 @@
 	private const int MaxCoAuthors = 10;
 	private const int DefaultConferenceId = 1;
 
+
+	// various variables for form state and validation
 	private int _conferenceId;
 	private Abstract _abstract = new();
-
 	private bool isSubmitting;
 	private string? message;
 	private string messageClass = string.Empty;
@@ -171,6 +177,7 @@
 
 	private List<string>? Categories;
 
+	// Computed properties for adding co-authors and form validation
 	private bool CanAddCoAuthor =>
 		!string.IsNullOrWhiteSpace(currentCoAuthor) &&
 		_abstract.CoAuthors.Count < MaxCoAuthors &&
@@ -185,6 +192,7 @@
 		keyValuesLength >= MinKeyValuesLength &&
 		abstractTextLength >= MinAbstractLength;
 
+	// Handle image file selection and upload
 	private async Task OnFileSelected(InputFileChangeEventArgs e)
 	{
 		try
@@ -192,11 +200,14 @@
 			var file = e.File;
 			if (file == null) return;
 
+			// Create image preview by opening a memory stream and copying the file content to it
+			//Then convert the bytes to a base64 string for the image source
 			using var memoryStream = new MemoryStream();
 			await file.OpenReadStream().CopyToAsync(memoryStream);
 			var bytes = memoryStream.ToArray();
 			imagePreview = $"data:image/png;base64,{Convert.ToBase64String(bytes)}";
 
+			// Upload image using the ImageService
 			var result = await ImageService.UploadImageAsync(file);
 			_abstract.Picture = result.FileName;
 			ShowMessage("Billede blev uploadet", true);
@@ -209,17 +220,22 @@
 
 	protected async override Task OnInitializedAsync()
 	{
+		// Get the current conference ID and categories 
+		// Redirect to the conference picker page if no conference is selected
 		var currentPage = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
 		_conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
 		if (_conferenceId == 0) NavigationManager.NavigateTo($"/pick-conference/{currentPage}");
 		Categories = await ConferenceService.GetCategoriesByIdAsync(_conferenceId);
 
+		// Redirect to login page if the user is not logged in or is not an applicant
 		var CurrentUser = await AuthService.GetCurrentUser();
 		if (CurrentUser is null) NavigationManager.NavigateTo("/login");
 		else if (CurrentUser.Role.ToString() != "Applicant" && CurrentUser.Role.ToString() != "Admin")
 			NavigationManager.NavigateTo("/dashboard");
 	}
 
+
+	// Handle form submission and display success/error messages
 	private async Task HandleSubmit()
 	{
 		if (!IsFormValid)
@@ -258,11 +274,13 @@
 		}
 	}
 
+	//error message for invalid form submission
 	private void HandleInvalidSubmit()
 	{
 		ShowMessage("Venligst udfyld alle påkrævede felter", false);
 	}
 
+	// method to display success/error messages
 	private void ShowMessage(string text, bool isSuccess)
 	{
 		message = text;
@@ -270,6 +288,7 @@
 		StateHasChanged();
 	}
 
+	//Method for displaying the number of characters in the keyvalues
 	private void OnKeyValuesInput(ChangeEventArgs args)
 	{
 		var value = args.Value?.ToString() ?? string.Empty;
@@ -282,6 +301,8 @@
 	{
 		_abstract.KeyValues = value;
 	}
+
+	//Method for displaying the number of characters in the abstract text
 
 	private void OnAbstractTextInput(ChangeEventArgs args)
 	{
@@ -296,6 +317,7 @@
 		_abstract.AbstractText = value;
 	}
 
+	//Method for adding a co-author to the list
 	private void AddCoAuthor()
 	{
 		if (CanAddCoAuthor)
@@ -306,12 +328,14 @@
 		}
 	}
 
+	//Method for removing a co-author from the list
 	private void RemoveCoAuthor(string author)
 	{
 		_abstract.CoAuthors.Remove(author);
 		StateHasChanged();
 	}
 
+		//Method for handling the enter key press when adding a co-author
 	private void HandleKeyDown(KeyboardEventArgs args)
 	{
 		if (args.Key == "Enter")
@@ -320,6 +344,7 @@
 		}
 	}
 
+	//Method for resetting the form
 	private void ResetForm()
 	{
 		_abstract = new()

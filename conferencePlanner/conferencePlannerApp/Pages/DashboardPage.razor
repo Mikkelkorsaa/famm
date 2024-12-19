@@ -3,6 +3,7 @@
 @inject NavigationManager navigationmanager
 @inject Blazored.LocalStorage.ILocalStorageService localStorage;
 
+@* Checks if the user is stores in local storage before trying to load content based on which role is assigned to them *@
 @if (_user is not null)
 {
 	<div class="container dashboardContainer">
@@ -28,6 +29,7 @@
 	private User? _user;
 	protected override async Task OnInitializedAsync()
 	{
+		//Checking if the user is logged in. If not, the user will be redirected to the login page.
 		_user = await AuthService.GetCurrentUser();
 		if (_user is null)
 			navigationmanager.NavigateTo("/login");

@@ -87,6 +87,7 @@
     private string? logohref = "/";
     private User? _user;
 
+    // Method for handling the collapse of the navbar
     protected override async Task OnInitializedAsync()
     {
         _user = await AuthService.GetCurrentUser();
@@ -96,11 +97,14 @@
         }
     }
 
+    // Method for toggling the navbar
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
 
+    // Method for signing out the user and redirecting to the login page
+    //force reloading to make sure that the navbar is updated
     public async Task OnSignOut()
     {
         await AuthService.ClearCurrentUser();

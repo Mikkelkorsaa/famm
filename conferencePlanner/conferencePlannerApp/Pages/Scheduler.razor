@@ -5,12 +5,17 @@
 @inject NavigationManager navigationmanager;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
+@* Checking if the user is logged in and has the correct role. If not, the user will be redirected to the login page or dashboard. *@
 @if (_conferenceId != null && _sortedEvents != null && _rooms != null && _conference != null)
 {
 	<div class="container">
+		@* button that calls the event form modal *@
 		<button class="btn btn-primary" @onclick="()=> _showEventFormModal = true">Tilføj session</button>
 		<button class="btn btn-primary" @onclick="OnSave">Gem Konferenceplan</button>
+		@* Scheduler component that displays the conference plan *@
 		<SchedulerComponent Rooms="@_rooms" Events="@_sortedEvents" />
+
+		@* Custom modal component that displays the event form component *@
 		@if (_showEventFormModal)
 		{
 			<ModalComponent OnClose="()=> _showEventFormModal = false">
@@ -22,6 +27,7 @@
 }
 else
 {
+	@* if the conference is not found, the user will be shown the simple conference component *@
 	<SimpleConferenceComponent />
 }
 @code {
@@ -31,13 +37,14 @@ else
 	private List<SchedulerEvent>? events;
 	private Venue? _venue;
 	private ConferencePlan? _conferencePlan;
-
+	//sorted events for displaying in the scheduler
 	private List<SchedulerEvent>? _sortedEvents;
 
 	private int? _conferenceId;
 
 	protected override async Task OnInitializedAsync()
 	{
+		//Checking if the user is logged in and has the correct role. If not, the user will be redirected to the login page or dashboard.
 		var CurrentUser = await AuthService.GetCurrentUser();
 		if (CurrentUser is null)
 			navigationmanager.NavigateTo("/login");
@@ -45,7 +52,7 @@ else
 		{
 			navigationmanager.NavigateTo("/dashboard");
 		}
-
+		//Getting the current conference id and the conference plan from the database and setting the variables. 
 		_conferenceId = await conferenceService.GetCurrentConferenceIdAsync();
 		if (_conferenceId is not null)
 		{
@@ -64,21 +71,25 @@ else
 
 	}
 
-
+	// Sorting the events by start time
 	public List<SchedulerEvent> sortEvents(List<SchedulerEvent> events)
 	{
 		return events.OrderBy(e => e.Start).ToList();
 	}
 
+	// Saving the conference plan by updating the conference object in the database using our conference service
 	private async Task OnSave()
 	{
 		_conference!.Plan.Events = _sortedEvents!;
 		var result = await conferenceService.UpdateAsync(_conference);
 	}
+
+	// Adding an event to the conference plan
 	private void AddEvent(SchedulerEvent se)
 	{
 		if (events is not null)
 		{
+			//Setting the id of the event to the next available id
 			se.Id = events.Count > 0 ? events.Max(e => e.Id) + 1 : 1;
 			events.Add(se);
 			_sortedEvents = sortEvents(events);

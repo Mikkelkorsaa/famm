@@ -1,12 +1,15 @@
 ﻿
 @using System.Globalization
 <div class="day-room-scheduler">
+
     <div class="scheduler-header">
         <button @onclick="PreviousDay">&lt;</button>
         <h2>@CurrentDate.ToString("dddd - dd/MM/yyyy")</h2>
         <button @onclick="NextDay">&gt;</button>
     </div>
+
     <div class="scheduler-body">
+
         <div class="time-column">
             <div class="time-slot">Rum</div>
             @for (int hour = 8; hour <= 23; hour++)
@@ -14,6 +17,7 @@
                 <div class="time-slot">@(hour.ToString("D2")):00</div>
             }
         </div>
+
         @foreach (var room in Rooms)
         {
             <div class="room-column">
@@ -51,7 +55,7 @@
 
     private DateTime CurrentDate { get; set; } = DateTime.Today;
 
-    private const int START_HOUR = 8;
+    private const int START_HOUR = 8; // Start time of the scheduler
     private const int SLOT_HEIGHT = 30; // Height of each time slot in pixels
     private const int TOTAL_HOURS = 16; // From 8:00 to 23:00
     private const int TOTAL_HEIGHT = TOTAL_HOURS * 2 * SLOT_HEIGHT; // Total height in pixels
@@ -59,6 +63,11 @@
     private void PreviousDay() => CurrentDate = CurrentDate.AddDays(-1);
     private void NextDay() => CurrentDate = CurrentDate.AddDays(1);
 
+    // Calculate the top and height of the event based on its start and end time in hours
+    // Returns a tuple with the top and height in pixels 
+    // The top is the offset from the top of the scheduler in pixels
+    // The height is the duration of the event in pixels
+    // The height is calculated based on the difference between the start and end time
     private (double Top, double Height) CalculateEventPosition(SchedulerEvent evt)
     {
         // Each hour slot is 30px high
@@ -72,16 +81,10 @@
         double duration = (evt.End - evt.Start).TotalHours;
         double height = duration * PIXELS_PER_HOUR;
 
-        // Debug output
-        Console.WriteLine($"Event: {evt.Title}");
-        Console.WriteLine($"Start: {evt.Start:HH:mm}, End: {evt.End:HH:mm}");
-        Console.WriteLine($"Start Offset: {startOffset} hours");
-        Console.WriteLine($"Duration: {duration} hours");
-        Console.WriteLine($"Top: {top}px, Height: {height}px");
-
         return (top, height);
     }
 
+    // Check if the event is valid in the scheduler based on its start and end time
     private bool IsEventVisible(SchedulerEvent evt)
     {
         var startTime = evt.Start.TimeOfDay;

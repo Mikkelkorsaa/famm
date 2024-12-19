@@ -4,40 +4,44 @@ namespace conferencePlannerApp.Services.Interfaces
 {
     public interface IUserService
     {
-        // Output: List of all users
+        /// <summary>
+        /// Retrieves a list of all users
+        /// </summary>
+        /// <returns>A list of User objects</returns>
         Task<List<User>> GetAllUsersAsync();
 
-        // Input: User object
-        // Manipulation: Saves to database
-        // Output: User object with generated ID
+        /// <summary>
+        /// Updates an existing user in the database
+        /// </summary>
+        /// <param name="user">The User object to be updated</param>
         Task UpdateUserAsync(User user);
-        /// <summary>
-        /// Get the current userId in local storage
-        /// </summary>
 
-        /// <returns>UserId</returns>
+        /// <summary>
+        /// Retrieves the current user ID from local storage
+        /// </summary>
+        /// <returns>The current user ID</returns>
         Task<int?> GetCurrentUserIdAsync();
+
         /// <summary>
-        /// Input: A filter containing, a search query string, int length of the list called shown and a int how many should be skipped, 
-        /// so you chose the maximum amount shown.
+        /// Retrieves a list of users based on a search query and filter criteria
         /// </summary>
-        /// <param name="filter"></param>
-        /// <returns>A list of Users, length can be set by the filter</returns>
+        /// <param name="filter">The filter containing search query, length of the list, and number of items to skip</param>
+        /// <returns>A list of User objects matching the filter criteria</returns>
         Task<List<User>> GetUsersBySearchOrFilter(UserFilter filter);
+
         /// <summary>
-        /// A filter containing, a search query string, int length of the list called shown and a int how many should be skipped, 
-        /// so you chose the maximum amount shown.
+        /// Retrieves the number of hits for a search query and filter criteria
         /// </summary>
-        /// <param name="filter"></param>
-        /// <returns>how many hits does this search have</returns>
+        /// <param name="filter">The filter containing search query, length of the list, and number of items to skip</param>
+        /// <returns>The number of hits for the search query</returns>
         Task<int> GetUsersBySearchOrFilterHits(UserFilter filter);
+
         /// <summary>
-        /// This function takes as a user as Input and attempts to send it to an API 
+        /// Creates a new user and attempts to send it to an API
         /// </summary>
-        /// <param name="user">A new user</param>
-        /// <returns>The user, if successfully added to a database the user.id != -1</returns>
+        /// <param name="user">The new User object</param>
+        /// <returns>The created User object, with a valid ID if successfully added to the database</returns>
         Task<User> CreateUserAsync(User user);
-
-
     }
 }
+

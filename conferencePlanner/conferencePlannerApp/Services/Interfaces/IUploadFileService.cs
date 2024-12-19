@@ -5,14 +5,18 @@ namespace conferencePlannerApp.Services.Interfaces;
 
 public interface IUploadFileService
 {
-    //input: IBrowserfile that is either a png, jpg, or jpeg
-    //Manipulation: Converts IBrowserFile to a base64string
-    //output: base64string
+    /// <summary>
+    /// Converts an image file to a base64 string
+    /// </summary>
+    /// <param name="file">The image file to be converted (png, jpg, or jpeg)</param>
+    /// <returns>The base64 string representation of the image file</returns>
     Task<string> ConvertToBase64String(IBrowserFile file);
 
-	//input: IBrowserfile that is either a png, jpg, or jpeg
-	//Manipulation: Converts IBrowserFile to a byte array
-	//output: byte array
-	Task<byte[]> ConvertToByteArray(IBrowserFile file);
-
+    /// <summary>
+    /// Converts an image file to a byte array
+    /// </summary>
+    /// <param name="file">The image file to be converted (png, jpg, or jpeg)</param>
+    /// <returns>The byte array representation of the image file</returns>
+    Task<byte[]> ConvertToByteArray(IBrowserFile file);
 }
+

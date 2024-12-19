@@ -2,6 +2,7 @@
 @inject IConferenceService ConferenceService
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject NavigationManager navigationManager
+@inject IAuthService AuthService
 
 <PageTitle>Edit Conference</PageTitle>
 
@@ -309,6 +310,7 @@
     [Parameter]
     public Conference Conference { get; set; } = new();
 
+    // Event callback to send the edited conference back to the parent component
     [Parameter]
     public EventCallback<Conference> OnConferenceUpdated { get; set; }
 
@@ -322,11 +324,21 @@
     private Reviewer? editingReviewer;
     private Dictionary<string, bool> reviewerCategories = new();
 
+    // Check if the user is logged in and has the correct role
     protected override async Task OnInitializedAsync()
     {
+        var CurrentUser = await AuthService.GetCurrentUser();
+        if (CurrentUser is null)
+            navigationManager.NavigateTo("/login");
+        else if (CurrentUser.Role.ToString() != "Organizer" && CurrentUser.Role.ToString() != "Admin")
+            navigationManager.NavigateTo("/dashboard");
+    
+            // Load the conference from local storage
         Conference = await localStorage.GetItemAsync<Conference>("TemplateConference");
     }
 
+
+    // method for starting the editing the field of the conference fields
     private void StartEdit(string field, object? value)
     {
         editingField = field;
@@ -346,12 +358,14 @@
         }
     }
 
+    // method for saving the edited conference
     private async Task OnSave()
 	{
 		await ConferenceService.UpdateAsync(Conference);
         navigationManager.NavigateTo("/conference");
 	}
 
+    // method for starting the editing of a reviewer
     private void StartEditReviewer(Reviewer reviewer)
     {
         editingReviewer = reviewer;
@@ -361,6 +375,7 @@
         );
     }
 
+    // method for saving the edited conference
     private async Task SaveEdit(string field)
     {
         switch (field)
@@ -387,6 +402,7 @@
         CancelEdit();
     }
 
+    // method for cancelling the editing of a field of the conference
     private void CancelEdit()
     {
         editingField = null;
@@ -396,6 +412,7 @@
         StateHasChanged();
     }
 
+    // method for cancelling the editing of a reviewer
     private void CancelEditReviewer()
     {
         editingReviewer = null;
@@ -403,8 +420,10 @@
         StateHasChanged();
     }
 
+    // method for adding a category to the conference
     private async Task AddCategory()
     {
+        // Check if the category is not empty and not already in the list
         if (!string.IsNullOrWhiteSpace(newCategory) && !Conference.Category.Contains(newCategory))
         {
             Conference.Category.Add(newCategory);
@@ -414,6 +433,7 @@
         }
     }
 
+    // method for removing a category from the conference
     private async Task RemoveCategory(string category)
     {
         Conference.removeCategory(category);
@@ -421,8 +441,10 @@
         StateHasChanged();
     }
 
+    // method for adding a criteria to the conference 
     private async Task AddCriteria()
     {
+        // Check if the criteria is not empty and not already in the list
         if (!string.IsNullOrWhiteSpace(newCriteria) && !Conference.ReviewCriteria.Contains(newCriteria))
         {
             Conference.ReviewCriteria.Add(newCriteria);
@@ -432,6 +454,7 @@
         }
     }
 
+    // method for removing a criteria from the conference
     private async Task RemoveCriteria(string criteria)
     {
         Conference.ReviewCriteria.Remove(criteria);
@@ -439,6 +462,7 @@
         StateHasChanged();
     }
 
+    // method for saving the categories of a reviewer
     private async Task SaveReviewerCategories()
     {
         if (editingReviewer != null)

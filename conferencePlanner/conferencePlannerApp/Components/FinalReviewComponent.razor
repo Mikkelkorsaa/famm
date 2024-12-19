@@ -1,9 +1,11 @@
 ﻿@page "/average-review"
 @inject IAbstractService AbstractService
 
+<!-- Wrapper for the abstract review section-->
 <div class="abstract-review-wrapper">
     <div class="abstract-review">
 
+        <!-- Check if there are any reviews for the selcted abstract -->
         @if (SelectedAbstract!.Reviews != null && SelectedAbstract.Reviews.Any())
         {
             var review = SelectedAbstract.Reviews.First();
@@ -52,6 +54,7 @@
     [Parameter]
     public Abstract? SelectedAbstract { get; set; }
 
+    // Get the average grade for each criteria
     private List<AverageCriteria> GetAverageCriteriaGrades()
     {
         var averageCriteriaGrades = new List<AverageCriteria>();
@@ -75,12 +78,13 @@
 
         return averageCriteriaGrades;
     }
-
+    // Get the number of recommendations
     private int GetRecommendationCount()
     {
         return SelectedAbstract!.Reviews.Count(r => r.Recommend);
     }
 
+    // Class for the average criteria
     private class AverageCriteria
     {
         public string? Name { get; set; }

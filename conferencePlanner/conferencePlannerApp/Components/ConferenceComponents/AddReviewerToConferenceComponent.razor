@@ -1,8 +1,9 @@
 ﻿@inject IUserService userService;
 @using Microsoft.AspNetCore.Components.Forms
-
+<!-- Form for adding a reviewer to a conference -->
 <div>
     <EditForm Model="@reviewer" OnValidSubmit="@HandleValidSubmit">
+        <!-- Search input for finding a reviewer -->
         <div class="row mb-3">
             <div class="col-md-6">
                 <div class="input-group">
@@ -12,12 +13,14 @@
             </div>
         </div>
 
+        <!-- Button to open the invite user modal -->
         <div class="row mb-3">
             <div class="col-12">
                 <button type="button" class="btn btn-primary w-100" @onclick="()=> showInviteUserModal = true">Send invitation</button>
             </div>
         </div>
 
+        <!-- Display selected user details -->
         @if (user != null)
         {
             <div class="row mb-3">
@@ -35,6 +38,7 @@
             </div>
         }
 
+        <!-- Checkbox list for selecting categories -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="row row-cols-2 g-3">
@@ -58,6 +62,7 @@
             </div>
         </div>
 
+        <!-- Buttons for submitting or canceling the form -->
         <div class="row">
             <div class="col-6">
                 <button type="submit" class="btn btn-success w-100">Gem bedømmer</button>
@@ -69,6 +74,7 @@
     </EditForm>
 </div>
 
+<!-- Modal for inviting a new user -->
 @if (showInviteUserModal)
 {
     <ModalComponent OnClose="() => showInviteUserModal = false">
@@ -77,6 +83,7 @@
     </ModalComponent>
 }
 
+<!-- Modal for searching and selecting a user -->
 @if (showFindUserModal)
 {
     <ModalComponent OnClose="() => showInviteUserModal = false">
@@ -90,11 +97,13 @@
 
 @code {
     [Parameter]
-    public Reviewer InitialReviewer { get; set; } = new();
+    public Reviewer InitialReviewer { get; set; } = new(); // initial revierwer
 
+    //list of categories
     [Parameter]
-    public List<string> Categories { get; set; } = new();
+    public List<string> Categories { get; set; } = new(); 
 
+    // EventCallback for saving the reviewer and sending the 
     [Parameter]
     public EventCallback<Reviewer> OnSave { get; set; }
 
@@ -134,13 +143,17 @@
         selectedCategories = new List<string>(reviewer.Categories ?? new List<string>());
     }
 
+    // Method for handling the search for a user
     private async void HandleSearch()
     {
+        // Get how many hits there are for the search
         searchResults = await userService.GetUsersBySearchOrFilterHits(searchFilter);
+        // gets a collection of the users that match the search
         searchResult = await userService.GetUsersBySearchOrFilter(searchFilter);
         showFindUserModal = true;
     }
 
+    // Method for handling the category toggle
     private void HandleCategoryToggle(string category, object? checkedValue)
     {
         if (checkedValue is bool isChecked)
@@ -156,6 +169,7 @@
         }
     }
 
+    // Method for handling the invite user
     public void HandleInviteUser(User invitedUser)
     {
         user = invitedUser;
@@ -163,6 +177,7 @@
         showInviteUserModal = false;
     }
 
+    // Method for handling the submit of the form
     public async Task HandleValidSubmit()
     {
         if (user == null || user.Id == -1)

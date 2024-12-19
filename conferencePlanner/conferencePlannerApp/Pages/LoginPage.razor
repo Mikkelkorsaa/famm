@@ -17,6 +17,7 @@
 					</div>
 				</div>
 
+				@* Showing login or register form depnding of which button has been pressed *@
 				@if (isLogin)
 				{
 					<EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
@@ -94,10 +95,12 @@
 	private RegisterModel registerModel = new();
 	private string errorMessage = string.Empty;
 
+	// Method for handling login
 	private async Task HandleLogin()
 	{
 		try
 		{
+			// Login the user and set the current user and user id in the local storage
 			var user = await LoginService.LoginAsync(loginModel);
 			await AuthService.SetCurrentUser(user);
 			await AuthService.SetCurrentUserId(user);
@@ -109,6 +112,7 @@
 		}
 	}
 
+	// Method for handling register
 	private async Task HandleRegister()
 	{
 		try

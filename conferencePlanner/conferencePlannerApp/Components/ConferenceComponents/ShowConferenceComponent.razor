@@ -175,12 +175,13 @@
 </RadzenCard>
 
 @code {
+    // The conference to edit given by the parent component
     [Parameter]
     public Conference Conference { get; set; } = new();
-
+    // EventCallback for saving the conference and sending it back to the parent component
     [Parameter]
     public EventCallback<Conference> OnConferenceUpdated { get; set; }
-
+    //the fied values for when editing has been started
     private string? editingField;
     private string editValue = string.Empty;
     private DateTime editDateValue;
@@ -188,6 +189,7 @@
     private DateTime editEndDate;
     private string newCategory = string.Empty;
 
+    // Method for starting the edit of a field and setting the initial value
     private void StartEdit(string field, object? value)
     {
         editingField = field;
@@ -207,6 +209,7 @@
         }
     }
 
+    // Method for saving the edit of a field and sending the updated conference back to the parent component
     private async Task SaveEdit(string field)
     {
         switch (field)
@@ -230,6 +233,7 @@
         CancelEdit();
     }
 
+    // Method for canceling the edit of a field
     private void CancelEdit()
     {
         editingField = null;
@@ -238,8 +242,10 @@
         StateHasChanged();
     }
 
+    // Method for adding a new category to the conference
     private async Task AddCategory()
     {
+        // Check if the new category is not empty and not already in the list
         if (!string.IsNullOrWhiteSpace(newCategory) && !Conference.Category.Contains(newCategory))
         {
             Conference.Category.Add(newCategory);
@@ -247,7 +253,7 @@
             await OnConferenceUpdated.InvokeAsync(Conference);
         }
     }
-
+    // Method for removing a category from the conference
     private async Task RemoveCategory(string category)
     {
         Conference.removeCategory(category);

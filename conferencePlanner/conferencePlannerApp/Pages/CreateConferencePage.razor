@@ -1,7 +1,18 @@
-﻿@page "/create-conference"
+﻿@inject IAuthService AuthService
+@inject NavigationManager navigationmanager
+
+@page "/create-conference"
 
 <CreateConferenceComponent></CreateConferenceComponent>
 
 @code {
 
+	protected override async Task OnInitializedAsync()
+	{
+		var CurrentUser = await AuthService.GetCurrentUser();
+		if (CurrentUser is null)
+			navigationmanager.NavigateTo("/login");
+		else if (CurrentUser.Role.ToString() != "Organizer" && CurrentUser.Role.ToString() != "Admin")
+			navigationmanager.NavigateTo("/dashboard");
+	}
 }
