@@ -80,6 +80,7 @@ namespace conferencePlannerApp.Services.Implementations
 		public async Task<Conference> GetByIdAsync(int id)
 		{
 			var response = await _httpClient.GetAsync($"/api/Conference/GetConferenceById/{id}");
+			response.EnsureSuccessStatusCode();
 			var result = await response.Content.ReadFromJsonAsync<Conference>();
 			if (result == null) throw new Exception("No conference found");
 			else return result;

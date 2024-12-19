@@ -79,7 +79,7 @@
     private bool isSidebarCollapsed;
     private int windowWidth;
     private User? _user;
-    private int? _conferenceId;
+    private int _conferenceId;
     private Conference? _conference;
 
     private string sidebarColumnClass => isSidebarCollapsed
@@ -96,18 +96,13 @@
         var currentPage = Navigation.ToBaseRelativePath(Navigation.Uri);
         if (_conferenceId == 0) Navigation.NavigateTo($"/pick-conference/{currentPage}");
         
-        _abstractList = await AbstractService.GetAbstracts();
+        _conference = await ConferenceService.GetByIdAsync(_conferenceId);
+        _abstractList = await AbstractService.GetAllAbstractsByConferenceIdAsync(_conferenceId);
         _user = await authService.GetCurrentUser();
      
     }
 
-    protected override async Task OnParametersSetAsync()
-    {
-        if (_conferenceId.HasValue)
-        {
-            _conference = await ConferenceService.GetByIdAsync(_conferenceId.Value);
-        }
-    }
+  
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
