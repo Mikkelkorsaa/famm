@@ -111,7 +111,7 @@
 		//Checking if the user is logged in and has the correct role. If not, the user will be redirected to the login page or dashboard.
 		var CurrentUser = await authService.GetCurrentUser();
 		if (CurrentUser is null) Navigation.NavigateTo("/login");
-		else if (CurrentUser.Role.ToString() != "Applicant" && CurrentUser.Role.ToString() != "Admin")
+		else if (CurrentUser.Role.ToString() != "Reviewer" && CurrentUser.Role.ToString() != "Admin"&& CurrentUser.Role.ToString() != "Organizer")
 			Navigation.NavigateTo("/dashboard");
 
 		//Getting the current conference and the abstracts for the conference
