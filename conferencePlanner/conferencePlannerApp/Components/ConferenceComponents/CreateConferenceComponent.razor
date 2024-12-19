@@ -1,6 +1,7 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @inject IConferenceService conferenceService
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navigationManager
 
 <PageTitle>Conference Form</PageTitle>
 <div class="container">
@@ -185,15 +186,15 @@
 
     protected async override Task OnInitializedAsync()
     {
-       Conference template = await localStorage.GetItemAsync<Conference>("TemplateConference");
-       if (template != null)
-	   {
-		   conference.Category = template.Category;
-           conference.ReviewCriteria = template.ReviewCriteria;
-           conference.Location = template.Location;
-           conference.Reviewers = template.Reviewers;
-		   await localStorage.RemoveItemAsync("TemplateConference");
-	   }
+        Conference template = await localStorage.GetItemAsync<Conference>("TemplateConference");
+        if (template != null)
+        {
+            conference.Category = template.Category;
+            conference.ReviewCriteria = template.ReviewCriteria;
+            conference.Location = template.Location;
+            conference.Reviewers = template.Reviewers;
+            await localStorage.RemoveItemAsync("TemplateConference");
+        }
     }
 
     private void ShowMessage(string text, bool isSuccess)
@@ -266,6 +267,7 @@
             await conferenceService.CreateConferenceAsync(conference);
             ShowMessage("Konference blev gemt successfully", true);
             await OnSave.InvokeAsync(conference);
+            navigationManager.NavigateTo("/conference");
         }
         catch (Exception ex)
         {

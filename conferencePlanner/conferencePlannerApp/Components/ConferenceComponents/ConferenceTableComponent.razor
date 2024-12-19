@@ -39,23 +39,22 @@
 @if (showConference)
 {
     <ModalComponent OnClose="() => showConference = false">
-        <ShowConferenceComponent conference="@selectedConference" />
+        <ShowConferenceComponent Conference="@selectedConference" />
     </ModalComponent>    
 }
 
 @code {
     [Parameter]
-    public IEnumerable<Conference>? conferences { get; set; }
+    public List<Conference>? conferences { get; set; }
     public bool showConference = false;
     public Conference? selectedConference;
     [Parameter]
     public EventCallback<Conference> OnConferenceSelected { get; set; }
 
     protected override async Task OnInitializedAsync()
-	{
-		var conferencesList = await localStorage.GetItemAsync<List<Conference>>("ConferenceList");
-		if (conferencesList is not null)
-			conferences = conferencesList;
+    {
+        conferences = await localStorage.GetItemAsync<List<Conference>>("ConferenceList") ?? new();
+
 		
 	}
 

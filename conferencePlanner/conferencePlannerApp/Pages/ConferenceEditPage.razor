@@ -1,5 +1,7 @@
 ﻿@page "/conference-edit"
 @inject IConferenceService ConferenceService
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navigationManager
 
 <PageTitle>Edit Conference</PageTitle>
 
@@ -301,6 +303,7 @@
             }
         </div>
     </div>
+    <button class="btn btn-primary" @onclick="OnSave">Gem</button>
 </RadzenCard>
 @code {
     [Parameter]
@@ -321,7 +324,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Conference = await ConferenceService.GetByIdAsync(0);
+        Conference = await localStorage.GetItemAsync<Conference>("TemplateConference");
     }
 
     private void StartEdit(string field, object? value)
@@ -342,6 +345,12 @@
                 break;
         }
     }
+
+    private async Task OnSave()
+	{
+		await ConferenceService.UpdateAsync(Conference);
+        navigationManager.NavigateTo("/conference");
+	}
 
     private void StartEditReviewer(Reviewer reviewer)
     {

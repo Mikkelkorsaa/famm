@@ -65,7 +65,7 @@ namespace conferencePlannerApi.Repositories.Implementations
 
 		public async Task<IEnumerable<Conference>> GetAllActiveAsync()
 		{
-			var filter = Builders<Conference>.Filter.Lt("EndDate", DateTime.Now);
+			var filter = Builders<Conference>.Filter.Gt("EndDate", DateTime.Now);
 			var response = await _conferenceCollection.FindAsync(filter);
 			var result = response.ToListAsync();
 			return (result != null) ? result.Result : throw new Exception("No conferences found");

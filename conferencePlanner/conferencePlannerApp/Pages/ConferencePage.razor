@@ -2,27 +2,68 @@
 @page "/conference"
 @inject NavigationManager navigationmanager
 @inject IAuthService AuthService
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
-<h3>ConferencePage</h3>
-<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="createConference">Opret konferencer</button>
+<style>
+	.custom-button {
+		font-size: 1.5rem; /* Large text */
+		padding: 0.75rem 1.5rem; /* Big buttons */
+		border-radius: 5px; /* Slightly rounded corners for a more square look */
+		border: none; /* Remove default border */
+		box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+		background: linear-gradient(90deg, #4a90e2, #007aff); /* Gradient background */
+		color: white; /* White text */
+		transition: all 0.3s ease; /* Smooth hover effect */
+		margin: 10px 0; /* Add margin between buttons */
+		width: 60%; /* Control width of buttons */
+	}
 
-@if (showModal)
-{
+		.custom-button:hover {
+			background: linear-gradient(90deg, #007aff, #4a90e2); /* Reverse gradient on hover */
+			transform: scale(1.05); /* Slightly enlarge button on hover */
+			box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+		}
 
-	<ModalComponent OnClose="() => showModal = false">
-		<OnCreateConferenceComponent OnCancel="() => showModal = false"></OnCreateConferenceComponent>
-	</ModalComponent>
-}
-<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="editConferences">Vis active konferencer</button>
+		.custom-button:active {
+			transform: scale(0.95); /* Slightly shrink on click */
+			box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Reduce shadow on click */
+		}
+</style>
 
-@if (conferences.Count() > 0)
-{
-	<ConferenceTableComponent conferences="@conferences" />
-}
+<div class="container text-center mt-4">
+	<button type="button"
+			class="custom-button"
+			@onclick="createConference">
+		Opret konferencer
+	</button>
+
+	@if (showModal)
+	{
+		<ModalComponent OnClose="() => showModal = false">
+			<OnCreateConferenceComponent OnCancel="() => showModal = false"></OnCreateConferenceComponent>
+		</ModalComponent>
+	}
+
+	<button type="button"
+			class="custom-button"
+			@onclick="ShowConferences">
+		Vis aktive konferencer
+	</button>
+
+	@if (showConferenceTableModal)
+	{
+		<ModalComponent OnClose="() => showConferenceTableModal = false">
+			<ConferenceTableComponent conferences="@conferences"
+									  OnConferenceSelected="editConference" />
+		</ModalComponent>
+	}
+</div>
+
 
 @code {
 	private bool showModal = false;
-	private IEnumerable<Conference> conferences = new List<Conference>();
+	private bool showConferenceTableModal = false;
+	private List<Conference> conferences = new List<Conference>();
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -39,10 +80,18 @@
 		showModal = true;
 		StateHasChanged();
 	}
-
-	private async Task editConferences()
+	private async Task ShowConferences()
 	{
-		conferences = await conferenceService.GetActiveConferencesAsync();
+		var conferenceList = await conferenceService.GetActiveConferencesAsync();
+		await localStorage.SetItemAsync<List<Conference>>("ConferenceList", conferenceList);
+		showConferenceTableModal = true;
+		StateHasChanged();
+	}
+	private async Task editConference(Conference conference)
+	{
+		await localStorage.SetItemAsync<Conference>("TemplateConference", conference);
+		navigationmanager.NavigateTo("/conference-edit");
+		StateHasChanged();
 	}
 
 	private void HandleSave(Conference conference)
