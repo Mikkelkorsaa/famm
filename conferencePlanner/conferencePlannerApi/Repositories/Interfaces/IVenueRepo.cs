@@ -5,30 +5,31 @@ namespace conferencePlannerApi.Repositories.Interfaces
     public interface IVenueRepo
     {
         /// <summary>
-        /// Gets venue object with the given id
+        /// Retrieves a venue by its id
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns>Venue Object</returns>
+        /// <param name="id">The id of the venue to retrieve</param>
+        /// <returns>A Venue object if found</returns>
         Task<Venue> GetByIdAsync(int id);
 
         /// <summary>
-        /// Creates a new venue
+        /// Creates a new venue in the database
         /// </summary>
-        /// <returns>The venue you just created</returns>
+        /// <param name="venue">The Venue object to create </param>
+        /// <returns>The created Venue object </returns>
         Task<Venue> CreateAsync(Venue venue);
 
         /// <summary>
-        /// Deletes the venue with the given id
+        /// Deletes a venue from the database matching the given id
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">The id of the venue to delete</param>
+        /// <returns>True if the venue was deleted</returns>
         Task<bool> DeleteAsync(int id);
 
         /// <summary>
-        /// Updates the venue with the given id
+        /// Updates an existing venue in the database
         /// </summary>
-        /// <param name="venue"></param>
-        /// <returns>The updated venue object</returns>
+        /// <param name="venue">The Venue object containing updated information</param>
+        /// <returns>The updated Venue object if found</returns>
         Task<Venue> UpdateAsync(Venue venue);
     }
 }

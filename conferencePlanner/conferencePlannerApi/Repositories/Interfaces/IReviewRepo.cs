@@ -3,14 +3,19 @@ namespace conferencePlannerApi.Repositories.Interfaces
 {
     public interface IReviewRepo
     {
-        // Input: The Id of the review
-        // Manipulation: 
-        // Output: returns the review with the given Id
+        /// <summary>
+        /// Retrieves a Review by its id.
+        /// </summary>
+        /// <param name="id">The id of the review.</param>
+        /// <returns>The review object associated with the id</returns>
         Task<Review> GetReviewByIdAsync(int id);
 
-        // Input: The Id of the abstract and the review
-        // Manipulation: saves the review to the database
-        // Output: 
+        /// <summary>
+        /// Updates an Abstract with a new Review.
+        /// </summary>
+        /// <param name="id">The unique identifier of the abstract.</param>
+        /// <param name="review">The Review object containing the updated review information.</param>
+        /// <returns>The updated Review object</returns>
         Task<Review> UpdateAbstract(int id, Review review);
 
 

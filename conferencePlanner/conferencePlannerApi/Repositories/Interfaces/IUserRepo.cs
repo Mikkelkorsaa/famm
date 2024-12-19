@@ -5,43 +5,58 @@ namespace conferencePlannerApi.Repositories.Interfaces
     // Repository interface for User entity operations
     public interface IUserRepo
     {
-        // Input: User ID
-        // Output: User object or null if not found
+        /// <summary>
+        /// Retrieves a user by their unique identifier
+        /// </summary>
+        /// <param name="id">The unique identifier of the user</param>
+        /// <returns>A User object if found</returns>
         Task<User> GetByIdAsync(int id);
 
-        // Output: Collection of all User objects
+        /// <summary>
+        /// Retrieves all users from the database
+        /// </summary>
+        /// <returns>A collection of all User objects</returns>
         Task<IEnumerable<User>> GetAllAsync();
 
-        // Input: User object without ID
-        // Manipulation: Saves to database
-        // Output: User object with generated ID
+        /// <summary>
+        /// Creates a new user in the database
+        /// </summary>
+        /// <param name="user">The User object to create</param>
+        /// <returns>The created User object</returns>
         Task<User> CreateAsync(User user);
 
-        // Input: User ID and updated User object
-        // Manipulation: Updates existing record
-        // Output: Updated User object or null if not found
+        /// <summary>
+        /// Updates an existing user in the database
+        /// </summary>
+        /// <param name="user">The User object containing updated information</param>
+        /// <returns>The updated User object if found</returns>
         Task<User> UpdateAsync(User user);
 
-        // Input: User ID
-        // Manipulation: Removes from database
-        // Output: True if deleted, false if not found
+        /// <summary>
+        /// Deletes a user from the database
+        /// </summary>
+        /// <param name="id">The unique identifier of the user to delete</param>
+        /// <returns>True if the user was deleted</returns>
         Task<bool> DeleteAsync(int id);
 
-        // Input: Email string
-        // Output: User object or null if not found
+        /// <summary>
+        /// Retrieves a user by their email address
+        /// </summary>
+        /// <param name="email">The email address to search for</param>
+        /// <returns>A User object if found</returns>
         Task<User> GetByEmailAsync(string email);
 
         /// <summary>
-        /// Input: A UserFilter object, containg a string Query and how long the list should be and how many should be skipped
+        /// Searches and filters users based on provided criteria
         /// </summary>
-        /// <param name="filter"></param>
-        /// <returns>A list of users matching the criteria</returns>
+        /// <param name="filter">A UserFilter object</param>
+        /// <returns>A list of users matching the filter criteria</returns>
         Task<List<User>> GetFilterORSearch(UserFilter filter);
         /// <summary>
-        /// Input: UserFilter, cares only about the query and sees how many hits it gives. 
+        /// Counts the number of users matching a search query
         /// </summary>
-        /// <param name="filter"></param>
-        /// <returns></returns>
+        /// <param name="filter">A UserFilter object (only Query property is used)</param>
+        /// <returns>The total number of users matching the search criteria</returns>
         Task<int> GetFilterOrSearchNumberOfHits(UserFilter filter);
     }
 }
