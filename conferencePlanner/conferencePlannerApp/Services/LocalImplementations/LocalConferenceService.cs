@@ -195,5 +195,10 @@ namespace conferencePlannerApp.Services.LocalImplementations
         {
             throw new NotImplementedException();
         }
-    }
+
+		Task<int> IConferenceService.GetCurrentConferenceIdAsync()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

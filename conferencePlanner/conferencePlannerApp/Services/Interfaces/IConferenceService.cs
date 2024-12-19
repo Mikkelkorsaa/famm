@@ -33,7 +33,7 @@ namespace conferencePlannerApp.Services.Interfaces
         /// gets the conference from the cashe. if no cashe contact api
         /// </summary>
         /// <returns>Conference Id</returns>
-        Task<int?> GetCurrentConferenceIdAsync();
+        Task<int> GetCurrentConferenceIdAsync();
         /// <summary>
         /// sets the conference id in localstorage
         /// </summary>

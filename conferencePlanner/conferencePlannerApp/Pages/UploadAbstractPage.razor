@@ -5,9 +5,10 @@
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
 
+
 <PageTitle>Upload Abstract</PageTitle>
 <div class="container">
-<RadzenCard class="m-4">
+	<RadzenCard class="m-4">
 		@if (!string.IsNullOrEmpty(message))
 		{
 			<div class="alert @messageClass mb-4" role="alert">
@@ -15,138 +16,139 @@
 			</div>
 		}
 
-	<RadzenTemplateForm TItem="Abstract" Data="@_abstract" Submit="@HandleSubmit" InvalidSubmit="@HandleInvalidSubmit">
-		<div class="row">
-			<div class="col-md-6 mb-3">
-				<RadzenLabel Text="Afsenders navn" Component="SenderName" />
-				<RadzenTextBox @bind-Value="@_abstract.SenderName" Class="w-100" Name="SenderName" />
-				<RadzenRequiredValidator Component="SenderName" Text="Navn er påkrævet" />
+		<RadzenTemplateForm TItem="Abstract" Data="@_abstract" Submit="@HandleSubmit" InvalidSubmit="@HandleInvalidSubmit">
+			<div class="row">
+				<div class="col-md-6 mb-3">
+					<RadzenLabel Text="Afsenders navn" Component="SenderName" />
+					<RadzenTextBox @bind-Value="@_abstract.SenderName" Class="w-100" Name="SenderName" />
+					<RadzenRequiredValidator Component="SenderName" Text="Navn er påkrævet" />
+				</div>
+
+				<div class="col-md-6 mb-3">
+					<RadzenLabel Text="Præsenterende E-mail" Component="PresenterEmail" />
+					<RadzenTextBox @bind-Value="@_abstract.PresenterEmail" Class="w-100" Name="PresenterEmail" />
+					<RadzenRequiredValidator Component="PresenterEmail" Text="E-mail er påkrævet" />
+					<RadzenEmailValidator Component="PresenterEmail" Text="Indtast venligst en gyldig e-mail" />
+				</div>
 			</div>
 
-			<div class="col-md-6 mb-3">
-				<RadzenLabel Text="Præsenterende E-mail" Component="PresenterEmail" />
-				<RadzenTextBox @bind-Value="@_abstract.PresenterEmail" Class="w-100" Name="PresenterEmail" />
-				<RadzenRequiredValidator Component="PresenterEmail" Text="E-mail er påkrævet" />
-				<RadzenEmailValidator Component="PresenterEmail" Text="Indtast venligst en gyldig e-mail" />
+			<div class="row">
+				<div class="col-md-6 mb-3">
+					<RadzenLabel Text="Organisation" Component="Organization" />
+					<RadzenTextBox @bind-Value="@_abstract.Organization" Class="w-100" Name="Organization" />
+					<RadzenRequiredValidator Component="Organization" Text="Organisation er påkrævet" />
+				</div>
+
+				<div class="col-md-6 mb-3">
+					<RadzenLabel Text="Kategori" Component="Category" />
+					<RadzenDropDown @bind-Value="@_abstract.Category" Class="w-100"
+									Data="@Categories" Name="Category" />
+					<RadzenRequiredValidator Component="Category" Text="Kategori er påkrævet" />
+				</div>
 			</div>
-		</div>
 
-		<div class="row">
-			<div class="col-md-6 mb-3">
-				<RadzenLabel Text="Organisation" Component="Organization" />
-				<RadzenTextBox @bind-Value="@_abstract.Organization" Class="w-100" Name="Organization" />
-				<RadzenRequiredValidator Component="Organization" Text="Organisation er påkrævet" />
+			<div class="mb-3">
+				<RadzenLabel Text="Titel" Component="Title" />
+				<RadzenTextBox @bind-Value="@_abstract.Title" Class="w-100" Name="Title" />
+				<RadzenRequiredValidator Component="Title" Text="Titel er påkrævet" />
 			</div>
 
-			<div class="col-md-6 mb-3">
-				<RadzenLabel Text="Kategori" Component="Category" />
-				<RadzenDropDown @bind-Value="@_abstract.Category" Class="w-100" 
-					Data="@Categories" Name="Category" />
-				<RadzenRequiredValidator Component="Category" Text="Kategori er påkrævet" />
-			</div>
-		</div>
-
-		<div class="mb-3">
-			<RadzenLabel Text="Titel" Component="Title" />
-			<RadzenTextBox @bind-Value="@_abstract.Title" Class="w-100" Name="Title" />
-			<RadzenRequiredValidator Component="Title" Text="Titel er påkrævet" />
-		</div>
-
-		<div class="mb-3">
-			<RadzenLabel Text="Nøgleord" Component="KeyValues" />
-			<div class="position-relative">
-				<RadzenTextArea @bind-Value="@_abstract.KeyValues" Class="w-100" 
-					Rows="3" Name="KeyValues" 
-					Change="@OnKeyValuesChange"
-					@oninput="@OnKeyValuesInput"
-					MaxLength="400" />
-				<ValidationMessage For="@(() => _abstract.KeyValues)" />
-				<div class="d-flex justify-content-end mt-1">
-					<div class="d-flex align-items-center gap-3">
+			<div class="mb-3">
+				<RadzenLabel Text="Nøgleord" Component="KeyValues" />
+				<div class="position-relative">
+					<RadzenTextArea @bind-Value="@_abstract.KeyValues" Class="w-100"
+									Rows="3" Name="KeyValues"
+									Change="@OnKeyValuesChange"
+									@oninput="@OnKeyValuesInput"
+									MaxLength="400" />
+					<ValidationMessage For="@(() => _abstract.KeyValues)" />
+					<div class="d-flex justify-content-end mt-1">
+						<div class="d-flex align-items-center gap-3">
 							@if (keyValuesLength < MinKeyValuesLength && keyValuesLength > 0)
 							{
 								<small class="text-danger">
-									Teksten skal være mindst @MinKeyValuesLength tegn 
+									Teksten skal være mindst @MinKeyValuesLength tegn
 									(mangler @(MinKeyValuesLength - keyValuesLength) tegn)
 								</small>
 							}
-						<small class="text-muted">@keyValuesLength/@MaxKeyValuesLength tegn</small>
+							<small class="text-muted">@keyValuesLength/@MaxKeyValuesLength tegn</small>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="mb-3">
-			<RadzenLabel Text="Abstract tekst" Component="AbstractText" />
-			<div class="position-relative">
-				<RadzenTextArea @bind-Value="@_abstract.AbstractText" Class="w-100" 
-					Rows="8" Name="AbstractText" 
-					Change="@OnAbstractTextChange"
-					@oninput="@OnAbstractTextInput"
-					MaxLength="@MaxAbstractLength" />
-				<ValidationMessage For="@(() => _abstract.AbstractText)" />
-				<div class="d-flex justify-content-end mt-1">
-					<div class="d-flex align-items-center gap-3">
+			<div class="mb-3">
+				<RadzenLabel Text="Abstract tekst" Component="AbstractText" />
+				<div class="position-relative">
+					<RadzenTextArea @bind-Value="@_abstract.AbstractText" Class="w-100"
+									Rows="8" Name="AbstractText"
+									Change="@OnAbstractTextChange"
+									@oninput="@OnAbstractTextInput"
+									MaxLength="@MaxAbstractLength" />
+					<ValidationMessage For="@(() => _abstract.AbstractText)" />
+					<div class="d-flex justify-content-end mt-1">
+						<div class="d-flex align-items-center gap-3">
 							@if (abstractTextLength < MinAbstractLength && abstractTextLength > 0)
 							{
 								<small class="text-danger">
-									Teksten skal være mindst @MinAbstractLength tegn 
+									Teksten skal være mindst @MinAbstractLength tegn
 									(mangler @(MinAbstractLength - abstractTextLength) tegn)
 								</small>
 							}
-						<small class="text-muted">@abstractTextLength/@MaxAbstractLength tegn</small>
+							<small class="text-muted">@abstractTextLength/@MaxAbstractLength tegn</small>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="mb-3">
-			<RadzenLabel Text="Medforfattere" />
-			<div class="d-flex gap-2 mb-2">
-				<RadzenTextBox @bind-Value="@currentCoAuthor" Class="w-100" 
-					Placeholder="Indtast medforfatter" @onkeydown="@HandleKeyDown" />
-				<RadzenButton Click="@AddCoAuthor" Text="Tilføj" 
-					ButtonStyle="ButtonStyle.Secondary" 
-					Disabled="@(!CanAddCoAuthor)" />
-			</div>
+			<div class="mb-3">
+				<RadzenLabel Text="Medforfattere" />
+				<div class="d-flex gap-2 mb-2">
+					<RadzenTextBox @bind-Value="@currentCoAuthor" Class="w-100"
+								   Placeholder="Indtast medforfatter" @onkeydown="@HandleKeyDown" />
+					<RadzenButton Click="@AddCoAuthor" Text="Tilføj"
+								  ButtonStyle="ButtonStyle.Secondary"
+								  Disabled="@(!CanAddCoAuthor)" />
+				</div>
 
 				@if (_abstract.CoAuthors.Any())
 				{
 					<div class="mt-2">
 						@foreach (var author in _abstract.CoAuthors)
 						{
-								<div class="d-flex justify-content-between align-items-center mb-1 p-2 border rounded">
-									<span>@author</span>
-									<RadzenButton Click="@(() => RemoveCoAuthor(author))" 
-										ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" 
-										Class="p-0" Icon="close" />
-								</div>
+							<div class="d-flex justify-content-between align-items-center mb-1 p-2 border rounded">
+								<span>@author</span>
+								<RadzenButton Click="@(() => RemoveCoAuthor(author))"
+											  ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small"
+											  Class="p-0" Icon="close" />
+							</div>
 						}
 					</div>
 					<small class="text-muted">
 						Antal medforfattere: @_abstract.CoAuthors.Count (max @MaxCoAuthors)
 					</small>
 				}
-		</div>
+			</div>
 
-		<div class="mb-3">
-			<RadzenLabel Text="Billede" />
-			<InputFile OnChange="@OnFileSelected" class="w-100" accept="image/*" />
+			<div class="mb-3">
+				<RadzenLabel Text="Billede" />
+				<InputFile OnChange="@OnFileSelected" class="w-100" accept="image/*" />
 				@if (!string.IsNullOrEmpty(imagePreview))
 				{
 					<div class="mt-2">
 						<img src="@imagePreview" style="max-width: 200px;" alt="Valgt billede" />
 					</div>
 				}
-		</div>
+			</div>
 
-		<div class="d-flex justify-content-end">
-			<RadzenButton ButtonType="ButtonType.Submit" Text="Indsend Abstract" 
-				ButtonStyle="ButtonStyle.Primary" Class="mt-3" 
-				Disabled="@(isSubmitting || !IsFormValid)" />
-		</div>
-	</RadzenTemplateForm>
-</RadzenCard>
+			<div class="d-flex justify-content-end">
+				<RadzenButton ButtonType="ButtonType.Submit" Text="Indsend Abstract"
+							  ButtonStyle="ButtonStyle.Primary" Class="mt-3"
+							  Disabled="@(isSubmitting || !IsFormValid)" />
+			</div>
+		</RadzenTemplateForm>
+	</RadzenCard>
+
 </div>
 @code {
 	private const int MinKeyValuesLength = 10;
@@ -156,6 +158,7 @@
 	private const int MaxCoAuthors = 10;
 	private const int DefaultConferenceId = 1;
 
+	private int _conferenceId;
 	private Abstract _abstract = new();
 
 	private bool isSubmitting;
@@ -166,13 +169,7 @@
 	private int keyValuesLength;
 	private int abstractTextLength;
 
-	private IReadOnlyList<string> Categories { get; } = new List<string>
-	{
-		"Forskningsartikel",
-		"Poster",
-		"Workshop",
-		"Paneldiskussion"
-	};
+	private List<string>? Categories;
 
 	private bool CanAddCoAuthor =>
 		!string.IsNullOrWhiteSpace(currentCoAuthor) &&
@@ -212,13 +209,15 @@
 
 	protected async override Task OnInitializedAsync()
 	{
-		var CurrentUser = await AuthService.GetCurrentUser();
-		if (CurrentUser is null) 
-			NavigationManager.NavigateTo("/login");
-		else if (CurrentUser.Role.ToString() != "Applicant" && CurrentUser.Role.ToString() != "Admin"){ 
-			NavigationManager.NavigateTo("/dashboard");
-		}
+		var currentPage = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+		_conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
+		if (_conferenceId == 0) NavigationManager.NavigateTo($"/pick-conference/{currentPage}");
+		Categories = await ConferenceService.GetCategoriesByIdAsync(_conferenceId);
 
+		var CurrentUser = await AuthService.GetCurrentUser();
+		if (CurrentUser is null) NavigationManager.NavigateTo("/login");
+		else if (CurrentUser.Role.ToString() != "Applicant" && CurrentUser.Role.ToString() != "Admin")
+			NavigationManager.NavigateTo("/dashboard");
 	}
 
 	private async Task HandleSubmit()

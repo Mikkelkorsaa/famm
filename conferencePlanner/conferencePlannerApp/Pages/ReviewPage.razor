@@ -93,13 +93,12 @@
     protected override async Task OnInitializedAsync()
     {
         _conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
+        var currentPage = Navigation.ToBaseRelativePath(Navigation.Uri);
+        if (_conferenceId == 0) Navigation.NavigateTo($"/pick-conference/{currentPage}");
+        
         _abstractList = await AbstractService.GetAbstracts();
         _user = await authService.GetCurrentUser();
-        var currentPage = Navigation.ToBaseRelativePath(Navigation.Uri);
-        
-        if(_conferenceId == null){
-            Navigation.NavigateTo($"/pick-conference/{currentPage}");
-        }
+     
     }
 
     protected override async Task OnParametersSetAsync()

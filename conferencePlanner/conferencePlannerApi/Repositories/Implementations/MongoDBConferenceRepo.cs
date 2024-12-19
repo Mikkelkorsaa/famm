@@ -88,7 +88,7 @@ namespace conferencePlannerApi.Repositories.Implementations
                 .Aggregate<BsonDocument>(pipeline)
                 .FirstOrDefaultAsync();
 
-            return (result != null ? result["maxUserId"].AsInt32 + 1 : 0);
+            return (result != null ? result["maxUserId"].AsInt32 + 1 : 1);
         }
 
         public async Task<List<string>> ListAllCriteria(int conferenceId)
@@ -122,7 +122,7 @@ namespace conferencePlannerApi.Repositories.Implementations
                 .Project<ConferenceCategories>(projection)
                 .FirstOrDefaultAsync();
 
-            return result.Category ?? new List<string>();
-        }
+            return result == null ? new List<string>() : result.Category;
+		}
     }
 }

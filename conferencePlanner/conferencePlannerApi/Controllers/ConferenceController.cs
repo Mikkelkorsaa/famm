@@ -99,7 +99,7 @@ namespace conferencePlannerApi.Controllers
 
 		[HttpGet]
 		[Route("AllCriteria/{id}")]
-		public async Task<ActionResult<List<string>>> GetConferenceCriteria(int id)
+		public async Task<ActionResult<IEnumerable<string>>> GetConferenceCriteria(int id)
 		{
 			try
 			{
@@ -114,7 +114,7 @@ namespace conferencePlannerApi.Controllers
 
 		[HttpGet]
 		[Route("AllCategories/{id}")]
-		public async Task<ActionResult<List<string>>> GetConferenceCategories(int id)
+		public async Task<ActionResult<IEnumerable<string>>> GetConferenceCategories(int id)
 		{
 			try
 			{
