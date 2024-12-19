@@ -11,10 +11,16 @@ namespace conferencePlannerApi.Repositories.Interfaces
         // Output: Collection of all Conference objects
         Task<IEnumerable<Conference>> GetAllAsync();
 
-        // Input: Conference object without ID
-        // Manipulation: Saves to database
-        // Output: Conference object with generated ID
-        Task<Conference> CreateAsync(Conference conference);
+        /// <summary>
+        /// No input is required since the it only needs to know the current date
+        /// Return: A List of all Conferences with an EndDate in the future.
+        /// </summary>
+        Task<IEnumerable<Conference>> GetAllActiveAsync();
+
+		// Input: Conference object without ID
+		// Manipulation: Saves to database
+		// Output: Conference object with generated ID
+		Task<Conference> CreateAsync(Conference conference);
 
         // Input: Conference ID and updated Conference object
         // Manipulation: Updates existing record

@@ -121,15 +121,7 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
 
         public async Task<Conference> CreateAsync(Conference conference)
         {
-            var response = _conferences.FirstOrDefault(c => c.Id == conference.Id);
-            if (response == null)
-            {
-                var newConference = conference with { Id = ++_lastId };
-                _conferences.Add(newConference);
-                return await Task.FromResult(newConference);
-            }
-            else
-                throw new Exception("Conference ID already exists");
+            return await Task.FromResult<Conference>(conference);
         }
 
         public async Task<Conference> UpdateAsync(Conference conference)
@@ -168,5 +160,15 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
         {
             throw new NotImplementedException();
         }
-    }
+
+        public Task<List<string>> ListAllCriteria(Conference conference)
+        {
+            throw new NotImplementedException();
+        }
+
+		public Task<IEnumerable<Conference>> GetAllActiveAsync()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

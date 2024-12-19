@@ -2,33 +2,39 @@
 @if (SelectedAbstract != null)
 {
     <div class="container-fluid">
-        <div class="col-12">
-            <div class="view-abstract-card">
-                <div class="card-header">
-                    <h4 class="card-title text-truncate">@SelectedAbstract.Title</h4>
-                    <h6 class="card-subtitle mb-2 text-muted">@SelectedAbstract.Category</h6>
+    <div class="col-12">
+        <div class="view-abstract-card">
+            <div class="card-header">
+                <h4 class="card-title text-truncate">@SelectedAbstract.Title</h4>
+                <h6 class="card-subtitle mb-2 text-muted">@SelectedAbstract.Category</h6>
+            </div>
+            <div class="card-body">
+                <div class="abstract-detail-row">
+                    <span class="detail-label">Sender Name:</span>
+                    <span class="detail-value">@SelectedAbstract.SenderName</span>
                 </div>
-                <div class="card-body">
-                    <div class="abstract-detail-row">
-                        <span class="detail-label">Sender Name:</span>
-                        <span class="detail-value">@SelectedAbstract.SenderName</span>
-                    </div>
-                    <div class="abstract-detail-row">
-                        <span class="detail-label">Presenter Email:</span>
-                        <span class="detail-value">@SelectedAbstract.PresenterEmail</span>
-                    </div>
-                    <div class="abstract-detail-row">
-                        <span class="detail-label">Organization:</span>
-                        <span class="detail-value">@SelectedAbstract.Organization</span>
-                    </div>
-                    <div class="abstract-detail-row">
-                        <span class="detail-label">Key Values:</span>
-                        <span class="detail-value">@SelectedAbstract.KeyValues</span>
-                    </div>
-                    <div class="abstract-detail-row abstract-text">
-                        <span class="detail-label">Abstract Text:</span>
-                        <p class="detail-value">@SelectedAbstract.AbstractText</p>
-                    </div>
+                <div class="abstract-detail-row">
+                    <span class="detail-label">Presenter Email:</span>
+                    <span class="detail-value">@SelectedAbstract.PresenterEmail</span>
+                </div>
+                <div class="abstract-detail-row">
+                    <span class="detail-label">Organization:</span>
+                    <span class="detail-value">@SelectedAbstract.Organization</span>
+                </div>
+                <div class="abstract-detail-row">
+                    <span class="detail-label">Key Values:</span>
+                    <span class="detail-value">@SelectedAbstract.KeyValues</span>
+                </div>
+                <div class="abstract-detail-row abstract-text">
+                    <span class="detail-label">Abstract Text:</span>
+                    <p class="detail-value">@SelectedAbstract.AbstractText</p>
+                </div>
+                @if (!string.IsNullOrEmpty(ImageResponse))
+                    {
+                        <div class="mt-2">
+                            <img src="@ImageResponse" style="max-width: 100%;" alt="Valgt billede" />
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -41,4 +47,6 @@ else
 @code {
     [Parameter]
     public Abstract? SelectedAbstract { get; set; }
+    [Parameter]
+    public string? ImageResponse { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿<table class="table table-striped table-hover">
+﻿@inject Blazored.LocalStorage.ILocalStorageService localStorage 
+<table class="table table-striped table-hover">
     <thead>
         <tr>
             <th scope="col">Navn</th>
@@ -8,7 +9,7 @@
     <tbody>
         @foreach (Conference conference in conferences!)
         {
-            <tr @onclick="() => displayConference(conference)">
+            <tr @onclick="() => selectConference(conference)">
                 <td>@conference.Name</td>
                 @if (conference.AbstractDeadLine > DateTime.Now)
                 {
@@ -38,19 +39,34 @@
 @if (showConference)
 {
     <ModalComponent OnClose="() => showConference = false">
-        <ShowConferenceComponent conference="@selectedConference" />
+        <ShowConferenceComponent Conference="@selectedConference" />
     </ModalComponent>    
 }
 
 @code {
     [Parameter]
-    public IEnumerable<Conference>? conferences { get; set; }
+    public List<Conference>? conferences { get; set; }
     public bool showConference = false;
     public Conference? selectedConference;
+    [Parameter]
+    public EventCallback<Conference> OnConferenceSelected { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        conferences = await localStorage.GetItemAsync<List<Conference>>("ConferenceList") ?? new();
+
+		
+	}
 
     public void displayConference(Conference conference)
     {
         selectedConference = conference;
         showConference = true;
+    }
+
+    private async void selectConference(Conference conference)
+    {
+        await localStorage.SetItemAsync<Conference>("TemplateConference", conference);
+        await OnConferenceSelected.InvokeAsync(conference);
     }
 }

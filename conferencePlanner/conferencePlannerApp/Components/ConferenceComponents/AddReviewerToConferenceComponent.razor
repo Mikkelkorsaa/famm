@@ -1,0 +1,190 @@
+﻿@inject IUserService userService;
+@using Microsoft.AspNetCore.Components.Forms
+
+<div>
+    <EditForm Model="@reviewer" OnValidSubmit="@HandleValidSubmit">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" @bind="searchFilter.Query" placeholder="Søg efter bedømmer..." />
+                    <button class="btn btn-outline-secondary" type="button" @onclick="HandleSearch">Søg</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12">
+                <button type="button" class="btn btn-primary w-100" @onclick="()=> showInviteUserModal = true">Send invitation</button>
+            </div>
+        </div>
+
+        @if (user != null)
+        {
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Valgt bruger</h5>
+                            <p class="card-text">
+                                <strong>Navn:</strong> @user.Name<br />
+                                <strong>Email:</strong> @user.Email
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="row row-cols-2 g-3">
+                    @foreach (var category in Categories)
+                    {
+                        <div class="col">
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       name="categoryCheckbox"
+                                       id="@($"category_{category}_{formId}")"
+                                       checked="@selectedCategories.Contains(category)"
+                                       @onchange="@(e => HandleCategoryToggle(category, e.Value))" />
+                                <label class="form-check-label" for="@($"category_{category}_{formId}")">
+                                    @category
+                                </label>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <button type="submit" class="btn btn-success w-100">Gem bedømmer</button>
+            </div>
+            <div class="col-6">
+                <button type="button" class="btn btn-secondary w-100" @onclick="HandleCancel">Annuller</button>
+            </div>
+        </div>
+    </EditForm>
+</div>
+
+@if (showInviteUserModal)
+{
+    <ModalComponent OnClose="() => showInviteUserModal = false">
+        <InviteUserComponent OnCancel="()=> showInviteUserModal = false"
+                             OnSave="HandleInviteUser" />
+    </ModalComponent>
+}
+
+@if (showFindUserModal)
+{
+    <ModalComponent OnClose="() => showInviteUserModal = false">
+        <SearchForUserComponent OnCancel="() => showFindUserModal = false"
+                                OnUserSelected="HandleInviteUser"
+                                searchTerm="searchFilter"
+                                totalResults="searchResults"
+                                FoundUsers="searchResult" />
+    </ModalComponent>
+}
+
+@code {
+    [Parameter]
+    public Reviewer InitialReviewer { get; set; } = new();
+
+    [Parameter]
+    public List<string> Categories { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<Reviewer> OnSave { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    // Unique identifier for this form instance
+    private readonly string formId = Guid.NewGuid().ToString();
+
+    // Local state for this form instance
+    private Reviewer reviewer;
+    private string errorMessage = string.Empty;
+    private User? user = null;
+    private int searchResults = 0;
+    private bool showInviteUserModal = false;
+    private bool showFindUserModal = false;
+    private List<User> searchResult = new();
+    private List<string> selectedCategories = new();
+    private UserFilter searchFilter = new UserFilter
+        {
+            Query = string.Empty,
+            numberOfUsersShown = 12,
+            numberOfUsersSkipped = 0
+        };
+
+    protected override void OnInitialized()
+    {
+        // Create a new instance of Reviewer for this form
+        reviewer = new Reviewer
+            {
+                NameUser = InitialReviewer.NameUser,
+                UserId = InitialReviewer.UserId,
+                Categories = new List<string>(InitialReviewer.Categories ?? new List<string>())
+            };
+
+        // Initialize selected categories
+        selectedCategories = new List<string>(reviewer.Categories ?? new List<string>());
+    }
+
+    private async void HandleSearch()
+    {
+        searchResults = await userService.GetUsersBySearchOrFilterHits(searchFilter);
+        searchResult = await userService.GetUsersBySearchOrFilter(searchFilter);
+        showFindUserModal = true;
+    }
+
+    private void HandleCategoryToggle(string category, object? checkedValue)
+    {
+        if (checkedValue is bool isChecked)
+        {
+            if (isChecked && !selectedCategories.Contains(category))
+            {
+                selectedCategories.Add(category);
+            }
+            else if (!isChecked)
+            {
+                selectedCategories.Remove(category);
+            }
+        }
+    }
+
+    public void HandleInviteUser(User invitedUser)
+    {
+        user = invitedUser;
+        showFindUserModal = false;
+        showInviteUserModal = false;
+    }
+
+    public async Task HandleValidSubmit()
+    {
+        if (user == null || user.Id == -1)
+        {
+            errorMessage = "Der skal vælges en bruger, eller sendes en invitation ud til dit nye komite medlem";
+            return;
+        }
+
+        reviewer.NameUser = user.Name;
+        reviewer.UserId = user.Id;
+        reviewer.Categories = new List<string>(selectedCategories);
+
+        await OnSave.InvokeAsync(reviewer);
+
+        // Reset form state
+        reviewer = new();
+        user = null;
+        selectedCategories.Clear();
+    }
+
+    public async Task HandleCancel()
+    {
+        await OnCancel.InvokeAsync();
+    }
+}

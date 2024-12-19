@@ -70,7 +70,7 @@ namespace conferencePlannerApp.Services.LocalImplementations
                 Name = "Berlin Congress Center",
                 Address = "456 Data Street, 10117 Berlin, Germany"
               }
-              
+
             },
             new Conference
             {
@@ -99,22 +99,18 @@ namespace conferencePlannerApp.Services.LocalImplementations
                 Name = "Singapore Tech Hub",
                 Address = "789 Cyber Road, Downtown Core, Singapore 018956"
               }
-             
+
             }
         };
         public LocalConferenceService(ILocalStorageService localStorage)
         {
             _localStorage = localStorage;
         }
-        public Task CreateConferenceAsync(Conference conference)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<IEnumerable<Conference>> GetActiveConferencesAsync()
+        public Task<List<Conference>> GetActiveConferencesAsync()
         {
             IEnumerable<Conference> Result = _conferences;
-            return Task.FromResult(Result);
+            return Task.FromResult(Result.ToList());
         }
 
         public Task<Conference> GetByIdAsync(int id)
@@ -146,10 +142,6 @@ namespace conferencePlannerApp.Services.LocalImplementations
 
         }
 
-
-
-        
-
         public Task<List<string>> GetCriteriaByIdAsync(int conferenceId)
         {
             var conference = _conferences.FirstOrDefault(c => c.Id == conferenceId);
@@ -163,38 +155,34 @@ namespace conferencePlannerApp.Services.LocalImplementations
             }
         }
 
-        
+        public Task<Conference> CreateConferenceAsync(Conference conference)
+        {
+            throw new NotImplementedException();
+        }
 
+        public Task<List<Conference>> GetConferencesAsync()
+        {
+            throw new NotImplementedException();
+        }
 
+        public Task<Conference> UpdateAsync(Conference conference)
+        {
+            throw new NotImplementedException();
+        }
 
-		public Task<Conference> UpdateAsync(Conference conference)
-		{
-			throw new NotImplementedException();
-		}
+        Task<int> IConferenceService.GetCurrentConferenceIdAsync()
+        {
+            throw new NotImplementedException();
+        }
 
-		public Task<List<Abstract>> GetAllAbstractsByIdAsync(int id)
-		{
-			throw new NotImplementedException();
-		}
+        Task IConferenceService.SetCurrentConferenceAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
 
-		public Task UpdateReview(int abstractId, Review review)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<int> GetNextReviewIdAsync(int abstractId)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<bool> HasReviewAsync(int? abstractId, int? userId)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<Review?> GetExistingReviewAsync(int abstractId, int userId)
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public Task<List<string>> GetCategoriesByIdAsync(int conferenceId)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

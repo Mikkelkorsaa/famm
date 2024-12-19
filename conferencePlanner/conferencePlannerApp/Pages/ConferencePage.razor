@@ -2,51 +2,77 @@
 @page "/conference"
 @inject NavigationManager navigationmanager
 @inject IAuthService AuthService
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
-<h3>ConferencePage</h3>
-<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="createConference">Opret konferencer</button>
 
-@if (showModal)
-{
-    <ModalComponent OnClose="() => showModal = false">
-        <CreateConferenceComponent OnSave="HandleSave" />
-    </ModalComponent>
-}
-<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="showActiveConferences">Vis active konferencer</button>
 
-@if (conferences.Count() > 0){
-    <ConfrenceTableComponent conferences="@conferences"/>
-}
+<div class="container text-center mt-4">
+	<button type="button"
+			class="custom-button"
+			@onclick="createConference">
+		Opret konferencer
+	</button>
+
+	@if (showModal)
+	{
+		<ModalComponent OnClose="() => showModal = false">
+			<OnCreateConferenceComponent OnCancel="() => showModal = false"></OnCreateConferenceComponent>
+		</ModalComponent>
+	}
+
+	<button type="button"
+			class="custom-button"
+			@onclick="ShowConferences">
+		Rediger en konference
+	</button>
+
+	@if (showConferenceTableModal)
+	{
+		<ModalComponent OnClose="() => showConferenceTableModal = false">
+			<ConferenceTableComponent conferences="@conferences"
+									  OnConferenceSelected="editConference" />
+		</ModalComponent>
+	}
+</div>
+
 
 @code {
-    private bool showModal = false;
-    private IEnumerable<Conference> conferences = new List<Conference>();
+	private bool showModal = false;
+	private bool showConferenceTableModal = false;
+	private List<Conference> conferences = new List<Conference>();
 
-    protected override async Task OnInitializedAsync()
-    {
-        var CurrentUser = await AuthService.GetCurrentUser();
-        if (CurrentUser is null)
-            navigationmanager.NavigateTo("/login");
-        else if (CurrentUser.Role.ToString() != "Organizer" && CurrentUser.Role.ToString() != "Admin")
-            navigationmanager.NavigateTo("/dashboard");
-        
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		var CurrentUser = await AuthService.GetCurrentUser();
+		if (CurrentUser is null)
+			navigationmanager.NavigateTo("/login");
+		else if (CurrentUser.Role.ToString() != "Organizer" && CurrentUser.Role.ToString() != "Admin")
+			navigationmanager.NavigateTo("/dashboard");
 
-    private void createConference()
-    {
-        showModal = true;
-        StateHasChanged();
-        Console.WriteLine($"{showModal}");
-    }
+	}
 
-    private async Task showActiveConferences()
-    {
-        conferences = await conferenceService.GetActiveConferencesAsync();
-    }
+	private void createConference()
+	{
+		showModal = true;
+		StateHasChanged();
+	}
+	private async Task ShowConferences()
+	{
+		var conferenceList = await conferenceService.GetActiveConferencesAsync();
+		await localStorage.SetItemAsync<List<Conference>>("ConferenceList", conferenceList);
+		showConferenceTableModal = true;
+		StateHasChanged();
+	}
+	private async Task editConference(Conference conference)
+	{
+		await localStorage.SetItemAsync<Conference>("TemplateConference", conference);
+		navigationmanager.NavigateTo("/conference-edit");
+		StateHasChanged();
+	}
 
-    private void HandleSave(Conference conference)
-    {
-        showModal = false;
-        StateHasChanged();
-    }
+	private void HandleSave(Conference conference)
+	{
+		showModal = false;
+		StateHasChanged();
+	}
 }

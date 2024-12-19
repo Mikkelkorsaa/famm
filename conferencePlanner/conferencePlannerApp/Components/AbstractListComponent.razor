@@ -66,10 +66,10 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        int? id = await ConferenceService.GetCurrentConferenceIdAsync();
-        if (id.HasValue)
+        int id = await ConferenceService.GetCurrentConferenceIdAsync();
+        if (id != 0)
         {
-            AbstractList = await AbstractService.GetAllAbstractsByConferenceIdAsync(id.Value);
+            AbstractList = await AbstractService.GetAllAbstractsByConferenceIdAsync(id);
         }
         else
         {

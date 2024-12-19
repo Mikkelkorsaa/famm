@@ -1,88 +1,149 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @inject IConferenceService conferenceService
-<div>
-    <EditForm Model="@conference" OnValidSubmit="HandleValidSubmit">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navigationManager
 
-        <div class="mb-3">
-            <label class="form-label">Konferancens navn</label>
-            <InputText @bind-Value="conference.Name" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Abstrakt tidsfrist</label>
-            <InputDate @bind-Value="conference.AbstractDeadLine" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Bedømmelses tidsfrist</label>
-            <InputDate @bind-Value="conference.ReviewDeadline" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Start dato</label>
-            <InputDate @bind-Value="conference.StartDate" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Slut dato</label>
-            <InputDate @bind-Value="conference.EndDate" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Kategori</label>
-            <div class="input-group">
-                <InputText @bind-Value="newCategory" class="form-control" />
-                <button type="button" class="btn btn-outline-secondary" @onclick="AddCategory">Tilføj kategori</button>
+<PageTitle>Conference Form</PageTitle>
+<div class="container">
+    <RadzenCard class="m-4">
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <div class="alert @messageClass mb-4" role="alert">
+                @message
             </div>
-            <div class="mt-2">
-                @foreach (var category in conference.Category)
-                {
-                    <span class="badge bg-primary me-2 mb-2">
-                        @category
-                        <button type="button" class="btn-close btn-close-white btn-sm"
-                                @onclick="() => RemoveCategory(category)"></button>
-                    </span>
-                }
-            </div>
-        </div>
+        }
 
-        <div class="mb-3">
-            <label class="form-label">Bedømmelse kriteria</label>
-            <div class="input-group">
-                <InputText @bind-Value="newCriteria" class="form-control" />
-                <button type="button" class="btn btn-outline-secondary" @onclick="AddCriteria">Tilføj kriteria</button>
-            </div>
-            <div class="mt-2">
-                @foreach (var criteria in conference.ReviewCriteria)
-                {
-                    <span class="badge bg-secondary me-2 mb-2">
-                        @criteria
-                        <button type="button" class="btn-close btn-close-white btn-sm"
-                                @onclick="() => RemoveCriteria(criteria)"></button>
-                    </span>
-                }
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Lokation</label>
-            @if (conference.Location != null)
-            {
-                <div class="card mb-2">
-                    <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">@conference.Location.Name</h6>
-                        <p class="card-text">@conference.Location.Address</p>
-                    </div>
+        <RadzenTemplateForm TItem="Conference" Data="@conference" Submit="@HandleValidSubmit">
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <RadzenLabel Text="Konferancens navn" Component="Name" />
+                    <RadzenTextBox @bind-Value="@conference.Name" Class="w-100" Name="Name" />
+                    <RadzenRequiredValidator Component="Name" Text="Navn er påkrævet" />
                 </div>
-            }
-            <button type="button" class="btn btn-outline-primary" @onclick="ShowVenueModal">
-                @(conference.Location == null ? "Select Venue" : "Change Venue")
-            </button>
-        </div>
-        <button type="submit" class="btn btn-primary">Gem konference</button>
-    </EditForm>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <RadzenLabel Text="Abstrakt tidsfrist" Component="AbstractDeadLine" />
+                    <RadzenDatePicker @bind-Value="@conference.AbstractDeadLine" Class="w-100" Name="AbstractDeadLine" />
+                    <RadzenRequiredValidator Component="AbstractDeadLine" Text="Abstrakt tidsfrist er påkrævet" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <RadzenLabel Text="Bedømmelses tidsfrist" Component="ReviewDeadline" />
+                    <RadzenDatePicker @bind-Value="@conference.ReviewDeadline" Class="w-100" Name="ReviewDeadline" />
+                    <RadzenRequiredValidator Component="ReviewDeadline" Text="Bedømmelses tidsfrist er påkrævet" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <RadzenLabel Text="Start dato" Component="StartDate" />
+                    <RadzenDatePicker @bind-Value="@conference.StartDate" Class="w-100" Name="StartDate" />
+                    <RadzenRequiredValidator Component="StartDate" Text="Start dato er påkrævet" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <RadzenLabel Text="Slut dato" Component="EndDate" />
+                    <RadzenDatePicker @bind-Value="@conference.EndDate" Class="w-100" Name="EndDate" />
+                    <RadzenRequiredValidator Component="EndDate" Text="Slut dato er påkrævet" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <RadzenLabel Text="Kategori" />
+                <div class="d-flex gap-2 mb-2">
+                    <RadzenTextBox @bind-Value="@newCategory" Class="w-100"
+                                   Placeholder="Indtast kategori" @onkeydown="@HandleCategoryKeyDown" />
+                    <RadzenButton Click="@AddCategory" Text="Tilføj"
+                                  ButtonStyle="ButtonStyle.Secondary"
+                                  Disabled="@(string.IsNullOrWhiteSpace(newCategory))" />
+                </div>
+
+                @if (conference.Category.Any())
+                {
+                    <div class="mt-2">
+                        @foreach (var category in conference.Category)
+                        {
+                            <div class="d-flex justify-content-between align-items-center mb-1 p-2 border rounded">
+                                <span>@category</span>
+                                <RadzenButton Click="@(() => RemoveCategory(category))"
+                                              ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small"
+                                              Class="p-0" Icon="close" />
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="mb-3">
+                <RadzenLabel Text="Bedømmelseskomité" />
+                @if (conference.Reviewers.Any())
+                {
+                    <div class="mt-2">
+                        @foreach (var reviewer in conference.Reviewers)
+                        {
+                            <div class="d-flex justify-content-between align-items-center mb-1 p-2 border rounded">
+                                <span>@reviewer.NameUser</span>
+                                <RadzenButton Click="@(() => RemoveReviewer(reviewer))"
+                                              ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small"
+                                              Class="p-0" Icon="close" />
+                            </div>
+                        }
+                    </div>
+                }
+                <RadzenButton Click="@(() => showReviewerModal = true)"
+                              Text="Tilføj komitemedlem"
+                              ButtonStyle="ButtonStyle.Secondary"
+                              Class="mt-2" />
+            </div>
+
+            <div class="mb-3">
+                <RadzenLabel Text="Bedømmelse kriteria" />
+                <div class="d-flex gap-2 mb-2">
+                    <RadzenTextBox @bind-Value="@newCriteria" Class="w-100"
+                                   Placeholder="Indtast kriteria" @onkeydown="@HandleCriteriaKeyDown" />
+                    <RadzenButton Click="@AddCriteria" Text="Tilføj"
+                                  ButtonStyle="ButtonStyle.Secondary"
+                                  Disabled="@(string.IsNullOrWhiteSpace(newCriteria))" />
+                </div>
+
+                @if (conference.ReviewCriteria.Any())
+                {
+                    <div class="mt-2">
+                        @foreach (var criteria in conference.ReviewCriteria)
+                        {
+                            <div class="d-flex justify-content-between align-items-center mb-1 p-2 border rounded">
+                                <span>@criteria</span>
+                                <RadzenButton Click="@(() => RemoveCriteria(criteria))"
+                                              ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small"
+                                              Class="p-0" Icon="close" />
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="mb-3">
+                <RadzenLabel Text="Lokation" />
+                @if (conference.Location != null)
+                {
+                    <RadzenCard Class="mt-2 mb-2">
+                        <h6 class="mb-2 text-muted">@conference.Location.Name</h6>
+                        <p class="mb-0">@conference.Location.Address</p>
+                    </RadzenCard>
+                }
+                <RadzenButton Click="@(() => showVenueModal = true)"
+                              Text="@(conference.Location == null ? "Vælg lokation" : "Skift lokation")"
+                              ButtonStyle="ButtonStyle.Secondary" />
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <RadzenButton ButtonType="ButtonType.Submit" Text="Gem konference"
+                              ButtonStyle="ButtonStyle.Primary" Class="mt-3" />
+            </div>
+        </RadzenTemplateForm>
+    </RadzenCard>
 </div>
 
 @if (showVenueModal)
@@ -94,38 +155,53 @@
     </ModalComponent>
 }
 
+@if (showReviewerModal)
+{
+    <ModalComponent OnClose="() => showReviewerModal = false">
+        <AddReviewerToConferenceComponent InitialReviewer="@newReviewer"
+                                          Categories="conference.Category"
+                                          OnSave="HandleReviewerSave"
+                                          OnCancel="() => showReviewerModal = false" />
+    </ModalComponent>
+}
+
 @code {
     [Parameter]
     public Conference conference { get; set; } = new Conference
         {
-            Id = 0,
-            Name = "",
-            Category = new List<string>(),
-            ReviewCriteria = new List<string>(),
             AbstractDeadLine = DateTime.Now,
             ReviewDeadline = DateTime.Now,
             StartDate = DateTime.Now,
             EndDate = DateTime.Now,
-            Location = new Venue { Id = 0, Name = "", Address = "" }
         };
 
     [Parameter] public EventCallback<Conference> OnSave { get; set; }
-
+    private Reviewer newReviewer = new();
     private bool showVenueModal = false;
+    private bool showReviewerModal = false;
     private string newCategory = "";
     private string newCriteria = "";
+    private string? message;
+    private string messageClass = string.Empty;
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        // Initialize the conference if it's null
-        if (conference == null)
+        Conference template = await localStorage.GetItemAsync<Conference>("TemplateConference");
+        if (template != null)
         {
-            conference = new Conference
-                {
-                    Category = new List<string>(),
-                    ReviewCriteria = new List<string>()
-                };
+            conference.Category = template.Category;
+            conference.ReviewCriteria = template.ReviewCriteria;
+            conference.Location = template.Location;
+            conference.Reviewers = template.Reviewers;
+            await localStorage.RemoveItemAsync("TemplateConference");
         }
+    }
+
+    private void ShowMessage(string text, bool isSuccess)
+    {
+        message = text;
+        messageClass = isSuccess ? "alert-success" : "alert-danger";
+        StateHasChanged();
     }
 
     private void AddCategory()
@@ -137,9 +213,17 @@
         }
     }
 
+    private void HandleCategoryKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            AddCategory();
+        }
+    }
+
     private void RemoveCategory(string category)
     {
-        conference.Category.Remove(category);
+        conference.removeCategory(category);
     }
 
     private void AddCriteria()
@@ -151,14 +235,17 @@
         }
     }
 
+    private void HandleCriteriaKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            AddCriteria();
+        }
+    }
+
     private void RemoveCriteria(string criteria)
     {
         conference.ReviewCriteria.Remove(criteria);
-    }
-
-    private void ShowVenueModal()
-    {
-        showVenueModal = true;
     }
 
     private void HandleVenueSave(Venue location)
@@ -167,9 +254,29 @@
         showVenueModal = false;
     }
 
+    private void HandleReviewerSave(Reviewer reviewer)
+    {
+        conference.Reviewers.Add(reviewer);
+        showReviewerModal = false;
+    }
+
     private async Task HandleValidSubmit()
     {
-        await conferenceService.CreateConferenceAsync(conference);
-        await OnSave.InvokeAsync(conference);
+        try
+        {
+            await conferenceService.CreateConferenceAsync(conference);
+            ShowMessage("Konference blev gemt successfully", true);
+            await OnSave.InvokeAsync(conference);
+            navigationManager.NavigateTo("/conference");
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Der opstod en fejl: {ex.Message}", false);
+        }
+    }
+
+    private void RemoveReviewer(Reviewer reviewer)
+    {
+        conference.Reviewers.Remove(reviewer);
     }
 }

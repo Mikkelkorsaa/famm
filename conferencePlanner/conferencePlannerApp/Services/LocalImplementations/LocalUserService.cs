@@ -42,7 +42,12 @@ namespace conferencePlannerApp.Services.Implementations
                 }
             };
         }
-       
+
+        public Task<User> CreateUserAsync(User user)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<User>> GetAllUsersAsync()
         {
             try
@@ -84,6 +89,16 @@ namespace conferencePlannerApp.Services.Implementations
             {
                 throw new InvalidOperationException($"Failed to update user with ID {user.Id}.", ex);
             }
+        }
+
+        public Task<List<User>> GetUsersBySearchOrFilter(UserFilter filter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> GetUsersBySearchOrFilterHits(UserFilter filter)
+        {
+            throw new NotImplementedException();
         }
     }
 }

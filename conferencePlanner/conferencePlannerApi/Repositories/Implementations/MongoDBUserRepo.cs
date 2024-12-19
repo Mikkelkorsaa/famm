@@ -4,6 +4,7 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using Microsoft.Extensions.Options;
 using conferencePlannerCore.Configurations;
+using MongoDB.Driver.Linq;
 
 namespace conferencePlannerApi.Repositories.Implementations
 {
@@ -20,18 +21,13 @@ namespace conferencePlannerApi.Repositories.Implementations
         }
 
         public async Task<User> CreateAsync(User user)
-        {
+        {       
             user.Id = await GetNextUserIdAsync();
             User response = await _userCollection.Find(Builders<User>.Filter.Eq("Email", user.Email)).FirstOrDefaultAsync();
-            if (response == null)
-            {
-                await _userCollection.InsertOneAsync(user);
-                return user;
-            }
-            else
-            {
-                throw new Exception("Email already in use");
-            }
+            if (response != null)
+                throw new Exception("Email is taken");
+            await _userCollection.InsertOneAsync(user);
+            return user;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -90,6 +86,32 @@ namespace conferencePlannerApi.Repositories.Implementations
             if (result == null)
                 return 0;
             return result["maxUserId"].AsInt32 + 1;
+        }
+
+        public async Task<List<User>> GetFilterORSearch(UserFilter filter)
+        {
+            var queryFilter = Builders<User>.Filter.Or(
+                   Builders<User>.Filter.Regex(u => u.Name, new BsonRegularExpression(filter.Query, "i")),
+                   Builders<User>.Filter.Regex(u => u.Email, new BsonRegularExpression(filter.Query, "i")),
+                   Builders<User>.Filter.Regex(u => u.Organization, new BsonRegularExpression(filter.Query, "i"))
+               );
+            var response = await _userCollection.Find(queryFilter)
+                .Skip(filter.numberOfUsersSkipped)
+                .Limit(filter.numberOfUsersShown)
+                .ToListAsync();
+            return response == null ? new List<User>(): response;
+        }
+
+        public async Task<int> GetFilterOrSearchNumberOfHits(UserFilter filter)
+        {
+            var queryFilter = Builders<User>.Filter.Or(
+                Builders<User>.Filter.Regex(u => u.Name, new BsonRegularExpression(filter.Query, "i")),
+                Builders<User>.Filter.Regex(u => u.Email, new BsonRegularExpression(filter.Query, "i")),
+                Builders<User>.Filter.Regex(u => u.Organization, new BsonRegularExpression(filter.Query, "i"))
+            );
+
+            var count = await _userCollection.CountDocumentsAsync(queryFilter);
+            return (int)count;
         }
     }
 }

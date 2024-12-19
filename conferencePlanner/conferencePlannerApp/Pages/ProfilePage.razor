@@ -122,9 +122,9 @@
   protected override async Task OnInitializedAsync()
   {
     var CurrentUser = await AuthService.GetCurrentUser();
-		if (CurrentUser is null)
-			NavigationManager.NavigateTo("/login");
-		
+    if (CurrentUser is null)
+      NavigationManager.NavigateTo("/login");
+
 
     EditUser = CurrentUser! with { };
   }

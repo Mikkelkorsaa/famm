@@ -48,7 +48,7 @@ namespace conferencePlannerApi.Controllers
             try
             {
                 var newUser = await _repo.CreateAsync(user);
-                return CreatedAtAction(nameof(GetUserById), new { id = newUser!.Id }, newUser);
+                return Ok(newUser);
             }
             catch (Exception e)
             {
@@ -197,9 +197,22 @@ namespace conferencePlannerApi.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("filter/or")]
+        public async Task<ActionResult<IEnumerable<User>>> GetOrFilterUsers(UserFilter filter) {
+            var users = await _repo.GetFilterORSearch(filter);
+            return users != null ? Ok(users) : new List<User>();
+        }
         private bool ValidatePassword(User user, string password)
         {
             return user.Password == password;
+        }
+
+        [HttpPost]
+        [Route("filter/or/hits")]
+        public async Task<ActionResult<int>> GetHitsOrFilter(UserFilter filter){
+            var noOfHits = await _repo.GetFilterOrSearchNumberOfHits(filter);
+            return Ok(noOfHits);
         }
     }
 }

@@ -16,6 +16,16 @@ namespace conferencePlannerApp.Services.LocalImplementations
             _localStorage = localStorage;
         }
 
+        public async Task<User> CreateUserAsync(User newUser)
+        {
+            if (newUser == null)
+                throw new Exception("User is null");
+            var response = await _httpClient.PostAsJsonAsync("/api/user/CreateUser", newUser); ;
+            response.EnsureSuccessStatusCode();
+            var responseUser = await response.Content.ReadFromJsonAsync<User>();
+            return responseUser != null ? responseUser : throw new Exception("User == null");
+        }
+
         public async Task<List<User>> GetAllUsersAsync()
         {
             try
@@ -58,6 +68,33 @@ namespace conferencePlannerApp.Services.LocalImplementations
             {
                 throw new InvalidOperationException($"Failed to update user with ID {user.Id}.", ex);
             }
+        }
+
+        public async Task<List<User>> GetUsersBySearchOrFilter(UserFilter filter)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("/api/user/filter/or", filter);
+                response.EnsureSuccessStatusCode();
+
+                var users = await response.Content.ReadFromJsonAsync<List<User>>()
+                    ?? throw new InvalidOperationException("Failed to deserialize users response.");
+
+                return users;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to fetch users from the API.", ex);
+            }
+        }
+
+        public async Task<int> GetUsersBySearchOrFilterHits(UserFilter filter)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/user/filter/or/hits", filter);
+            response.EnsureSuccessStatusCode();
+
+            var hits = await response.Content.ReadFromJsonAsync<int>();
+            return hits;
         }
     }
 

@@ -1,8 +1,8 @@
-﻿@page "/pick-conference/{target:alpha}"
+﻿@page "/pick-conference/{target?}"
 @inject IConferenceService conferenceService
 @inject NavigationManager Navigation
 
-<h3>SimpleConferenceComponent</h3>
+<h1 class="text-center">Select a conference</h1>
 
 <div class="row">
     @if (Conferences != null)
