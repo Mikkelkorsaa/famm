@@ -1,4 +1,5 @@
-﻿<table class="table table-striped table-hover">
+﻿@inject Blazored.LocalStorage.ILocalStorageService localStorage 
+<table class="table table-striped table-hover">
     <thead>
         <tr>
             <th scope="col">Navn</th>
@@ -8,7 +9,7 @@
     <tbody>
         @foreach (Conference conference in conferences!)
         {
-            <tr @onclick="() => displayConference(conference)">
+            <tr @onclick="() => selectConference(conference)">
                 <td>@conference.Name</td>
                 @if (conference.AbstractDeadLine > DateTime.Now)
                 {
@@ -47,10 +48,19 @@
     public IEnumerable<Conference>? conferences { get; set; }
     public bool showConference = false;
     public Conference? selectedConference;
+    [Parameter]
+    public EventCallback<Conference> OnConferenceSelected { get; set; }
+
 
     public void displayConference(Conference conference)
     {
         selectedConference = conference;
         showConference = true;
+    }
+
+    private async void selectConference(Conference conference)
+    {
+        await localStorage.SetItemAsync<Conference>("TemplateConference", conference);
+        await OnConferenceSelected.InvokeAsync(conference);
     }
 }

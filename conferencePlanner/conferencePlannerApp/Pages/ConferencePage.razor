@@ -10,7 +10,7 @@
         <CreateConferenceComponent OnSave="HandleSave" />
     </ModalComponent>
 }
-<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="showActiveConferences">Vis active konferencer</button>
+<button type="button" class="btn btn-primary w-50 btn-sm" @onclick="editConferences">Vis active konferencer</button>
 
 @if (conferences.Count() > 0){
     <ConfrenceTableComponent conferences="@conferences"/>
@@ -27,7 +27,7 @@
         Console.WriteLine($"{showModal}");
     }
 
-    private async Task showActiveConferences()
+    private async Task editConferences()
     {
         conferences = await conferenceService.GetActiveConferencesAsync();
     }

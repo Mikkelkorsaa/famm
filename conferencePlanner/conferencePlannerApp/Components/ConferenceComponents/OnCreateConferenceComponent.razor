@@ -1,0 +1,37 @@
+﻿@inject IConferenceService conferenceService
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager navigationManager
+<div @onclick="OnNewButton">
+	<span>Ny konference</span>
+</div>
+<div @onclick="OnTemplateButton">
+	<span>Find Skabelon</span>
+</div>
+@if (conferences.Count() > 0 )
+{
+	<ModalComponent>
+		<ConferenceTableComponent conferences="@conferences" OnConferenceSelected="CreateFromTemplate"></ConferenceTableComponent>
+	</ModalComponent>
+}
+
+@code {
+	private List<Conference> conferences = new List<Conference>();
+
+	
+
+	private async Task CreateFromTemplate(Conference conference)
+	{
+		await localStorage.SetItemAsync<Conference?>("TemplateConference", conference);
+		navigationManager.NavigateTo("/create-conference");
+	}
+	private async Task OnNewButton(MouseEventArgs e)
+	{
+		await localStorage.SetItemAsync<Conference?>("TemplateConference", new Conference());
+		navigationManager.NavigateTo("/create-conference");
+	}
+	private async Task OnTemplateButton(MouseEventArgs e)
+	{
+		var conferences= await conferenceService.GetConferencesAsync();
+
+	}
+}
