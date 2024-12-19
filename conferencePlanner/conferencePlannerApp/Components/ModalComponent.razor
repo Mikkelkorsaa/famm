@@ -11,10 +11,12 @@
 
 @code
 {
-
+    // any component or page file that ends in .razor
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
+    // A function that defines what happens when the closes. The function can change a bool,
+    // and/or any other needed information. This is defined in the calling component/page.
     [Parameter]
     public EventCallback OnClose { get; set; }
 

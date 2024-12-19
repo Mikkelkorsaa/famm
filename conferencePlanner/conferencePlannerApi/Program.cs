@@ -20,7 +20,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.Configure<MongoDBSettings>(options =>
 {
-    options.ConnectionString = "mongodb+srv://mikkelkorsaa:oCkPG6nncfSz1675@conferenceplanner.pufil.mongodb.net/";
+    options.ConnectionString = "mongodb://localhost/ConferencePlaner";
 });
 
 builder.Services.Configure<EmailConfiguration>(options =>

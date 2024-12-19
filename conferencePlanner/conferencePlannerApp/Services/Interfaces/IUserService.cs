@@ -31,6 +31,12 @@ namespace conferencePlannerApp.Services.Interfaces
         /// <param name="filter"></param>
         /// <returns>how many hits does this search have</returns>
         Task<int> GetUsersBySearchOrFilterHits(UserFilter filter);
+        /// <summary>
+        /// This function takes as a user as Input and attempts to send it to an API 
+        /// </summary>
+        /// <param name="user">A new user</param>
+        /// <returns>The user, if successfully added to a database the user.id != -1</returns>
+        Task<User> CreateUserAsync(User user);
 
 
     }

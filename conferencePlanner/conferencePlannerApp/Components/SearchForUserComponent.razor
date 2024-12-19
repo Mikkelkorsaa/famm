@@ -98,10 +98,7 @@
 
     private async Task HandleUserSelection(User user)
     {
-        if (OnUserSelected.HasDelegate)
-        {
-            await OnUserSelected.InvokeAsync(user);
-        }
+        await OnUserSelected.InvokeAsync(user);
     }
 
     private async Task HandleNext()
@@ -118,9 +115,6 @@
 
     private async Task HandleCancel()
     {
-        if (OnCancel.HasDelegate)
-        {
-            await OnCancel.InvokeAsync();
-        }
+        await OnCancel.InvokeAsync();
     }
 }

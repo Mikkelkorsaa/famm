@@ -165,5 +165,10 @@ namespace conferencePlannerApi.Repositories.LocalImplementations
         {
             throw new NotImplementedException();
         }
-    }
+
+		public Task<IEnumerable<Conference>> GetAllActiveAsync()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

@@ -63,9 +63,17 @@ namespace conferencePlannerApi.Repositories.Implementations
             return (response.ModifiedCount == 0) ? throw new Exception("Conference not found") : updatedConference;
         }
 
-        // Help function, gets the highest ID, and adds 1, ensuring that we have an unused valid ID.
-        // If the collection is empty it will be assigned the value 0.
-        public async Task<int> GetNextConferenceIdAsync()
+		public async Task<IEnumerable<Conference>> GetAllActiveAsync()
+		{
+			var filter = Builders<Conference>.Filter.Lt("EndDate", DateTime.Now);
+			var response = await _conferenceCollection.FindAsync(filter);
+			var result = response.ToListAsync();
+			return (result != null) ? result.Result : throw new Exception("No conferences found");
+		}
+
+		// Help function, gets the highest ID, and adds 1, ensuring that we have an unused valid ID.
+		// If the collection is empty it will be assigned the value 0.
+		public async Task<int> GetNextConferenceIdAsync()
         {
             var pipeline = new[]
             {
@@ -80,7 +88,7 @@ namespace conferencePlannerApi.Repositories.Implementations
                 .Aggregate<BsonDocument>(pipeline)
                 .FirstOrDefaultAsync();
 
-            return (result != null ? result["maxUserId"].AsInt32 + 1 : 0) + 1;
+            return (result != null ? result["maxUserId"].AsInt32 + 1 : 0);
         }
 
         public async Task<List<string>> ListAllCriteria(int conferenceId)
@@ -97,7 +105,7 @@ namespace conferencePlannerApi.Repositories.Implementations
                 .Project<ConferenceCriteria>(projection)
                 .FirstOrDefaultAsync();
 
-            return result.ReviewCriteria ?? new List<string>();
+            return result == null ? new List<string>() : result.ReviewCriteria ;
         }
 
         public async Task<List<string>> ListAllCategories(int conferenceId)
@@ -115,11 +123,6 @@ namespace conferencePlannerApi.Repositories.Implementations
                 .FirstOrDefaultAsync();
 
             return result.Category ?? new List<string>();
-        }
-
-        public Task<List<string>> ListAllCriteria(Conference conference)
-        {
-            throw new NotImplementedException();
         }
     }
 }

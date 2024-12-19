@@ -20,62 +20,61 @@ namespace conferencePlannerApp.Services.Implementations
             _httpClient = httpClient;
         }
 
-        public async Task CreateConferenceAsync(Conference conference)
+        public async Task<Conference> CreateConferenceAsync(Conference conference)
         {
-            try
+            var response = await _httpClient.PostAsJsonAsync("/api/Conference/CreateConference", conference);
+            if (!response.IsSuccessStatusCode)
             {
-                ArgumentNullException.ThrowIfNull(conference);
-
-                var conferences = await GetConferencesAsync();
-                conferences.Add(conference);
-                await _localStorage.SetItemAsync(StorageKey, conferences);
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Failed to create abstract: {errorContent}");
             }
-            catch (Exception)
+            if (response.IsSuccessStatusCode)
             {
-                throw new InvalidOperationException("Failed to create conference.");
+                var newConference = await response.Content.ReadFromJsonAsync<Conference>();
+                return newConference!;
             }
+            else {
+                throw new Exception("something went wrong");
+            }
+            
         }
+		private async Task<List<Conference>> GetConferencesAsync()
+		{
+			try
+			{
+				var conferences = await _httpClient.GetAsync("/api/Conference/GetAllConferences");
+				conferences.EnsureSuccessStatusCode();
+				var result = await conferences.Content.ReadFromJsonAsync<IEnumerable<Conference>>();
+				if (result == null)
+				{
+					throw new InvalidOperationException("Failed to retrieve conferences.");
+				}
+				return result.ToList();
+			}
+			catch (Exception)
+			{
+				throw new InvalidOperationException("Failed to retrieve conferences.");
+			}
+		}
 
-        public async Task<IEnumerable<Conference>> GetActiveConferencesAsync()
+		public async Task<List<Conference>> GetActiveConferencesAsync()
         {
-            try
-            {
-                var conferences = await GetConferencesAsync();
-                var denmarkZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Copenhagen");
-                var currentDate = TimeZoneInfo.ConvertTime(DateTime.UtcNow, denmarkZone);
-
-                return conferences
-                    .Where(c => c.EndDate > currentDate)
-                    .ToList();
-            }
-            catch (TimeZoneNotFoundException)
-            {
-                throw new InvalidOperationException("Failed to determine timezone.");
-            }
-            catch (Exception)
-            {
-                throw new InvalidOperationException("Failed to retrieve active conferences.");
-            }
-        }
-
-        private async Task<List<Conference>> GetConferencesAsync()
-        {
-            try
-            {
-                var conferences = await _httpClient.GetAsync("/api/Conference/GetAllConferences");
-                conferences.EnsureSuccessStatusCode();
-                var result = await conferences.Content.ReadFromJsonAsync<List<Conference>>();
-                if(result == null)
-                {
-                    throw new InvalidOperationException("Failed to retrieve conferences.");
-                }
-                return result;
-            }
-            catch (Exception)
-            {
-                throw new InvalidOperationException("Failed to retrieve conferences.");
-            }
-        }
+			try
+			{
+				var conferences = await _httpClient.GetAsync("/api/Conference/GetActiveConferences");
+				conferences.EnsureSuccessStatusCode();
+				var result = await conferences.Content.ReadFromJsonAsync<IEnumerable<Conference>>();
+				if (result == null)
+				{
+					throw new InvalidOperationException("Failed to retrieve conferences.");
+				}
+				return result.ToList();
+			}
+			catch (Exception)
+			{
+				throw new InvalidOperationException("Failed to retrieve conferences.");
+			}
+		}
 
         public async Task<Conference> GetByIdAsync(int id)
         {
@@ -102,20 +101,9 @@ namespace conferencePlannerApp.Services.Implementations
             else
                 return conference;
         }
-
-        public Task<List<Abstract>> GetAllAbstractsByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateReview(int abstractId, Review review)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<List<string>> GetCriteriaByIdAsync(int conferenceId)
         {
-            var response = await _httpClient.GetAsync($"/api/Conference/Conference/AllCriteria/{conferenceId}");
+            var response = await _httpClient.GetAsync($"/api/Conference/AllCriteria/{conferenceId}");
 
 
             var result = await response.Content.ReadFromJsonAsync<List<string>>();
@@ -128,26 +116,24 @@ namespace conferencePlannerApp.Services.Implementations
 
         }
 
-        public Task<int> GetNextReviewIdAsync(int abstractId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> HasReviewAsync(int? abstractId, int? userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Review?> GetExistingReviewAsync(int abstractId, int userId)
-        {
-            throw new NotImplementedException();
-        }
-
 		public async Task<Conference> UpdateAsync(Conference conference)
 		{
 			var response = await _httpClient.PutAsJsonAsync("/api/conference/UpdateConference", conference);
 			var result = await response.Content.ReadFromJsonAsync<Conference>();
 			if (result == null) throw new Exception("No conference found");
+			else return result;
+		}
+
+		public async Task<List<string>> GetCategoriesByIdAsync(int conferenceId)
+		{
+			var response = await _httpClient.GetAsync($"/api/Conference/AllCategories/{conferenceId}");
+
+			var result = await response.Content.ReadFromJsonAsync<List<string>>();
+
+			if (result == null)
+			{
+				throw new InvalidOperationException("Failed to retrieve criteria.");
+			}
 			else return result;
 		}
 	}

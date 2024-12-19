@@ -4,6 +4,7 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using Microsoft.Extensions.Options;
 using conferencePlannerCore.Configurations;
+using MongoDB.Driver.Linq;
 
 namespace conferencePlannerApi.Repositories.Implementations
 {
@@ -20,18 +21,13 @@ namespace conferencePlannerApi.Repositories.Implementations
         }
 
         public async Task<User> CreateAsync(User user)
-        {
+        {       
             user.Id = await GetNextUserIdAsync();
             User response = await _userCollection.Find(Builders<User>.Filter.Eq("Email", user.Email)).FirstOrDefaultAsync();
-            if (response == null)
-            {
-                await _userCollection.InsertOneAsync(user);
-                return user;
-            }
-            else
-            {
-                throw new Exception("Email already in use");
-            }
+            if (response != null)
+                throw new Exception("Email is taken");
+            await _userCollection.InsertOneAsync(user);
+            return user;
         }
 
         public async Task<bool> DeleteAsync(int id)
