@@ -1,7 +1,7 @@
 ﻿@inject IUploadFileService UploadFileService
 @inject IJSRuntime JSRuntime
 
-
+@* InputFile for uploading a file and a preview of the image *@
 <div class="upload-container">
 	<InputFile OnChange="@HandleSelectedFile" accept="@AcceptedFileTypes"></InputFile>
 	@if (!string.IsNullOrEmpty(_imageUrl))
@@ -13,22 +13,33 @@
 </div>
 
 @code {
+	//parameter eventcallback that will be invoked when a file is uploaded
 	[Parameter]
 	public EventCallback<string> OnFileUploaded { get; set; }
+
+	//parameters for the accepted file types and size
 	[Parameter]
 	public string? AcceptedFileTypes { get; set; }
+
+	//parameter for the accepted size of the file
 	[Parameter]
 	public int AcceptedSize { get; set; }
 	private string? _imageUrl { get; set; }
 
+	//method for handling the selected file
 	private async Task HandleSelectedFile(InputFileChangeEventArgs e)
 	{
+		//get the file from the event arguments
 		var file = e.File;
+		//convert the file to a base64 string using the UploadFileService
 		var imgString= await UploadFileService.ConvertToBase64String(file);
+		//preview the image
 		PreviewImage(file, imgString);
+		//invoke the eventcallback with the base64 string
 		await OnFileUploaded.InvokeAsync(imgString);
 	}
 
+	//method for previewing the image
 	private void PreviewImage(IBrowserFile file, string imgstring)
 	{
 		_imageUrl = $"data:{file.ContentType};base64,{imgstring}";
