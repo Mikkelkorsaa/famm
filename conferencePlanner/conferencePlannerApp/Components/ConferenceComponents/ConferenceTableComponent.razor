@@ -36,6 +36,7 @@
     </tbody>
 </table>
 
+<!-- if a conference has been clicked it will display in our custom modal component using the ShowConferenceComponent-->
 @if (showConference)
 {
     <ModalComponent OnClose="() => showConference = false">
@@ -44,26 +45,31 @@
 }
 
 @code {
+    //List of conferences to display
     [Parameter]
     public List<Conference>? conferences { get; set; }
+    //Boolean for showing the conference
     public bool showConference = false;
+    //The selected conference
     public Conference? selectedConference;
+    //Eventcallback for selecting a conference and sending it to the parent component
     [Parameter]
     public EventCallback<Conference> OnConferenceSelected { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        conferences = await localStorage.GetItemAsync<List<Conference>>("ConferenceList") ?? new();
-
-		
+        //Get the conference list from local storage
+        conferences = await localStorage.GetItemAsync<List<Conference>>("ConferenceList") ?? new();	
 	}
 
+    //Method for displaying the conference in the modal
     public void displayConference(Conference conference)
     {
         selectedConference = conference;
         showConference = true;
     }
 
+    //Method for selecting a conference and sending it to the parent component
     private async void selectConference(Conference conference)
     {
         await localStorage.SetItemAsync<Conference>("TemplateConference", conference);

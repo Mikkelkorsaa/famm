@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Forms
 @inject IUserService userService
 
+<!-- Editform for inviting a user to the comitee -->
 <EditForm Model="@formModel" OnValidSubmit="@HandleValidSubmit">
     <div class="row mb-3">
         <div class="col-12">
@@ -46,10 +47,13 @@
 </EditForm>
 
 @code {
+    // EventCallback for saving the user
     [Parameter]
     public EventCallback<User> OnSave { get; set; }
+    // EventCallback for canceling the invite
     [Parameter]
     public EventCallback OnCancel { get; set; }
+    // Model for the form
     private InviteUserModel formModel = new();
 
     private class InviteUserModel
@@ -59,6 +63,9 @@
         public string Organization { get; set; } = "";
     }
 
+    // Method for handling the submit of the form and creating the user
+    // The user is created using the userservice and then the evntcallback OnSave is invoked
+    //to send the user to the parent component
     private async Task HandleValidSubmit()
     {
         User user = new User
@@ -73,6 +80,7 @@
         await OnSave.InvokeAsync(user);
     }
 
+// Method for handling the cancel button
     private async void HandleCancel()
     {
         await OnCancel.InvokeAsync();

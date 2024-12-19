@@ -2,6 +2,7 @@
 @using Radzen
 @using Radzen.Blazor
 
+<!-- Form for creating an event for the scheduler-->
 <RadzenTemplateForm TItem="SchedulerEvent" Data=@_eventModel Submit=@OnSubmit>
     <RadzenFieldset Text="Booking Details">
         <div class="row mb-3">
@@ -76,16 +77,19 @@
     [Parameter]
     public List<Room>? Rooms { get; set; }
 
+    // EventCallback for saving the event and sending it back to the parent component
     [Parameter]
     public EventCallback<SchedulerEvent> OnSave { get; set; }
 
     private SchedulerEvent _eventModel = new();
 
+    // Making sure that the evntmodel is reset when the component is initialized
     protected override void OnInitialized()
     {
         _eventModel = new();
     }
 
+    // Method for handling the submit of the form and creating the event
     private async Task OnSubmit()
     {
             await OnSave.InvokeAsync(_eventModel);

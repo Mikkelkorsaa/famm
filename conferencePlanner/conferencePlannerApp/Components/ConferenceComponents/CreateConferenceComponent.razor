@@ -166,6 +166,7 @@
 }
 
 @code {
+    // The conference model to bind the form to
     [Parameter]
     public Conference conference { get; set; } = new Conference
         {
@@ -175,6 +176,7 @@
             EndDate = DateTime.Now,
         };
 
+    // EventCallback for saving the conference
     [Parameter] public EventCallback<Conference> OnSave { get; set; }
     private Reviewer newReviewer = new();
     private bool showVenueModal = false;
@@ -184,9 +186,13 @@
     private string? message;
     private string messageClass = string.Empty;
 
+
+    
     protected async override Task OnInitializedAsync()
     {
+        // Check if there is a template conference saved in the local storage
         Conference template = await localStorage.GetItemAsync<Conference>("TemplateConference");
+        // If there is a template conference, set the relevant values of the new conference to the template
         if (template != null)
         {
             conference.Category = template.Category;
@@ -197,6 +203,7 @@
         }
     }
 
+    // Method for showing a message to the user
     private void ShowMessage(string text, bool isSuccess)
     {
         message = text;
@@ -204,6 +211,7 @@
         StateHasChanged();
     }
 
+    // Method for adding a category to the conference
     private void AddCategory()
     {
         if (!string.IsNullOrWhiteSpace(newCategory))
@@ -213,6 +221,7 @@
         }
     }
 
+    // Method for handling the keydown event on the category input
     private void HandleCategoryKeyDown(KeyboardEventArgs args)
     {
         if (args.Key == "Enter")
@@ -221,11 +230,13 @@
         }
     }
 
+    // Method for removing a category from the conference
     private void RemoveCategory(string category)
     {
         conference.removeCategory(category);
     }
 
+    // Method for adding a criteria to the conference
     private void AddCriteria()
     {
         if (!string.IsNullOrWhiteSpace(newCriteria))
@@ -235,6 +246,7 @@
         }
     }
 
+    // Method for handling the keydown event on the criteria input
     private void HandleCriteriaKeyDown(KeyboardEventArgs args)
     {
         if (args.Key == "Enter")
@@ -243,29 +255,36 @@
         }
     }
 
+    // Method for removing a criteria from the conference
     private void RemoveCriteria(string criteria)
     {
         conference.ReviewCriteria.Remove(criteria);
     }
 
+    // Method for handling the save of a venue
     private void HandleVenueSave(Venue location)
     {
         conference.Location = location;
         showVenueModal = false;
     }
 
+    // Method for handling the save of a reviewer
     private void HandleReviewerSave(Reviewer reviewer)
     {
         conference.Reviewers.Add(reviewer);
         showReviewerModal = false;
     }
 
+    // Method for handling the submit of the form
     private async Task HandleValidSubmit()
     {
         try
         {
+            //create the conference using the IConferenceService
             await conferenceService.CreateConferenceAsync(conference);
             ShowMessage("Konference blev gemt successfully", true);
+            //avoke the OnSave eventcallback to send the conference to the parent component
+            //and navigating back to /confernce page
             await OnSave.InvokeAsync(conference);
             navigationManager.NavigateTo("/conference");
         }
@@ -275,6 +294,7 @@
         }
     }
 
+    // Method for removing a reviewer from the conference
     private void RemoveReviewer(Reviewer reviewer)
     {
         conference.Reviewers.Remove(reviewer);

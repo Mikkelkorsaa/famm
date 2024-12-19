@@ -19,6 +19,7 @@
 </EditForm>
 
 @code {
+    // The venue to edit given by the parent component
     [Parameter]
     public Venue Venue { get; set; } = new Venue
     {
@@ -36,11 +37,13 @@
         venue = Venue ?? new Venue();
     }
 
+    // Method for handling the submit of the form and creating the venue
     private async Task HandleValidSubmit()
     {
         await OnSave.InvokeAsync(venue);
     }
 
+    // Method for handling the cancel button
     private async Task HandleCancel()
     {
         await OnCancel.InvokeAsync();
