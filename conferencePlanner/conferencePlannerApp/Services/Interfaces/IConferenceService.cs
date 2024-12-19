@@ -39,7 +39,7 @@ namespace conferencePlannerApp.Services.Interfaces
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Conference Object</returns>
-        Task<Conference> SetCurrentConferenceAsync(int id);
+        Task SetCurrentConferenceAsync(int id);
         /// <summary>
         /// Get the review criterias for a specific conference using the id
         /// </summary>

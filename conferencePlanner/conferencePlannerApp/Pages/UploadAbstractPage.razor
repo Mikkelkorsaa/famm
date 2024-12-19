@@ -211,7 +211,7 @@
 	{
 		var currentPage = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
 		_conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
-		if (_conferenceId == 0) NavigationManager.NavigateTo($"/pick-conference/{currentPage}");
+		if (_conferenceId == -1) NavigationManager.NavigateTo($"/pick-conference/{currentPage}");
 		Categories = await ConferenceService.GetCategoriesByIdAsync(_conferenceId);
 
 		var CurrentUser = await AuthService.GetCurrentUser();
@@ -233,7 +233,7 @@
 			isSubmitting = true;
 			ShowMessage("Sender abstract...", true);
 
-			var savedAbstract = await AbstractService.AddAbstract(_abstract);
+			var savedAbstract = await AbstractService.AddAbstract(_abstract with { ConferenceId = _conferenceId });
 
 			Console.WriteLine(savedAbstract);
 

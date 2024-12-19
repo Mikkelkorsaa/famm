@@ -160,45 +160,29 @@ namespace conferencePlannerApp.Services.LocalImplementations
             throw new NotImplementedException();
         }
 
+        public Task<List<Conference>> GetConferencesAsync()
+        {
+            throw new NotImplementedException();
+        }
 
         public Task<Conference> UpdateAsync(Conference conference)
         {
             throw new NotImplementedException();
         }
 
-        public Task UpdateReview(int abstractId, Review review)
+        Task<int> IConferenceService.GetCurrentConferenceIdAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<int> GetNextReviewIdAsync(int abstractId)
+        Task IConferenceService.SetCurrentConferenceAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> HasReviewAsync(int? abstractId, int? userId)
+        public Task<List<string>> GetCategoriesByIdAsync(int conferenceId)
         {
             throw new NotImplementedException();
         }
-
-        public Task<Review?> GetExistingReviewAsync(int abstractId, int userId)
-        {
-            throw new NotImplementedException();
-        }
-
-		public Task<List<string>> GetCategoriesByIdAsync(int conferenceId)
-		{
-			throw new NotImplementedException();
-		}
-
-        public Task<List<Conference>> GetConferencesAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-		Task<int> IConferenceService.GetCurrentConferenceIdAsync()
-		{
-			throw new NotImplementedException();
-		}
-	}
+    }
 }

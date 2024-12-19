@@ -8,15 +8,14 @@
 @inject IAuthService authService
 @inject IConferenceService ConferenceService
 @inject NavigationManager Navigation
+@inject IImageService ImageService
 
 <div class="container-fluid">
     <div class="filler" />
     <div class="row no-gutters">
         <div class="@sidebarColumnClass">
-            <AbstractListComponent @ref="_abstractListComponent"
-            AbstractList="@_abstractList"
-            OnAbstractSelected="SetAbstract"
-            OnCollapseChanged="HandleCollapseChanged">
+            <AbstractListComponent @ref="_abstractListComponent" AbstractList="@_abstractList"
+                OnAbstractSelected="@(async (abs) => await SetAbstract(abs))" OnCollapseChanged="HandleCollapseChanged">
             </AbstractListComponent>
         </div>
         <div class="@contentColumnClass">
@@ -24,7 +23,8 @@
                 <div class="view-abstract-column">
                     @if (_currentAbstract != null)
                     {
-                        <ViewAbstractComponent SelectedAbstract="@_currentAbstract"></ViewAbstractComponent>
+                        <ViewAbstractComponent SelectedAbstract="@_currentAbstract" ImageResponse="@_image">
+                        </ViewAbstractComponent>
                     }
                 </div>
                 <div class="review-column">
@@ -37,7 +37,7 @@
                         else
                         {
                             <ReviewComponent SelectedAbstract="@_currentAbstract" />
-                        }  
+                        }
                     }
                 </div>
             </div>
@@ -47,27 +47,27 @@
 
 <script>
     window.registerHandlers = (sidebarRef, dotNetHelper) => {
-    document.addEventListener("click", (event) => {
-    const sidebarElement = sidebarRef && sidebarRef.getBoundingClientRect();
-    const isClickInside =
-    sidebarElement &&
-    event.clientX >= sidebarElement.left &&
-    event.clientX <= sidebarElement.right &&
-    event.clientY >= sidebarElement.top &&
-    event.clientY <= sidebarElement.bottom;
-    if (!isClickInside) {
-    dotNetHelper.invokeMethodAsync("CollapseSidebar");
-    }
-    });
+        document.addEventListener("click", (event) => {
+            const sidebarElement = sidebarRef && sidebarRef.getBoundingClientRect();
+            const isClickInside =
+                sidebarElement &&
+                event.clientX >= sidebarElement.left &&
+                event.clientX <= sidebarElement.right &&
+                event.clientY >= sidebarElement.top &&
+                event.clientY <= sidebarElement.bottom;
+            if (!isClickInside) {
+                dotNetHelper.invokeMethodAsync("CollapseSidebar");
+            }
+        });
 
-    window.addEventListener("resize", () => {
-    dotNetHelper.invokeMethodAsync("OnResize", window.innerWidth);
-    });
+        window.addEventListener("resize", () => {
+            dotNetHelper.invokeMethodAsync("OnResize", window.innerWidth);
+        });
     };
 
     window.unregisterHandlers = () => {
-    document.removeEventListener("click");
-    window.removeEventListener("resize");
+        document.removeEventListener("click");
+        window.removeEventListener("resize");
     };
 </script>
 
@@ -76,6 +76,7 @@
     private AbstractListComponent? _abstractListComponent;
     private List<Abstract> _abstractList = new();
     private Abstract? _currentAbstract;
+    private string? _image;
     private bool isSidebarCollapsed;
     private int windowWidth;
     private User? _user;
@@ -83,26 +84,26 @@
     private Conference? _conference;
 
     private string sidebarColumnClass => isSidebarCollapsed
-        ? "col-2 sidebar-transition sidebar-column-collapsed"
-        : "col-1 sidebar-transition sidebar-column-expanded";
+    ? "col-2 sidebar-transition sidebar-column-collapsed"
+    : "col-1 sidebar-transition sidebar-column-expanded";
 
     private string contentColumnClass => isSidebarCollapsed
-        ? "col-11 sidebar-transition content-column sidebar-column-collapsed"
-        : "col-10 sidebar-transition content-column sidebar-column-expanded";
+    ? "col-11 sidebar-transition content-column sidebar-column-collapsed"
+    : "col-10 sidebar-transition content-column sidebar-column-expanded";
 
     protected override async Task OnInitializedAsync()
     {
         _conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
         var currentPage = Navigation.ToBaseRelativePath(Navigation.Uri);
         if (_conferenceId == 0) Navigation.NavigateTo($"/pick-conference/{currentPage}");
-        
+
         _conference = await ConferenceService.GetByIdAsync(_conferenceId);
         _abstractList = await AbstractService.GetAllAbstractsByConferenceIdAsync(_conferenceId);
         _user = await authService.GetCurrentUser();
-     
+
     }
 
-  
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -121,9 +122,19 @@
         StateHasChanged();
     }
 
-    private void SetAbstract(Abstract abs)
+    private async Task SetAbstract(Abstract abs)
     {
         _currentAbstract = abs;
+        if (!string.IsNullOrEmpty(abs.Picture))
+        {
+            var imageResponse = await ImageService.GetImageAsync(abs.Picture);
+            _image = $"data:image/jpeg;base64,{Convert.ToBase64String(imageResponse.Content)}";
+        }
+        else
+        {
+            _image = null;
+        }
+        StateHasChanged();
     }
 
     private void HandleCollapseChanged(bool isCollapsed)

@@ -77,7 +77,7 @@
     private bool _hasReviewed = false;
     private bool _updateSuccess;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         int? conferenceId = await ConferenceService.GetCurrentConferenceIdAsync();
 
@@ -120,6 +120,7 @@
                         UserId = UserId ?? 0,
                         Criterias = reviewCriteria.Select(c => new Criteria { Name = c }).ToList()
                     };
+                _comment = string.Empty;
             }
             else
             {

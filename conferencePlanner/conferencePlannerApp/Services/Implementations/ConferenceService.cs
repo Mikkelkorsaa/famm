@@ -87,12 +87,9 @@ namespace conferencePlannerApp.Services.Implementations
 		}
 
 
-		public async Task<Conference> SetCurrentConferenceAsync(int id)
+		public async Task SetCurrentConferenceAsync(int id)
 		{
 			await _localStorage.SetItemAsync(StorageKey, id);
-
-			var conference = await GetByIdAsync(id);
-			return conference;
 		}
 
 		public async Task<int> GetCurrentConferenceIdAsync()
