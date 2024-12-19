@@ -4,54 +4,65 @@ namespace conferencePlannerApp.Services.Interfaces
 {
     public interface IConferenceService
     {
-        // A user want to create a conference, the site needs to provide a conference,
-        // The method needs to store the conference.
+        /// <summary>
+        /// Creates a new conference and stores it in the database
+        /// </summary>
+        /// <param name="conference">The Conference object to be created</param>
+        /// <returns>The created Conference object</returns>
         Task<Conference> CreateConferenceAsync(Conference conference);
-        //A user want to see all conferences that have not yet concluded.
-        //The method will return all conferences with a EndDate in the future.
+
+        /// <summary>
+        /// Retrieves all active conferences that have not yet concluded
+        /// </summary>
+        /// <returns>A List of active Conference objects</returns>
         Task<List<Conference>> GetActiveConferencesAsync();
-		/// <summary>
-		/// Returns all conferences
-		/// </summary>
-		/// <returns> List of conference objects</returns>
-		Task<List<Conference>> GetConferencesAsync();
-		/// <summary>
-		/// Gets the conference by the ID
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns>Conference object</returns>
-		///
-		Task<Conference> GetByIdAsync(int id);
+
         /// <summary>
-        /// Updates the conference with matching id in the DB and
-        /// then it returns the same object back
+        /// Retrieves all conferences
         /// </summary>
-        /// <param name="conference"></param>
-        /// <returns>The updated Conference Objekt</returns>
+        /// <returns>A List of Conference objects</returns>
+        Task<List<Conference>> GetConferencesAsync();
+
+        /// <summary>
+        /// Retrieves a conference by its ID
+        /// </summary>
+        /// <param name="id">The ID of the conference</param>
+        /// <returns>The Conference object</returns>
+        Task<Conference> GetByIdAsync(int id);
+
+        /// <summary>
+        /// Updates an existing conference in the database
+        /// </summary>
+        /// <param name="conference">The Conference object to be updated</param>
+        /// <returns>The updated Conference object</returns>
         Task<Conference> UpdateAsync(Conference conference);
+
         /// <summary>
-        /// gets the conference from the cashe. if no cashe contact api
+        /// Retrieves the current conference ID from local storage
         /// </summary>
-        /// <returns>Conference Id</returns>
+        /// <returns>The current conference ID</returns>
         Task<int> GetCurrentConferenceIdAsync();
+
         /// <summary>
-        /// sets the conference id in localstorage
+        /// Sets the current conference ID in local storage
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns>Conference Object</returns>
+        /// <param name="id">The ID of the conference</param>
         Task SetCurrentConferenceAsync(int id);
+
         /// <summary>
-        /// Get the review criterias for a specific conference using the id
+        /// Retrieves the review criteria for a specific conference by its ID
         /// </summary>
-        /// <param name="conferenceId"></param>
-        /// <returns>returns a list of the review criteria</returns>
+        /// <param name="conferenceId">The ID of the conference</param>
+        /// <returns>A list of strings</returns>
         Task<List<string>> GetCriteriaByIdAsync(int conferenceId);
+
         /// <summary>
-        /// Input: int Conference.ID
-        /// Output: The list of categories bound to this conference.
+        /// Retrieves the categories associated with a specific conference by its ID
         /// </summary>
-        /// <param name="conferenceId"></param>
-        /// <returns></returns>
+        /// <param name="conferenceId">The ID of the conference</param>
+        /// <returns>A list of strings</returns>
         Task<List<string>> GetCategoriesByIdAsync(int conferenceId);
     }
 }
+
+

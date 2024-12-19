@@ -5,10 +5,10 @@ namespace conferencePlannerApp.Services.Interfaces;
 public interface IVenueService
 {
     /// <summary>
-    /// Return a VenueObject with the given id
+    /// Retrieves a Venue object by its ID
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns>VenueObject</returns>
+    /// <param name="id">The ID of the venue</param>
+    /// <returns>The Venue object</returns>
     Task<Venue> GetByIdAsync(int id);
 }
 

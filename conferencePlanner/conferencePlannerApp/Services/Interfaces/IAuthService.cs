@@ -2,18 +2,30 @@ using conferencePlannerCore.Models;
 
 namespace conferencePlannerApp.Services.Interfaces
 {
-  public interface IAuthService
-  {
-    // Output: Current user or null if not logged in
-    Task<User> GetCurrentUser();
+    public interface IAuthService
+    {
+        /// <summary>
+        /// Retrieves the current logged-in user
+        /// </summary>
+        /// <returns>The current User object or null if not logged in</returns>
+        Task<User> GetCurrentUser();
 
-    // Input: User object
-    // Manipulation: Saves to local storage
-    Task SetCurrentUser(User user);
+        /// <summary>
+        /// Sets the current user and saves it to local storage
+        /// </summary>
+        /// <param name="user">The User object to be set as current user</param>
+        Task SetCurrentUser(User user);
 
-    Task SetCurrentUserId(User user);
+        /// <summary>
+        /// Sets the current user ID
+        /// </summary>
+        /// <param name="user">The User object whose ID is to be set</param>
+        Task SetCurrentUserId(User user);
 
-    // Manipulation: Removes user from local storage
-    Task ClearCurrentUser();
-  }
+        /// <summary>
+        /// Clears the current user from local storage
+        /// </summary>
+        Task ClearCurrentUser();
+    }
 }
+
