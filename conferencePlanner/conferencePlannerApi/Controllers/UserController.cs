@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using conferencePlannerApi.Repositories.Interfaces;
 using conferencePlannerCore.Models;
-using conferencePlannerApi.Services.Interfaces;
 
 namespace conferencePlannerApi.Controllers
 {
@@ -10,12 +9,10 @@ namespace conferencePlannerApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserRepo _repo;
-        private readonly IEmailService _emailService;
 
-        public UserController(IUserRepo repo, IEmailService emailService)
+        public UserController(IUserRepo repo)
         {
             _repo = repo;
-            _emailService = emailService;
         }
 
         /// <summary>
@@ -245,32 +242,6 @@ namespace conferencePlannerApi.Controllers
             catch
             {
                 return StatusCode(500, "An error occurred while retrieving the user");
-            }
-        }
-
-        /// <summary>
-        /// Sends a test email using the email service
-        /// </summary>
-        /// <returns>
-        /// 200 OK if email is sent successfully
-        /// 500 Internal Server Error if an error occurs while sending the email
-        /// </returns>
-        [HttpPost]
-        [Route("SendEmail")]
-        public async Task<IActionResult> SendEmail()
-        {
-            try
-            {
-                await _emailService.SendEmailAsync(
-                    "mikkelkorsaa@gmail.com",
-                    "Test Subject",
-                    "<h1>Hello</h1><p>This is a test email.</p>"
-                );
-                return Ok("Email sent successfully");
-            }
-            catch
-            {
-                return StatusCode(500, "An error occurred while sending the email");
             }
         }
 
